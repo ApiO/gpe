@@ -9,6 +9,4 @@ int calculate()
 		j += i;
 	}
 	return j;
-
-
 }

@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpe", "gpe.vcxproj", "{F3041B73-7E11-4A90-9C77-8D07C5C49B68}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "demo.vcxproj", "{3B3CE500-BED9-4F53-843C-CA0978E3864B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F3041B73-7E11-4A90-9C77-8D07C5C49B68} = {F3041B73-7E11-4A90-9C77-8D07C5C49B68}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
