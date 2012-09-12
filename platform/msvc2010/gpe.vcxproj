@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\gpe\src\gpe.h" />
     <ClInclude Include="..\..\gpe\src\ressource_manager.h" />
+    <ClInclude Include="..\..\gpe\src\sized_types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
