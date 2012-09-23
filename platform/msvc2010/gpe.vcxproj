@@ -47,6 +47,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\gpe\include</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -80,7 +85,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\gpe\src\gpe.h" />
     <ClInclude Include="..\..\gpe\src\ressource_manager.h" />
-    <ClInclude Include="..\..\gpe\src\sized_types.h" />
+    <ClInclude Include="..\..\gpe\src\short_types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
