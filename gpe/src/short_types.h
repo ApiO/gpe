@@ -1,7 +1,7 @@
 #ifndef SHORT_TYPES_
 #define SHORT_TYPES_
 
-#include <stdint.h>
+#include "pstdint.h"
 
 typedef uint8_t  U8; 
 typedef  int8_t  I8;
@@ -17,13 +17,13 @@ typedef double   F64;
 
 // endian swapping functions
 
-U16 swapU16(U16 value)
+static U16 swapU16(U16 value)
 {
    return ((value & 0x00FF) << 8) 
         | ((value & 0xFF00) >> 8);
 }
 
-U32 swapU32(U32 value)
+static U32 swapU32(U32 value)
 {
    return ((value & 0x000000FF) << 24)
         | ((value & 0x0000FF00) << 8)
@@ -31,7 +31,7 @@ U32 swapU32(U32 value)
         | ((value & 0xFF000000) >> 24);
 }
 
-U64 swapU64(U64 value)
+static U64 swapU64(U64 value)
 {
    return ((value & 0x00000000000000FF) << 56)
         | ((value & 0x000000000000FF00) << 40)
@@ -43,7 +43,7 @@ U64 swapU64(U64 value)
         | ((value & 0xFF00000000000000) >> 56);
 }
 
-F32 swapF32(F32 value)
+static F32 swapF32(F32 value)
 {
    union U32F32
    {
@@ -57,7 +57,7 @@ F32 swapF32(F32 value)
    return u.m_asF32;
 }
 
-F64 swapF64(F64 value)
+static F64 swapF64(F64 value)
 {
    union U64F64
    {
