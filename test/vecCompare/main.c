@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include "chipmunk.h"
 #include <time.h>
 
 int main( int argc, const char* argv[] )
 {	
-    const int ITEM_COUNT = 30001; 
+    const int ITEM_COUNT = 1000; 
     int i, j;
     clock_t start, end;
 	
