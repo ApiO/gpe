@@ -81,11 +81,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\gpe\src\ressource_manager.c" />
+    <ClCompile Include="..\..\gpe\src\vector.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\gpe\src\gpe.h" />
+    <ClInclude Include="..\..\gpe\src\pstdint.h" />
     <ClInclude Include="..\..\gpe\src\ressource_manager.h" />
     <ClInclude Include="..\..\gpe\src\short_types.h" />
+    <ClInclude Include="..\..\gpe\src\vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
