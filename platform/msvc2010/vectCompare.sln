@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vectCompare", "vectCompare.vcxproj", "{3E74B8F5-C896-416B-9C52-3445E15E4587}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpe", "gpe.vcxproj", "{F3041B73-7E11-4A90-9C77-8D07C5C49B68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E74B8F5-C896-416B-9C52-3445E15E4587}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3E74B8F5-C896-416B-9C52-3445E15E4587}.Debug|Win32.Build.0 = Debug|Win32
+		{3E74B8F5-C896-416B-9C52-3445E15E4587}.Release|Win32.ActiveCfg = Release|Win32
+		{3E74B8F5-C896-416B-9C52-3445E15E4587}.Release|Win32.Build.0 = Release|Win32
+		{F3041B73-7E11-4A90-9C77-8D07C5C49B68}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F3041B73-7E11-4A90-9C77-8D07C5C49B68}.Debug|Win32.Build.0 = Debug|Win32
+		{F3041B73-7E11-4A90-9C77-8D07C5C49B68}.Release|Win32.ActiveCfg = Release|Win32
+		{F3041B73-7E11-4A90-9C77-8D07C5C49B68}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
