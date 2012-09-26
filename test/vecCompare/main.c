@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "chipmunk.h"
+#include <chipmunk.h>
 #include <time.h>
 
 int main( int argc, const char* argv[] )
@@ -24,7 +24,6 @@ int main( int argc, const char* argv[] )
     }
 
     start = clock();
-
 	
     //calc
     for(j = 0; j < ITEM_COUNT; j++)

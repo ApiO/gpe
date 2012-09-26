@@ -1,6 +1,6 @@
 #include "test.h"
 #include <stdio.h>
-#include "chipmunk\chipmunk.h"
+#include <chipmunk\chipmunk.h>
 
 void cpFoo (void)
 {
