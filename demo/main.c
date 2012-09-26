@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include "ressource_manager.h"
+#include "systems\physics\test.h"
 
 int main( int argc, const char* argv[] )
 {
-	int age;
-	printf( "\nHello World\n\n" );
-	printf( "\r\n%d\r\n>" , calculate() );
-	scanf_s( "%i", &age );
+  cpFoo();
+  
+  return 0;
 }
