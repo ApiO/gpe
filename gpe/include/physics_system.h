@@ -1,27 +1,33 @@
 #ifndef PHYSICS_SYSTEM_H_
 #define PHYSICS_SYSTEM_H_
 
+#include <chipmunk\chipmunk.h>
 
-//#include <chipmunk.h>
+#define HASHID int //ID lookup table value
 
 typedef struct
 {
-  //cpSpace *space;
-  /*
-    list obj : liste des entité physiques
-     type id;
-     cpBody body;
-     cpShape shapes[];
-  */
-  /*
-   type toUpdate[]; //liste des id d'élément à updater pour le tick courrant
-  */
-  int asuppr;
+  int     id;
+  cpBody  body;
+  cpShape shapes[];
+} gpPhysic;
+
+
+typedef struct
+{
+  cpSpace   *space;
+  //gpPhysic  *physics;  //liste des entité physiques
+  HASHID    toUpdate[]; //liste des id d'élément à updater pour le tick courrant
 } physics_system;
 
-//void  load (id, data)
-//OU
-//type  load (data)
+
+void    physics_system_init (physics_system * system);
+
+HASHID  physics_system_load (physics_system * system, char * data);
+
+HASHID  gpPhysic_init (physics_system * system, cpBody * body, cpShape * shapes);
+
+void    physics_add(physics_system * system, gpPhysic item);
 
 //void  remove (id)
 //void  submitUpdate (id,data)
