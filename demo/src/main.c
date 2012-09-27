@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <systems\physics\test.h>
+#include <test.h>
 
 int main( int argc, const char* argv[] )
 {
