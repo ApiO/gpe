@@ -3,7 +3,7 @@
 
 #include <chipmunk\chipmunk.h>
 
-#define HASHID int //ID lookup table value
+typedef int HASHID; //ID lookup table value
 
 typedef struct
 {
