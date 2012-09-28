@@ -1,7 +1,10 @@
 #include "physics_system.h"
+#include <stdlib.h>
   
 void physics_system_init (physics_system * system)
 {
+  system->physics_count = 0;
+
   // cpVect is a 2D vector and cpv() is a shortcut for initializing them.
   cpVect gravity = cpv(0, -100);
   
@@ -41,14 +44,40 @@ HASHID gpPhysic_init (physics_system * system, cpBody * body, cpShape * shapes)
 {
   //@system pas forcement utile, sauf si pour aider à determiner le HASHID de retour
 
-  gpPhysic item = {0x0001, *body, *shapes};
+  gpPhysic item = {0x0001, *body, shapes, 1};
 
   physics_add(system, item);
 
   return 0x0001;
 }
 
-void physics_add(physics_system * system, gpPhysic item)
+void gpPhysic_add_shape(gpPhysic * physic, cpShape shape)
 {
-  //add de "item" à "system->physics"
+  //ralloc du tableau de shape
+  //ajout du nouvel élément
+  physic->shapes_count++;
+}
+
+void physics_add(physics_system * system, gpPhysic *item)
+{
+  gpPhysic * physics = system->physics;
+  int count = system->physics_count;
+
+  if (count == 0)
+  {
+    physics = (gpPhysic *)malloc (sizeof(gpPhysic));
+  }
+  else
+  {
+    physics = (gpPhysic *)realloc (physics, (count + 1) * sizeof(gpPhysic) );
+  }
+
+  if( physics == NULL )
+  {
+    exit(EXIT_FAILURE);
+  }
+
+  physics[count] = *item;
+
+  system->physics_count = count++;
 }

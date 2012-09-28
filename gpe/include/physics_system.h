@@ -9,25 +9,27 @@ typedef struct
 {
   int     id;
   cpBody  body;
-  cpShape shapes[];
+  cpShape *shapes;
+  int     shapes_count;
 } gpPhysic;
 
 
 typedef struct
 {
   cpSpace   *space;
-  //gpPhysic  *physics;  //liste des entité physiques
-  HASHID    toUpdate[]; //liste des id d'élément à updater pour le tick courrant
+  gpPhysic  *physics;  //liste des entité physiques
+  int       physics_count;
+  HASHID    *toUpdate; //liste des id d'élément à updater pour le tick courrant
 } physics_system;
 
 
 void    physics_system_init (physics_system * system);
-
 HASHID  physics_system_load (physics_system * system, char * data);
 
-HASHID  gpPhysic_init (physics_system * system, cpBody * body, cpShape * shapes);
-
 void    physics_add(physics_system * system, gpPhysic item);
+
+HASHID  gpPhysic_init (physics_system * system, cpBody * body, cpShape * shapes);
+void    gpPhysic_add_shape(gpPhysic * physic, cpShape shape);
 
 //void  remove (id)
 //void  submitUpdate (id,data)
