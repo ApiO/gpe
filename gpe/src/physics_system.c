@@ -28,35 +28,33 @@ HASHUID physics_system_load (physics_system * system, char * data)
   
   gpPhysic physic = { ballBody, ballShape, 1 };
 
-  return physics_add(system, &physic);
+  return physics_add(system, physic);
 }
 
-HASHUID physics_add(physics_system * system, gpPhysic * physic)
+HASHUID physics_add(physics_system * system, gpPhysic physic)
 {
   int count = system->physics_count;
   gpIdLookup idLookup = { generate_hashuid(), count };
-  gpPhysic * physics = system->physics;
-  gpIdLookup * idLookupTable = system->idLookupTable;
 
   if (count == 0)
   {
-    physics = (gpPhysic *)malloc (sizeof(gpPhysic));
-    idLookupTable = (gpIdLookup *)malloc (sizeof(gpIdLookup));
+    system->physics = (gpPhysic *)malloc (sizeof(gpPhysic));
+    system->idLookupTable = (gpIdLookup *)malloc (sizeof(gpIdLookup));
   }
   else
   {
-    physics = (gpPhysic *)realloc (physics, (count + 1) * sizeof(gpPhysic) );
-    idLookupTable = (gpIdLookup *)realloc (idLookupTable, (count + 1) * sizeof(gpIdLookup) );
+    system->physics = (gpPhysic *)realloc (system->physics, (count + 1) * sizeof(gpPhysic) );
+    system->idLookupTable = (gpIdLookup *)realloc (system->idLookupTable, (count + 1) * sizeof(gpIdLookup) );
   }
 
-  if( physics == NULL || idLookupTable == NULL)
+  if( system->physics == NULL || system->idLookupTable == NULL)
   {
     exit(EXIT_FAILURE);
   }
   
-  physics[count] = * physic;
-  idLookupTable[count] = idLookup;
-  system->physics_count = count++;
+  system->physics[count] = physic;
+  system->idLookupTable[count] = idLookup;
+  system->physics_count = (count + 1);
 
   return idLookup.uid;
 }

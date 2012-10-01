@@ -30,7 +30,7 @@ typedef struct
 void    physics_system_init (physics_system * system);
 
 HASHUID physics_system_load (physics_system * system, char * data);
-HASHUID physics_add(physics_system * system, gpPhysic * physic);
+HASHUID physics_add(physics_system * system, gpPhysic physic);
 HASHUID generate_hashuid (void);
 
 void    physics_system_remove (physics_system * system, HASHUID uid);
