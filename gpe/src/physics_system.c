@@ -5,79 +5,79 @@ void physics_system_init (physics_system * system)
 {
   system->physics_count = 0;
 
-  // cpVect is a 2D vector and cpv() is a shortcut for initializing them.
   cpVect gravity = cpv(0, -100);
-  
-  // Create an empty space.
   cpSpace *space = cpSpaceNew();
   cpSpaceSetGravity(space, gravity);
 
   system->space = space;
 }
 
-HASHID physics_system_load (physics_system * system, char * data)
+HASHUID physics_system_load (physics_system * system, char * data)
 {
   cpSpace *space = system->space;
 
+  //pars de data, si ce n'est pas déjà une data intermediaire, et création de body et shape(s)
   cpFloat radius = 5;
   cpFloat mass = 1;
-  
-  // The moment of inertia is like mass for rotation
-  // Use the cpMomentFor*() functions to help you approximate it.
   cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
-  
-  // The cpSpaceAdd*() functions return the thing that you are adding.
-  // It's convenient to create and add an object in one line.
   cpBody *ballBody = cpSpaceAddBody(space, cpBodyNew(mass, moment));
   cpBodySetPos(ballBody, cpv(0, 15));
-  
-  // Now we create the collision shape for the ball.
-  // You can create multiple collision shapes that point to the same body.
-  // They will all be attached to the body and move around to follow it.
   cpShape *ballShape = cpSpaceAddShape(space, cpCircleShapeNew(ballBody, radius, cpvzero));
   cpShapeSetFriction(ballShape, 0.7);
+  //--------------------------------------------------
   
-  return gpPhysic_init(system, ballBody, ballShape);
+  gpPhysic physic = { ballBody, ballShape, 1 };
+
+  return physics_add(system, &physic);
 }
 
-HASHID gpPhysic_init (physics_system * system, cpBody * body, cpShape * shapes)
+HASHUID physics_add(physics_system * system, gpPhysic * physic)
 {
-  //@system pas forcement utile, sauf si pour aider à determiner le HASHID de retour
-
-  gpPhysic item = {0x0001, *body, shapes, 1};
-
-  physics_add(system, item);
-
-  return 0x0001;
-}
-
-void gpPhysic_add_shape(gpPhysic * physic, cpShape shape)
-{
-  //ralloc du tableau de shape
-  //ajout du nouvel élément
-  physic->shapes_count++;
-}
-
-void physics_add(physics_system * system, gpPhysic *item)
-{
-  gpPhysic * physics = system->physics;
   int count = system->physics_count;
+  gpIdLookup idLookup = { generate_hashuid(), count };
+  gpPhysic * physics = system->physics;
+  gpIdLookup * idLookupTable = system->idLookupTable;
 
   if (count == 0)
   {
     physics = (gpPhysic *)malloc (sizeof(gpPhysic));
+    idLookupTable = (gpIdLookup *)malloc (sizeof(gpIdLookup));
   }
   else
   {
     physics = (gpPhysic *)realloc (physics, (count + 1) * sizeof(gpPhysic) );
+    idLookupTable = (gpIdLookup *)realloc (idLookupTable, (count + 1) * sizeof(gpIdLookup) );
   }
 
-  if( physics == NULL )
+  if( physics == NULL || idLookupTable == NULL)
   {
     exit(EXIT_FAILURE);
   }
-
-  physics[count] = *item;
-
+  
+  physics[count] = * physic;
+  idLookupTable[count] = idLookup;
   system->physics_count = count++;
+
+  return idLookup.uid;
+}
+
+HASHUID generate_hashuid (void)
+{
+  return 42;
+}
+
+void physics_system_remove (physics_system * system, HASHUID uid)
+{
+}
+
+void  physics_system_submitUpdate (physics_system * system, HASHUID uid, char * data)
+{
+}
+
+void  physics_system_update(physics_system * system, float dt)
+{
+}
+
+void  physics_system_free (physics_system * system, HASHUID uid)
+{
 }
