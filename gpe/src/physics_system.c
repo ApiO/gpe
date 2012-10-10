@@ -1,78 +1,40 @@
-#include "physics_system.h"
 #include <stdlib.h>
-  
-void physics_system_init (physics_system * system)
+#include "physics_system.h"
+
+void physics_system_init (physics_system * system, int size)
 {
-  system->physics_count = 0;
-
-  cpVect gravity = cpv(0, -100);
-  cpSpace *space = cpSpaceNew();
-  cpSpaceSetGravity(space, gravity);
-
-  system->space = space;
+  system->capacity = size;
+  gpr_idlut_init(gp_physics_entity, system->idLookupTable, size);
 }
 
 HASHUID physics_system_load (physics_system * system, char * data)
 {
-  cpSpace *space = system->space;
+  //travail sur gp_physics_t cf @ data
 
-  //pars de data, si ce n'est pas déjà une data intermediaire, et création de body et shape(s)
-  cpFloat radius = 5;
-  cpFloat mass = 1;
-  cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
-  cpBody *ballBody = cpSpaceAddBody(space, cpBodyNew(mass, moment));
-  cpBodySetPos(ballBody, cpv(0, 15));
-  cpShape *ballShape = cpSpaceAddShape(space, cpCircleShapeNew(ballBody, radius, cpvzero));
-  cpShapeSetFriction(ballShape, 0.7);
-  //--------------------------------------------------
-  
-  gpPhysic physic = { ballBody, ballShape, 1 };
-
-  return physics_add(system, physic);
-}
-
-HASHUID physics_add(physics_system * system, gpPhysic physic)
-{
-  int count = system->physics_count;
-  gpIdLookup idLookup = { generate_hashuid(), count };
-
-  if (count == 0)
-  {
-    system->physics = (gpPhysic *)malloc (sizeof(gpPhysic));
-    system->idLookupTable = (gpIdLookup *)malloc (sizeof(gpIdLookup));
-  }
-  else
-  {
-    system->physics = (gpPhysic *)realloc (system->physics, (count + 1) * sizeof(gpPhysic) );
-    system->idLookupTable = (gpIdLookup *)realloc (system->idLookupTable, (count + 1) * sizeof(gpIdLookup) );
-  }
-
-  if( system->physics == NULL || system->idLookupTable == NULL)
-  {
-    exit(EXIT_FAILURE);
-  }
-  
-  system->physics[count] = physic;
-  system->idLookupTable[count] = idLookup;
-  system->physics_count = (count + 1);
-
-  return idLookup.uid;
-}
-
-HASHUID generate_hashuid (void)
-{
-  return 42;
+  return 42;//id_lookup_t_add(system->idLookupTable);
 }
 
 void physics_system_remove (physics_system * system, HASHUID uid)
 {
+  //if (id_lookup_t_has(system->idLookupTable, uid))
+  //{
+  //  //free(system->physics);
+  //  //realloc : physics
+  //  //free(system->idLookupTable[i]);
+  //  //realloc : idLookupTable
+  //    
+  //  //cp free system->physics|i].body
+  //  //cp free system->physics|i].shapes
+  //  id_lookup_t_remove(system->idLookupTable, uid);
+  //  system->physics_count = --system->physics_count;
+  //  return;
 }
 
 void  physics_system_submitUpdate (physics_system * system, HASHUID uid, char * data)
 {
 }
 
-void  physics_system_update(physics_system * system, float dt)
+void  physics_system_update (physics_system * system, float dt)
 {
 }
 

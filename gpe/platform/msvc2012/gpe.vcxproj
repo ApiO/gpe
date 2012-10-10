@@ -11,19 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\gpe.h" />
+    <ClInclude Include="..\..\include\gpr_assert.h" />
+    <ClInclude Include="..\..\include\gpr_containers.h" />
     <ClInclude Include="..\..\include\physics_system.h" />
-    <ClInclude Include="..\..\include\pstdint.h" />
     <ClInclude Include="..\..\include\ressource_manager.h" />
     <ClInclude Include="..\..\include\short_types.h" />
-    <ClInclude Include="..\..\include\test.h" />
-    <ClInclude Include="..\..\include\vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\physics_system.c" />
     <ClCompile Include="..\..\src\ressource_manager.c" />
-    <ClCompile Include="..\..\src\test.c" />
-    <ClCompile Include="..\..\src\vector.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>

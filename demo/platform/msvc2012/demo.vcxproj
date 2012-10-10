@@ -11,7 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\id_lookup_table_test.c" />
     <ClCompile Include="..\..\src\main.c" />
+    <ClCompile Include="..\..\src\physics_system_test.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\id_lookup_table_test.h" />
+    <ClInclude Include="..\..\src\physics_system_test.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
@@ -67,6 +73,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\gpe\platform\msvc2012\build\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>gpe.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
