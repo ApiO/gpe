@@ -4,7 +4,7 @@
 void physics_system_init (physics_system * system, int object_count)
 {
   system->capacity = object_count;
-  gpr_idlut_init(gpe_physics_entity, system->idLookupTable, object_count);
+  gpr_idlut_init(gpe_physics_entity, &system->idlut, object_count);
 
   cpVect gravity = cpv(0, -100);
   cpSpace *space = cpSpaceNew();
@@ -27,12 +27,12 @@ U32 physics_system_load (physics_system * system, char * data)
   
   gpe_physics_entity physics = { ballBody, ballShape, 1 };
   
-  return gpr_gpe_physics_entity_idlut_add(system->idLookupTable, &physics);
+  return gpr_gpe_physics_entity_idlut_add(&system->idlut, &physics);
 }
 
 void physics_system_remove (physics_system * system, U32 id)
 {
-  gpr_gpe_physics_entity_idlut_remove(system->idLookupTable, id);
+  gpr_gpe_physics_entity_idlut_remove(&system->idlut, id);
 }
 
 void  physics_system_submitUpdate (physics_system * system, U32 id, char * data)
