@@ -1,36 +1,41 @@
 #include <stdlib.h>
 #include "physics_system.h"
 
-void physics_system_init (physics_system * system, int size)
+void physics_system_init (physics_system * system, int object_count)
 {
-  system->capacity = size;
-  gpr_idlut_init(gp_physics_entity, system->idLookupTable, size);
+  system->capacity = object_count;
+  gpr_idlut_init(gpe_physics_entity, system->idLookupTable, object_count);
+
+  cpVect gravity = cpv(0, -100);
+  cpSpace *space = cpSpaceNew();
+  cpSpaceSetGravity(space, gravity);
+
+  system->space = space;
 }
 
-HASHUID physics_system_load (physics_system * system, char * data)
+U32 physics_system_load (physics_system * system, char * data)
 {
-  //travail sur gp_physics_t cf @ data
-
-  return 42;//id_lookup_t_add(system->idLookupTable);
+  //pars de data, si ce n'est pas déjà une data intermediaire, et création de body et shape(s)
+  cpFloat radius = 5;
+  cpFloat mass = 1;
+  cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
+  cpBody *ballBody = cpSpaceAddBody(system->space, cpBodyNew(mass, moment));
+  cpBodySetPos(ballBody, cpv(0, 15));
+  cpShape *ballShape = cpSpaceAddShape(system->space, cpCircleShapeNew(ballBody, radius, cpvzero));
+  cpShapeSetFriction(ballShape, 0.7);
+  //--------------------------------------------------
+  
+  gpe_physics_entity physics = { ballBody, ballShape, 1 };
+  
+  return gpr_gpe_physics_entity_idlut_add(system->idLookupTable, &physics);
 }
 
-void physics_system_remove (physics_system * system, HASHUID uid)
+void physics_system_remove (physics_system * system, U32 id)
 {
-  //if (id_lookup_t_has(system->idLookupTable, uid))
-  //{
-  //  //free(system->physics);
-  //  //realloc : physics
-  //  //free(system->idLookupTable[i]);
-  //  //realloc : idLookupTable
-  //    
-  //  //cp free system->physics|i].body
-  //  //cp free system->physics|i].shapes
-  //  id_lookup_t_remove(system->idLookupTable, uid);
-  //  system->physics_count = --system->physics_count;
-  //  return;
+  gpr_gpe_physics_entity_idlut_remove(system->idLookupTable, id);
 }
 
-void  physics_system_submitUpdate (physics_system * system, HASHUID uid, char * data)
+void  physics_system_submitUpdate (physics_system * system, U32 id, char * data)
 {
 }
 
@@ -38,6 +43,6 @@ void  physics_system_update (physics_system * system, float dt)
 {
 }
 
-void  physics_system_free (physics_system * system, HASHUID uid)
+void  physics_system_free (physics_system * system, U32 id)
 {
 }

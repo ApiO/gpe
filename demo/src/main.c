@@ -1,11 +1,11 @@
 #include <stdio.h>
-//#include "id_lookup_table_test.h"
+#include "physics_system_test.h"
 
 int main( int argc, const char* argv[] )
 {
   int CONSOLE_BREAK;
 
-  //id_lookup_table_test();
+  physics_system_test();
   
   scanf_s("%d", &CONSOLE_BREAK);
   return 0;

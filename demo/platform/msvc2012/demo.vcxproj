@@ -19,6 +19,11 @@
     <ClInclude Include="..\..\src\id_lookup_table_test.h" />
     <ClInclude Include="..\..\src\physics_system_test.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\gpe\platform\msvc2012\gpe.vcxproj">
+      <Project>{e3503211-4061-4ce2-9133-0cbbeef66c0a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
