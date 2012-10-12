@@ -51,8 +51,8 @@ static void make_leg(cpSpace *space, cpFloat side, cpFloat offset, cpBody *chass
 void physics_system_init (physics_system * system, U16 iterations, int gravity_x, int gravity_y, int object_count)
 {
   system->capacity = object_count;
-  gpr_idlut_init(gpe_physics_entity, &system->idlut, object_count);
-
+  gpr_idlut_init(gpe_physics_entity, &system->table, object_count);
+  
   cpSpace *space = cpSpaceNew();
   system->space = space;
 	cpSpaceSetIterations(space, iterations);
@@ -142,12 +142,15 @@ U32 physics_system_load (physics_system * system, gpe_physics_type type, gpe_phy
       break;
   }
 
-  return gpr_gpe_physics_entity_idlut_add(&system->idlut, &physics);
+  return gpr_idlut_add(gpe_physics_entity, &system->table, &physics);
 }
 
 void physics_system_remove (physics_system * system, U32 id)
 {
-  gpr_gpe_physics_entity_idlut_remove(&system->idlut, id);
+  gpe_physics_entity *physics = gpr_idlut_lookup(gpe_physics_entity, &system->table, id);
+  cpShapeFree(physics->shapes);
+  cpBodyFree(physics->body);
+  gpr_idlut_remove(gpe_physics_entity, &system->table, id);
 }
 
 void  physics_system_submitUpdate (physics_system * system, U32 id, char * data)

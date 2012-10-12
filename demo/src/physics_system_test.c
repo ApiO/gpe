@@ -36,7 +36,7 @@ void physics_system_test()
   data.vec_a.y = -240;
   data.vec_b.x =  320;
   data.vec_b.y = -240;
-  //ids[currentId] = physics_system_load(&system, segment_shape, data);
+  ids[currentId] = physics_system_load(&system, segment_shape, data);
   currentId = ++currentId;
   
   for (i = 0; i < ENTITY_COUNT; i++)
