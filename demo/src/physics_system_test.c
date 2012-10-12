@@ -4,35 +4,43 @@
 
 void physics_system_test()
 {
-  const int LOOP_COUNT = 50;
+  const int ENTITY_COUNT = 3;
+  int ids[ENTITY_COUNT];
   int i;
+  U32 currentId = 0;
 
   physics_system system;
+  gpe_physics_segment data;
 
-  physics_system_init(&system, 1);
+  physics_system_init(&system, 20, 0, -500, 1);
+  
+  data.elasticity = 1.0f;
+  data.friction = 1.0f;
+  data.radius = 0.0f;
+  
+  data.vec_a.x = -320;
+  data.vec_a.y = -240;
+  data.vec_b.x = -320;
+  data.vec_b.y =  240;
+  ids[currentId] = physics_system_load(&system, segment_shape, data);
+  currentId = ++currentId;
 
-  U32 elementID = physics_system_load(&system, "les datas formatées du ou des objets physique à charger");
-
-  physics_system_remove(&system, elementID);
-
-
-  //-------------
-
-  /*
-  physics_system_init(&physics_system, LOOP_COUNT);
-
-
-  for (i = 1; i < LOOP_COUNT; i++)
+  data.vec_a.x =  320;
+  data.vec_a.y = -240;
+  data.vec_b.x =  320;
+  data.vec_b.y =  240;
+  ids[currentId] = physics_system_load(&system, segment_shape, data);
+  currentId = ++currentId;
+  
+  data.vec_a.x = -320;
+  data.vec_a.y = -240;
+  data.vec_b.x =  320;
+  data.vec_b.y = -240;
+  //ids[currentId] = physics_system_load(&system, segment_shape, data);
+  currentId = ++currentId;
+  
+  for (i = 0; i < ENTITY_COUNT; i++)
   {
-    physics_system_load(&physics_system, "les datas formatées d'un objet");
+    physics_system_remove(&system, ids[i]);
   }
-
-  physics_system_remove(&physics_system, LOOP_COUNT);
-
-  for (i = 0; i < physics_system.physics_count; i++)
-  {
-    //printf("idLookupTable[%d] = { uid=%d, index=%d }\n", i, physics_system.idLookupTable[i].id, physics_system.idLookupTable[i].index);
-    physics_system_remove(&physics_system, elementID);
-  }
-  */
 }
