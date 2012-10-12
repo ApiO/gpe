@@ -20,9 +20,9 @@ typedef struct
 {
   gpe_pair vec_a;
   gpe_pair vec_b;
-  float   radius;
-  float   elasticity;
-  float   friction;
+  F32      radius;
+  F32      elasticity;
+  F32      friction;
 } gpe_physics_segment;
 
 typedef struct
@@ -35,11 +35,12 @@ GPR_IDLUT_INIT(gpe_physics_entity)
 
 typedef struct
 {
-  cpSpace                         *space;
-  gpr_idlut_t(gpe_physics_entity)  table;  //table de correspondance entre HASID et index de l'élément dans la table dynamique physics
-  U32                              physics_count;  //nombre d'entitées physique dans la table physics
-  U32                             *toUpdate;       //liste des id d'élément à updater pour le tick courrant
-  U32                              capacity;
+  cpSpace *space;
+  gpr_idlut_t(gpe_physics_entity)  
+           table;
+  U32      physics_count;   //nombre d'entitées physique dans la table physics
+  U32     *toUpdate;        //liste des id d'élément à updater pour le tick courrant
+  U32      capacity;
 } physics_system;
 
 void  physics_system_init (physics_system * system, U16 iterations, int gravity_x, int gravity_y, int object_count);

@@ -4,15 +4,15 @@
 
 void physics_system_test()
 {
-  const int ENTITY_COUNT = 3;
-  int ids[ENTITY_COUNT];
-  int i;
-  U32 currentId = 0;
+  const I32 ENTITY_COUNT = 3;
+  U32 ids[ENTITY_COUNT];
+  I32 i;
+  I32 currentId = 0;
 
   physics_system system;
   gpe_physics_segment data;
 
-  physics_system_init(&system, 20, 0, -500, 1);
+  physics_system_init(&system, 20, 0, -500, ENTITY_COUNT);
   
   data.elasticity = 1.0f;
   data.friction = 1.0f;
