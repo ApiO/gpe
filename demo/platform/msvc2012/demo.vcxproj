@@ -13,9 +13,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\main.c" />
     <ClCompile Include="..\..\src\physics_system_test.c" />
+    <ClCompile Include="..\..\src\window_test.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\physics_system_test.h" />
+    <ClInclude Include="..\..\src\window_test.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\gpe\platform\msvc2012\gpe.vcxproj">
@@ -80,7 +82,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\gpe\platform\msvc2012\build\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gpe.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gpe.lib;%(AdditionalDependencies);opengl32.lib</AdditionalDependencies>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>

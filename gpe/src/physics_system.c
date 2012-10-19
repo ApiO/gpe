@@ -3,129 +3,31 @@
 
 #define GRABABLE_MASK_BIT (1<<31)
 #define NOT_GRABABLE_MASK (~GRABABLE_MASK_BIT)
-static cpConstraint *motor;
-static cpFloat seg_radius = 3.0f;
 
-static void make_leg(cpSpace *space, cpFloat side, cpFloat offset, cpBody *chassis, cpBody *crank, cpVect anchor)
-{
-	cpVect a, b;
-	cpShape *shape;
-	
-	cpFloat leg_mass = 1.0f;
-
-	// make leg
-	a = cpvzero, b = cpv(0.0f, side);
-	cpBody *upper_leg = cpSpaceAddBody(space, cpBodyNew(leg_mass, cpMomentForSegment(leg_mass, a, b)));
-	cpBodySetPos(upper_leg, cpv(offset, 0.0f));
-	
-	cpSpaceAddShape(space, cpSegmentShapeNew(upper_leg, a, b, seg_radius));
-	cpSpaceAddConstraint(space, cpPivotJointNew2(chassis, upper_leg, cpv(offset, 0.0f), cpvzero));
-	
-	// lower leg
-	a = cpvzero, b = cpv(0.0f, -1.0f*side);
-	cpBody *lower_leg = cpSpaceAddBody(space, cpBodyNew(leg_mass, cpMomentForSegment(leg_mass, a, b)));
-	cpBodySetPos(lower_leg, cpv(offset, -side));
-	
-	shape = cpSpaceAddShape(space, cpSegmentShapeNew(lower_leg, a, b, seg_radius));
-	cpShapeSetGroup(shape, 1);
-	
-	shape = cpSpaceAddShape(space, cpCircleShapeNew(lower_leg, seg_radius*2.0f, b));
-	cpShapeSetGroup(shape, 1);
-	cpShapeSetElasticity(shape, 0.0f);
-	cpShapeSetFriction(shape, 1.0f);
-	
-	cpSpaceAddConstraint(space, cpPinJointNew(chassis, lower_leg, cpv(offset, 0.0f), cpvzero));
-	
-	cpSpaceAddConstraint(space, cpGearJointNew(upper_leg, lower_leg, 0.0f, 1.0f));
-	
-	cpConstraint *constraint;
-	cpFloat diag = cpfsqrt(side*side + offset*offset);
-	
-	constraint = cpSpaceAddConstraint(space, cpPinJointNew(crank, upper_leg, anchor, cpv(0.0f, side)));
-	cpPinJointSetDist(constraint, diag);
-	
-	constraint = cpSpaceAddConstraint(space, cpPinJointNew(crank, lower_leg, anchor, cpvzero));
-	cpPinJointSetDist(constraint, diag);
-}
-
-void physics_system_init (physics_system * system, U16 iterations, int gravity_x, int gravity_y, int object_count)
+void physics_system_init (physics_system * system, int gravity_x, int gravity_y, int object_count)
 {
   system->capacity = object_count;
   gpr_idlut_init(gpe_physics_entity, &system->table, object_count);
   
   cpSpace *space = cpSpaceNew();
   system->space = space;
-	cpSpaceSetIterations(space, iterations);
   cpSpaceSetGravity(space, cpv(gravity_x, gravity_y));
-  
-	//cpBody *staticBody = cpSpaceGetStaticBody(space);
-	cpShape *shape;
-	cpVect a, b;
-	
-	// Create segments around the edge of the screen.
-  /*
-	shape = cpSpaceAddShape(space, cpSegmentShapeNew(staticBody, cpv(-320,-240), cpv(-320,240), 0.0f));
-	cpShapeSetElasticity(shape, 1.0f);
-	cpShapeSetFriction(shape, 1.0f);
-	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
-
-	shape = cpSpaceAddShape(space, cpSegmentShapeNew(staticBody, cpv(320,-240), cpv(320,240), 0.0f));
-	cpShapeSetElasticity(shape, 1.0f);
-	cpShapeSetFriction(shape, 1.0f);
-	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
-
-	shape = cpSpaceAddShape(space, cpSegmentShapeNew(staticBody, cpv(-320,-240), cpv(320,-240), 0.0f));
-	cpShapeSetElasticity(shape, 1.0f);
-	cpShapeSetFriction(shape, 1.0f);
-	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
-  */
-
-	cpFloat offset = 30.0f;
-
-	// make chassis
-	cpFloat chassis_mass = 2.0f;
-	a = cpv(-offset, 0.0f), b = cpv(offset, 0.0f);
-	cpBody *chassis = cpSpaceAddBody(space, cpBodyNew(chassis_mass, cpMomentForSegment(chassis_mass, a, b)));
-	
-	shape = cpSpaceAddShape(space, cpSegmentShapeNew(chassis, a, b, seg_radius));
-	cpShapeSetGroup(shape, 1);
-	
-	// make crank
-	cpFloat crank_mass = 1.0f;
-	cpFloat crank_radius = 13.0f;
-	cpBody *crank = cpSpaceAddBody(space, cpBodyNew(crank_mass, cpMomentForCircle(crank_mass, crank_radius, 0.0f, cpvzero)));
-	
-	shape = cpSpaceAddShape(space, cpCircleShapeNew(crank, crank_radius, cpvzero));
-	cpShapeSetGroup(shape, 1);
-	
-	cpSpaceAddConstraint(space, cpPivotJointNew2(chassis, crank, cpvzero, cpvzero));
-	
-	cpFloat side = 30.0f;
-	
-	int num_legs = 2;
-	for(int i=0; i<num_legs; i++){
-    make_leg(system->space, side,  offset, chassis, crank, cpvmult(cpvforangle((cpFloat)(2*i+0)/(cpFloat)num_legs*M_PI), crank_radius));
-		make_leg(system->space, side, -offset, chassis, crank, cpvmult(cpvforangle((cpFloat)(2*i+1)/(cpFloat)num_legs*M_PI), crank_radius));
-	}
-	
-	motor = cpSpaceAddConstraint(space, cpSimpleMotorNew(chassis, crank, 6.0f));
 }
 
 //gpe_physics_entity load_segment_shape(physics_system * system, char * data)
-gpe_physics_entity load_segment_shape(physics_system * system, gpe_physics_segment data)
+void load_segment_shape(gpe_physics_entity *physics, physics_system * system, gpe_physics_segment data)
 {
   //gpe_physics_segment seg_shape = (gpe_physics_segment) data + sizeof(gpe_physics_segment);
   
-	cpBody *staticBody = cpSpaceGetStaticBody(system->space);
-	cpShape *shape;
-	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(data.vec_a.x, data.vec_a.y), cpv(data.vec_b.x, data.vec_b.y), data.radius));
+	cpBody *staticBody = cpBodyNewStatic();
+	cpShape *shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(data.vec_a.x, data.vec_a.y), cpv(data.vec_b.x, data.vec_b.y), data.radius));
   cpShapeSetElasticity(shape, data.elasticity);
   cpShapeSetFriction(shape, data.friction);
 	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
 
-  gpe_physics_entity physics = { staticBody, shape, 1 };
-
-  return physics;
+  physics->body = staticBody;
+  physics->shapes = shape;
+  physics->shapes_count = 1;
 }
 
 //U32 physics_system_load (physics_system * system, gpe_physics_type type, char * data)
@@ -136,7 +38,7 @@ U32 physics_system_load (physics_system * system, gpe_physics_type type, gpe_phy
   switch (type)
   {
     case segment_shape:      
-      physics = load_segment_shape(system, data);
+      load_segment_shape(&physics, system, data);
       break;
     default:
       break;
@@ -163,4 +65,38 @@ void  physics_system_update (physics_system * system, float dt)
 
 void  physics_system_free (physics_system * system, U32 id)
 {
+}
+
+//DEV :: ajoute un shape directement au space : ne passe pas par idlut. doit être utilisé pour dev/test sur physics_debug
+void  physics_system_loadFoo (physics_system * system)
+{
+  // Add a static line segment shape for the ground.
+  // We'll make it slightly tilted so the ball will roll off.
+  // We attach it to space->staticBody to tell Chipmunk it shouldn't be movable.
+  cpShape *ground = cpSegmentShapeNew(system->space->staticBody, cpv(-20, 5), cpv(20, -5), 0);
+  cpShapeSetFriction(ground, 1);
+  cpSpaceAddShape(system->space, ground);
+  
+  // Now let's make a ball that falls onto the line and rolls off.
+  // First we need to make a cpBody to hold the physical properties of the object.
+  // These include the mass, position, velocity, angle, etc. of the object.
+  // Then we attach collision shapes to the cpBody to give it a size and shape.
+  
+  cpFloat radius = 5;
+  cpFloat mass = 1;
+  
+  // The moment of inertia is like mass for rotation
+  // Use the cpMomentFor*() functions to help you approximate it.
+  cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
+  
+  // The cpSpaceAdd*() functions return the thing that you are adding.
+  // It's convenient to create and add an object in one line.
+  cpBody *ballBody = cpSpaceAddBody(system->space, cpBodyNew(mass, moment));
+  cpBodySetPos(ballBody, cpv(0, 15));
+  
+  // Now we create the collision shape for the ball.
+  // You can create multiple collision shapes that point to the same body.
+  // They will all be attached to the body and move around to follow it.
+  cpShape *ballShape = cpSpaceAddShape(system->space, cpCircleShapeNew(ballBody, radius, cpvzero));
+  cpShapeSetFriction(ballShape, 0.7);
 }
