@@ -68,7 +68,7 @@ void  physics_system_free (physics_system * system, U32 id)
 }
 
 //DEV :: ajoute un shape directement au space : ne passe pas par idlut. doit être utilisé pour dev/test sur physics_debug
-void  physics_system_loadFoo (physics_system * system)
+void  physics_system_loadFoo0 (physics_system * system)
 {
   // Add a static line segment shape for the ground.
   // We'll make it slightly tilted so the ball will roll off.
@@ -99,4 +99,18 @@ void  physics_system_loadFoo (physics_system * system)
   // They will all be attached to the body and move around to follow it.
   cpShape *ballShape = cpSpaceAddShape(system->space, cpCircleShapeNew(ballBody, radius, cpvzero));
   cpShapeSetFriction(ballShape, 0.7);
+}
+
+void  physics_system_loadFoo1 (physics_system * system)
+{
+  cpFloat mass = 1.0f;
+  cpFloat inertia = 1.0f;
+	cpFloat radius = 10.0f;
+
+  cpBody *body = cpSpaceAddBody(system->space, cpBodyNew(mass, inertia));
+	cpShape *circle = cpSpaceAddShape(system->space,  cpCircleShapeNew(body, radius, cpvzero));
+  
+  cpFloat width = 5.0f;
+  cpFloat height = 5.0f;
+  cpShape *box = cpSpaceAddShape(system->space, cpBoxShapeNew(body, width, height));
 }

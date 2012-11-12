@@ -11,13 +11,12 @@ void physics_system_test_foo0(void)
   window_manager manager;
   physics_system system;
   physics_debug debug;
-  gpe_physics_segment data;
 
   window_manager_init(&manager, "Physics debug", 600, 800);
   physics_system_init(&system, 0, -100, ENTITY_COUNT);
   physics_debug_init(&debug, system.space);
 
-  physics_system_loadFoo(&system);
+  physics_system_loadFoo0(&system);
   
   //pseudo game loop
   while (manager.running)
@@ -29,7 +28,6 @@ void physics_system_test_foo0(void)
   
   window_manager_free(&manager);
 }
-
 
 void physics_system_test_foo1(void)
 {
@@ -86,4 +84,29 @@ void physics_system_test_foo1(void)
   {
     physics_system_remove(&system, ids[i]);
   }
+}
+
+void physics_system_test_foo2(void)
+{
+  const I32 ENTITY_COUNT = 1;
+
+  window_manager manager;
+  physics_system system;
+  physics_debug debug;
+
+  window_manager_init(&manager, "Physics debug", 600, 800);
+  physics_system_init(&system, 0, -100, ENTITY_COUNT);
+  physics_debug_init(&debug, system.space);
+
+  physics_system_loadFoo1(&system);
+  
+  //pseudo game loop
+  while (manager.running)
+  {
+    window_manager_clear();
+    physics_debug_draw(&debug);
+    window_manager_swapBuffers(&manager);
+  }
+  
+  window_manager_free(&manager);
 }

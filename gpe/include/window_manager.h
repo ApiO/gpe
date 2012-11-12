@@ -19,6 +19,7 @@ typedef struct {
 typedef struct
 {
   int   running;
+  int   restart;
 } window_manager;
 
 void window_manager_init (window_manager * manager, char * title, int height, int width);

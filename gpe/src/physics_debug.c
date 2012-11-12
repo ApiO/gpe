@@ -11,20 +11,17 @@ typedef struct {
 	void *data;
 } spaceShapeContext;
 
-void cpSpaceLock(cpSpace *space);
+
 void drawShapes(cpSpace * space, cpSpaceShapeIteratorFunc func, void *data);
+void drawShape(cpShape *shape, void *unused);
 void drawConstraints(cpSpace * space);
 void drawCollisionPoints(cpSpace * space);
-void drawShape(cpShape *shape, void *unused);
-static void spaceEachShapeIterator(cpShape *shape, spaceShapeContext *context);
-static Color ColorForShape(cpShape *shape);
-static Color ColorFromHash(cpHashValue hash, float alpha);
-static inline Color LAColor(float l, float a);
-static inline Color RGBAColor(float r, float g, float b, float a);
-static inline void glColor_from_color(Color color);
-//void cpSpaceLock(cpSpace *space);
-//void cpSpaceUnlock(cpSpace *space, cpBool runPostStep);
-
+void spaceEachShapeIterator(cpShape *shape, spaceShapeContext *context);
+Color ColorForShape(cpShape *shape);
+Color ColorFromHash(cpHashValue hash, float alpha);
+Color LAColor(float l, float a);
+Color RGBAColor(float r, float g, float b, float a);
+void glColor_from_color(Color color);
 
 void physics_debug_init (physics_debug * debug, cpSpace * space)
 {
@@ -40,21 +37,19 @@ void physics_debug_draw (physics_debug * debug)
 
 void drawShapes(cpSpace * space, cpSpaceShapeIteratorFunc func, void *data)
 {
-  //TODO
 	//cpSpaceLock(space); {
-		spaceShapeContext context = { func, data };
-		cpSpatialIndexEach(space->activeShapes_private, (cpSpatialIndexIteratorFunc)spaceEachShapeIterator, &context);
-		cpSpatialIndexEach(space->staticShapes_private, (cpSpatialIndexIteratorFunc)spaceEachShapeIterator, &context);
-	//} cpSpaceUnlock(space, cpTrue);
+	spaceShapeContext context = { func, data };
+	cpSpatialIndexEach(space->activeShapes_private, (cpSpatialIndexIteratorFunc)spaceEachShapeIterator, &context);
+	cpSpatialIndexEach(space->staticShapes_private, (cpSpatialIndexIteratorFunc)spaceEachShapeIterator, &context);
+  //} cpSpaceUnlock(space, cpTrue);
 }
 
-static void spaceEachShapeIterator(cpShape *shape, spaceShapeContext *context)
+void spaceEachShapeIterator(cpShape *shape, spaceShapeContext *context)
 {
 	context->func(shape, context->data);
 }
 
-
-static Color ColorFromHash(cpHashValue hash, float alpha)
+Color ColorFromHash(cpHashValue hash, float alpha)
 {
 	unsigned long val = (unsigned long)hash;
 	
@@ -88,17 +83,17 @@ static Color ColorFromHash(cpHashValue hash, float alpha)
 	}
 }
 
-static inline Color LAColor(float l, float a){
+Color LAColor(float l, float a){
 	Color color = {l, l, l, a};
 	return color;
 }
 
-static inline Color RGBAColor(float r, float g, float b, float a){
+Color RGBAColor(float r, float g, float b, float a){
 	Color color = {r, g, b, a};
 	return color;
 }
 
-static Color ColorForShape(cpShape *shape)
+Color ColorForShape(cpShape *shape)
 {
 	if(cpShapeGetSensor(shape)){
 		return LAColor(1, 0);
@@ -115,7 +110,7 @@ static Color ColorForShape(cpShape *shape)
 	}
 }
 
-static void drawShape(cpShape *shape, void *unused)
+void drawShape(cpShape *shape, void *unused)
 {
 	cpBody *body = shape->body;
 	Color color = ColorForShape(shape);
@@ -140,51 +135,12 @@ static void drawShape(cpShape *shape, void *unused)
 	}
 }
 
-void drawConstraints(cpSpace * space)
+void drawConstraints(cpSpace *space)
 {
-  //TODO
+
 }
 
 void drawCollisionPoints(cpSpace * space)
 {
   //TODO
 }
-
-/*
-void cpSpaceLock(cpSpace *space)
-{
-  space->locked_private += 1;
-}
-
-void cpSpaceUnlock(cpSpace *space, cpBool runPostStep)
-{
-	space->locked_private -= 1;
-	
-	if(space->locked_private == 0 && runPostStep && !space->skipPostStep_private){
-		space->skipPostStep_private = cpTrue;
-		
-		cpArray *waking = space->rousedBodies_private;
-		for(int i=0, count=waking->num; i<count; i++){
-			cpSpaceActivateBody(space, (cpBody *)waking->arr[i]);
-			waking->arr[i] = NULL;
-		}
-		
-		cpArray *arr = space->postStepCallbacks_private;
-		for(int i=0; i<arr->num; i++){
-			cpPostStepCallback *callback = (cpPostStepCallback *)arr->arr[i];
-			cpPostStepFunc func = callback->func;
-			
-			// Mark the func as NULL in case calling it calls cpSpaceRunPostStepCallbacks() again.
-			callback->func = NULL;
-			if(func) func(space, callback->key, callback->data);
-			
-			arr->arr[i] = NULL;
-			cpfree(callback);
-		}
-		
-		waking->num = 0;
-		arr->num = 0;
-		space->skipPostStep_private = cpFalse;
-	}
-}
-*/

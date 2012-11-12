@@ -50,6 +50,7 @@ void  physics_system_submitUpdate (physics_system * system, U32 id, char * data)
 void  physics_system_update (physics_system * system, float dt);
 void  physics_system_free (physics_system * system, U32 id);
 
-void  physics_system_loadFoo (physics_system * system);
+void  physics_system_loadFoo0 (physics_system * system);
+void  physics_system_loadFoo1 (physics_system * system);
 
 #endif // physics_system_H_

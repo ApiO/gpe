@@ -3,5 +3,6 @@
 
 void  physics_system_test_foo0 (void);
 void  physics_system_test_foo1 (void);
+void  physics_system_test_foo2 (void);
 
 #endif //physics_system_test_h
