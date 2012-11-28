@@ -10,12 +10,12 @@
 #define _window_manager_h_
 
 #include <GL\glfw.h>
-#include <chipmunk\chipmunk.h>
-
+//#include <chipmunk\chipmunk.h>
+/*
 typedef struct {
 	float r, g, b, a;
 } Color;
-
+*/
 typedef struct
 {
   int   running;
@@ -26,10 +26,10 @@ void window_manager_init (window_manager * manager, char * title, int height, in
 void window_manager_clear (void);
 void window_manager_swapBuffers (window_manager * manager);
 void window_manager_free (window_manager * manager);
-
+/*
 void drawCircle(cpVect center, cpFloat angle, cpFloat radius, Color lineColor, Color fillColor);
 void drawFatSegment(cpVect a, cpVect b, cpFloat radius, Color lineColor, Color fillColor);
 void drawSegment(cpVect a, cpVect b, Color color);
 void drawPolygon(int count, cpVect *verts, Color lineColor, Color fillColor);
-
+*/
 #endif //_window_manager_h_

@@ -2,7 +2,8 @@
 #include "TheoJansen.h"
 #include "window_manager.h"
 #include "physics_system.h"
-#include "physics_debug.h"
+//#include "physics_debug.h"
+#include "physics_debug_system.h"
 
 int TheoJansen_app(void);
 void TheoJansen_init(physics_system * system);
@@ -16,8 +17,7 @@ const int SCREEN_WIDTH = 640;
 #define NOT_GRABABLE_MASK (~GRABABLE_MASK_BIT)
 
 static cpConstraint *tj_motor;
-//static cpFloat seg_radius = 3.0f;
-static cpFloat seg_radius = 0.3f;
+static cpFloat seg_radius = 3.0f;
 cpVect tj_Keyboard = {};
 
 void TheoJansen_foo(void)
@@ -39,12 +39,14 @@ int TheoJansen_app(void)
 
   window_manager manager;
   physics_system system;
-  physics_debug debug;
+  physics_debug_system debug;
+  //physics_debug debug;
   int ticks = 0;
 
   window_manager_init(&manager, "Physics debug", SCREEN_HEIGHT, SCREEN_WIDTH);
   physics_system_init(&system, 0, -500, ENTITY_COUNT);
-  physics_debug_init(&debug, system.space);
+  physics_debug_system_init(&debug, system.space);
+  //physics_debug_init(&debug, system.space);
 
   TheoJansen_init(&system); //ici on charge les entités dans le space ss passer par le physics_system
   
@@ -65,7 +67,7 @@ int TheoJansen_app(void)
 
     TheoJansen_update(&system, ticks);
 
-    physics_debug_draw(&debug);
+    physics_debug_system_draw(&debug);
 
     window_manager_swapBuffers(&manager);
     ticks += 1;
@@ -128,27 +130,26 @@ void TheoJansen_init(physics_system * system)
 	cpVect a, b;
 	
 	// Create segments around the edge of the screen.
-	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(-SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 0.0f));
-	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-1,-1), cpv(-1,1), 0.0f));
+	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(-SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 0.0f));
+	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-1,-1), cpv(-1,1), 0.0f));
 	cpShapeSetElasticity(shape, 1.0f);
 	cpShapeSetFriction(shape, 1.0f);
 	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
   
-	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 0.0f));
-	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(1,-1), cpv(1,1), 0.0f));
+	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 0.0f));
+	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(1,-1), cpv(1,1), 0.0f));
 	cpShapeSetElasticity(shape, 1.0f);
 	cpShapeSetFriction(shape, 1.0f);
 	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
   
-	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), 0.0f));
-	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-1,-1), cpv(1,-1), 0.0f));
-	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-0.5,-0.5), cpv(0.5,-0.5), 0.0f));
+	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), 0.0f));
+	//shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(staticBody, cpv(-1,-1), cpv(1,-1), 0.0f));
 	cpShapeSetElasticity(shape, 1.0f);
 	cpShapeSetFriction(shape, 1.0f);
 	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
 	
-	//cpFloat offset = 30.0f;
-	cpFloat offset = 0.003f;
+	cpFloat offset = 30.0f;
+	//cpFloat offset = 0.003f;
 
 	// make chassis
 	cpFloat chassis_mass = 2.0f;
@@ -160,8 +161,8 @@ void TheoJansen_init(physics_system * system)
 	
 	// make crank
 	cpFloat crank_mass = 1.0f;
-	//cpFloat crank_radius = 13.0f;
-	cpFloat crank_radius = 0.13f;
+	cpFloat crank_radius = 13.0f;
+	//cpFloat crank_radius = 0.13f;
 	cpBody *crank = cpSpaceAddBody(system->space, cpBodyNew(crank_mass, cpMomentForCircle(crank_mass, crank_radius, 0.0f, cpvzero)));
 	
 	shape = cpSpaceAddShape(system->space, cpCircleShapeNew(crank, crank_radius, cpvzero));
@@ -169,8 +170,8 @@ void TheoJansen_init(physics_system * system)
 	
 	cpSpaceAddConstraint(system->space, cpPivotJointNew2(chassis, crank, cpvzero, cpvzero));
   
-	//cpFloat side = 30.0f;
-	cpFloat side = 0.003f;
+	cpFloat side = 30.0f;
+	//cpFloat side = 0.003f;
 	
 	int num_legs = 2;
 	for(int i=0; i<num_legs; i++){

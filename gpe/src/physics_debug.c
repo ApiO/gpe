@@ -1,4 +1,5 @@
 #include "physics_debug.h"
+/*
 #include "window_manager.h"
 
 const Color LINE_COLOR = {200.0/255.0, 210.0/255.0, 230.0/255.0, 1.0};
@@ -144,3 +145,4 @@ void drawCollisionPoints(cpSpace * space)
 {
   //TODO
 }
+*/

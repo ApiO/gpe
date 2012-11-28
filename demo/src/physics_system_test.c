@@ -2,7 +2,7 @@
 #include "physics_system_test.h"
 #include "window_manager.h"
 #include "physics_system.h"
-#include "physics_debug.h"
+#include "physics_debug_system.h"
 
 void physics_system_test_foo0(void)
 {
@@ -10,11 +10,11 @@ void physics_system_test_foo0(void)
 
   window_manager manager;
   physics_system system;
-  physics_debug debug;
+  physics_debug_system debug;
 
   window_manager_init(&manager, "Physics debug", 600, 800);
   physics_system_init(&system, 0, -100, ENTITY_COUNT);
-  physics_debug_init(&debug, system.space);
+  physics_debug_system_init(&debug, system.space);
 
   physics_system_loadFoo0(&system);
   
@@ -22,7 +22,7 @@ void physics_system_test_foo0(void)
   while (manager.running)
   {
     window_manager_clear();
-    physics_debug_draw(&debug);
+    physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
   
@@ -38,12 +38,12 @@ void physics_system_test_foo1(void)
 
   window_manager manager;
   physics_system system;
-  physics_debug debug;
+  physics_debug_system debug;
   gpe_physics_segment data;
 
   window_manager_init(&manager, "Physics debug", 600, 800);
   physics_system_init(&system, 0, -500, ENTITY_COUNT);
-  physics_debug_init(&debug, system.space);
+  physics_debug_system_init(&debug, system.space);
   
   data.elasticity = 1.0f;
   data.friction = 1.0f;
@@ -74,7 +74,7 @@ void physics_system_test_foo1(void)
   while (manager.running)
   {
     window_manager_clear();
-    physics_debug_draw(&debug);
+    physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
   
@@ -92,11 +92,11 @@ void physics_system_test_foo2(void)
 
   window_manager manager;
   physics_system system;
-  physics_debug debug;
+  physics_debug_system debug;
 
   window_manager_init(&manager, "Physics debug", 600, 800);
   physics_system_init(&system, 0, -100, ENTITY_COUNT);
-  physics_debug_init(&debug, system.space);
+  physics_debug_system_init(&debug, system.space);
 
   physics_system_loadFoo1(&system);
   
@@ -104,7 +104,7 @@ void physics_system_test_foo2(void)
   while (manager.running)
   {
     window_manager_clear();
-    physics_debug_draw(&debug);
+    physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
   

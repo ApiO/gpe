@@ -3,8 +3,79 @@
 #include <stdlib.h>
 
 void gl_init(int height, int width);
-void glColor_from_color(Color color);
 
+void window_manager_init (window_manager * manager, char * title, int height, int width)
+{
+  manager->running = GL_TRUE;
+  manager->restart = 0;
+ 
+  // Initialize GLFW
+  if( !glfwInit() )
+  {
+    exit( EXIT_FAILURE );
+  }
+  // Open an OpenGL window
+  if( !glfwOpenWindow( width, height, 0,0,0,0,0,0, GLFW_WINDOW ) )
+  {
+    glfwTerminate();
+    exit( EXIT_FAILURE );
+  }
+  //init de la fenêtre glfw
+  glfwSetWindowTitle(title);
+  
+  gl_init(height, width);
+}
+
+void gl_init(int height, int width)
+{
+  glViewport(0, 0, width, height);
+
+  glClearColor( 0.21f, 0.21f, 0.21f, 0.0f );
+  glClear(GL_COLOR_BUFFER_BIT);
+	
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_POINT_SMOOTH);
+
+  glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+  glHint(GL_POINT_SMOOTH_HINT, GL_DONT_CARE);
+	
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void window_manager_clear (void)
+{
+  glClear( GL_COLOR_BUFFER_BIT );
+
+  // initialize viewing values 
+  glMatrixMode(GL_PROJECTION);
+  
+  glLoadIdentity();
+}
+
+void window_manager_swapBuffers (window_manager * manager)
+{
+  manager->restart = !(!glfwGetKey( GLFW_KEY_ENTER ) && glfwGetWindowParam( GLFW_OPENED ));
+
+  if(manager->restart == 1) {
+    manager->running = 0;
+    return;
+  }
+
+  // Swap front and back rendering buffers
+  glfwSwapBuffers();
+  // Check if ESC key was pressed or window was closed
+  manager->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
+}
+
+void window_manager_free(window_manager * manager)
+{
+  glfwTerminate();
+}
+
+/*
+void glColor_from_color(Color color);
 const GLfloat circleVAR[] = {
 	 0.0000f,  1.0000f,
 	 0.2588f,  0.9659f,
@@ -65,58 +136,6 @@ const GLfloat pillVAR[] = {
 	 0.0000f,  1.0000f, 0.0f,
 };
 const int pillVAR_count = sizeof(pillVAR)/sizeof(GLfloat)/3;
-
-void window_manager_init (window_manager * manager, char * title, int height, int width)
-{
-  manager->running = GL_TRUE;
-  manager->restart = 0;
- 
-  // Initialize GLFW
-  if( !glfwInit() )
-  {
-    exit( EXIT_FAILURE );
-  }
-  // Open an OpenGL window
-  if( !glfwOpenWindow( width, height, 0,0,0,0,0,0, GLFW_WINDOW ) )
-  {
-    glfwTerminate();
-    exit( EXIT_FAILURE );
-  }
-  //init de la fenêtre glfw
-  glfwSetWindowTitle(title);
-  
-  gl_init(height, width);
-}
-
-void window_manager_clear (void)
-{
-  glClear( GL_COLOR_BUFFER_BIT );
-
-  // initialize viewing values 
-  glMatrixMode(GL_PROJECTION);
-  
-  glLoadIdentity();
-}
-
-void window_manager_swapBuffers (window_manager * manager)
-{
-  manager->restart = !(!glfwGetKey( GLFW_KEY_ENTER ) && glfwGetWindowParam( GLFW_OPENED ));
-
-  if(manager->restart == 1) {
-    manager->running = 0;
-    return;
-  }
-
-  // Swap front and back rendering buffers
-  glfwSwapBuffers();
-  // Check if ESC key was pressed or window was closed
-  manager->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
-}
-
-void window_manager_free(window_manager * manager)
-{
-  glfwTerminate();
-}
 
 void glColor_from_color(Color color){
 	glColor4fv((GLfloat *)&color);
@@ -204,22 +223,4 @@ void drawPolygon(int count, cpVect *verts, Color lineColor, Color fillColor)
 		glColor_from_color(lineColor);
 		glDrawArrays(GL_LINE_LOOP, 0, count);
 	}
-}
-
-void gl_init(int height, int width)
-{
-  //glViewport(0, 0, width, height);
-
-  glClearColor( 0.21f, 0.21f, 0.21f, 0.0f );
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnable(GL_LINE_SMOOTH);
-	glEnable(GL_POINT_SMOOTH);
-
-	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-	glHint(GL_POINT_SMOOTH_HINT, GL_DONT_CARE);
-	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
+}*/
