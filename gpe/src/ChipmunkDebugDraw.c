@@ -38,13 +38,13 @@
 	about Chipmunk which may change with little to no warning.
 */
 
-const Color LINE_COLOR = {200.0/255.0, 210.0/255.0, 230.0/255.0, 1.0};
+const Color LINE_COLOR = {(float)(200.0/255.0), (float)(210.0/255.0), (float)(230.0/255.0), 1.0f};
 const Color CONSTRAINT_COLOR = {0.0, 0.75, 0.0, 1.0};
 const float SHAPE_ALPHA = 1.0;
 
 float ChipmunkDebugDrawPointLineScale = 1.0f;
 
-void ChipmunkDebugDraw_SetPointLineScale(int scale)
+void ChipmunkDebugDraw_SetPointLineScale(float scale)
 {
 	ChipmunkDebugDrawPointLineScale = scale;
 }
@@ -62,12 +62,12 @@ ColorFromHash(cpHashValue hash, float alpha)
 	val = (val+0xfd7046c5) + (val<<3);
 	val = (val^0xb55a4f09) ^ (val>>16);
 	
-	GLfloat r = (val>>0) & 0xFF;
-	GLfloat g = (val>>8) & 0xFF;
-	GLfloat b = (val>>16) & 0xFF;
+	GLfloat r = (GLfloat)((val>>0) & 0xFF);
+	GLfloat g = (GLfloat)((val>>8) & 0xFF);
+	GLfloat b = (GLfloat)((val>>16) & 0xFF);
 	
-	GLfloat max = cpfmax(cpfmax(r, g), b);
-	GLfloat min = cpfmin(cpfmin(r, g), b);
+	GLfloat max = (GLfloat)cpfmax(cpfmax(r, g), b);
+	GLfloat min = (GLfloat)cpfmin(cpfmin(r, g), b);
 	GLfloat intensity = 0.75;
 	
 	// Saturate and scale the color
@@ -93,14 +93,14 @@ static Color
 ColorForShape(cpShape *shape)
 {
 	if(cpShapeGetSensor(shape)){
-		return LAColor(1, 0);
+		return LAColor(1.0f, 0.0f);
 	} else {
 		cpBody *body = shape->body;
 		
 		if(cpBodyIsSleeping(body)){
-			return LAColor(0.2, 1);
+			return LAColor(0.2f, 1.0f);
 		} else if(body->node.idleTime > shape->space->sleepTimeThreshold) {
-			return LAColor(0.66, 1);
+			return LAColor(0.66f, 1.0f);
 		} else {
 			return ColorFromHash(shape->hashid, SHAPE_ALPHA);
 		}
@@ -142,9 +142,9 @@ void ChipmunkDebugDrawCircle(cpVect center, cpFloat angle, cpFloat radius, Color
 	glVertexPointer(2, GL_FLOAT, 0, circleVAR);
 
 	glPushMatrix(); {
-		glTranslatef(center.x, center.y, 0.0f);
-		glRotatef(angle*180.0f/M_PI, 0.0f, 0.0f, 1.0f);
-		glScalef(radius, radius, 1.0f);
+		glTranslatef((GLfloat)center.x, (GLfloat)center.y, 0.0f);
+		glRotatef((GLfloat)(angle*180.0f/M_PI), 0.0f, 0.0f, 1.0f);
+		glScalef((GLfloat)radius, (GLfloat)radius, 1.0f);
 		
 		if(fillColor.a > 0){
 			glColor_from_color(fillColor);
@@ -192,8 +192,8 @@ static const int pillVAR_count = sizeof(pillVAR)/sizeof(GLfloat)/3;
 void ChipmunkDebugDrawSegment(cpVect a, cpVect b, Color color)
 {
 	GLfloat verts[] = {
-		a.x, a.y,
-		b.x, b.y,
+		(GLfloat)a.x, (GLfloat)a.y,
+		(GLfloat)b.x, (GLfloat)b.y,
 	};
 	
 	glVertexPointer(2, GL_FLOAT, 0, verts);
@@ -210,10 +210,10 @@ void ChipmunkDebugDrawFatSegment(cpVect a, cpVect b, cpFloat radius, Color lineC
 			cpVect r = cpvmult(d, radius/cpvlength(d));
 
 			const GLfloat matrix[] = {
-				 r.x, r.y, 0.0f, 0.0f,
-				-r.y, r.x, 0.0f, 0.0f,
-				 d.x, d.y, 0.0f, 0.0f,
-				 a.x, a.y, 0.0f, 1.0f,
+				 (GLfloat)r.x, (GLfloat)r.y, 0.0f, 0.0f,
+				(GLfloat)-r.y, (GLfloat)r.x, 0.0f, 0.0f,
+				 (GLfloat)d.x, (GLfloat)d.y, 0.0f, 0.0f,
+				 (GLfloat)a.x, (GLfloat)a.y, 0.0f, 1.0f,
 			};
 			glMultMatrixf(matrix);
 			
@@ -259,7 +259,7 @@ void ChipmunkDebugDrawPoints(cpFloat size, int count, cpVect *verts, Color color
 	glVertexPointer(2, GL_FLOAT, 0, verts);
 #endif
 	
-	glPointSize(size*ChipmunkDebugDrawPointLineScale);
+	glPointSize((GLfloat)size*ChipmunkDebugDrawPointLineScale);
 	glColor_from_color(color);
 	glDrawArrays(GL_POINTS, 0, count);
 }
@@ -343,11 +343,11 @@ drawSpring(cpDampedSpring *spring, cpBody *body_a, cpBody *body_b)
 
 	glVertexPointer(2, GL_FLOAT, 0, springVAR);
 	glPushMatrix(); {
-		GLfloat x = a.x;
-		GLfloat y = a.y;
-		GLfloat cos = delta.x;
-		GLfloat sin = delta.y;
-		GLfloat s = 1.0f/cpvlength(delta);
+		GLfloat x = (GLfloat)a.x;
+		GLfloat y = (GLfloat)a.y;
+		GLfloat cos = (GLfloat)delta.x;
+		GLfloat sin = (GLfloat)delta.y;
+		GLfloat s = (GLfloat)(1.0f/cpvlength(delta));
 
 		const GLfloat matrix[] = {
 				 cos,    sin, 0.0f, 0.0f,
@@ -431,7 +431,7 @@ void ChipmunkDebugDrawCollisionPoints(cpSpace *space)
 			
 			for(int j=0; j<arb->numContacts; j++){
 				cpVect v = arb->contacts[j].p;
-				glVertex2f(v.x, v.y);
+				glVertex2f((GLfloat)v.x, (GLfloat)v.y);
 			}
 		}
 	} glEnd();

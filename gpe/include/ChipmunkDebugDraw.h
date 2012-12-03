@@ -51,6 +51,6 @@ void ChipmunkDebugDrawShapes(cpSpace *space);
 void ChipmunkDebugDrawConstraints(cpSpace *space);
 void ChipmunkDebugDrawCollisionPoints(cpSpace *space);
 
-void ChipmunkDebugDraw_SetPointLineScale(int scale);
+void ChipmunkDebugDraw_SetPointLineScale(float scale);
 
 #endif ChipmunkDebugDraw_h

@@ -62,11 +62,11 @@ void Main_Loop(void)
     if (glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS)
       break;
     if (glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
-      rotate_y = rotate_y + delta_rotate;
+      rotate_y = (float)(rotate_y + delta_rotate);
     if (glfwGetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
-      rotate_y = rotate_y - delta_rotate;
+      rotate_y = (float)(rotate_y - delta_rotate);
     // z axis always rotates
-    rotate_z = rotate_z + delta_rotate;
+    rotate_z = (float)(rotate_z + delta_rotate);
  
     // clear the buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -84,11 +84,11 @@ void Draw_Square(float red, float green, float blue)
   {
     glColor3f(red, green, blue);
     glVertex2i(1, 11);
-    glColor3f(red * .8, green * .8, blue * .8);
+    glColor3f(red * .8f, green * .8f, blue * .8f);
     glVertex2i(-1, 11);
-    glColor3f(red * .5, green * .5, blue * .5);
+    glColor3f(red * .5f, green * .5f, blue * .5f);
     glVertex2i(-1, 9);
-    glColor3f(red * .8, green * .8, blue * .8);
+    glColor3f(red * .8f, green * .8f, blue * .8f);
     glVertex2i(1, 9);
   }
   glEnd();
@@ -108,10 +108,10 @@ void Draw(void)
   int i = 0, squares = 15;
   float red = 0, blue = 1;
   for (; i < squares; ++i){
-    glRotatef(360.0/squares, 0, 0, 1);
+    glRotatef((float)(360.0/squares), 0.0f, 0.0f, 1.0f);
     // colors change for each square
-    red += 1.0/12;
-    blue -= 1.0/12;
-    Draw_Square(red, .6, blue);
+    red += (float)(1.0/12);
+    blue -= (float)(1.0/12);
+    Draw_Square(red, 0.6f, blue);
   }
 }

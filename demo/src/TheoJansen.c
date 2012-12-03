@@ -3,11 +3,12 @@
 #include "window_manager.h"
 #include "physics_system.h"
 #include "physics_debug_system.h"
+#include <GL/glfw.h>
 
-int TheoJansen_app(void);
-void TheoJansen_init(physics_system * system);
-void TheoJansen_update(physics_system * system, int ticks);
-void TheoJansen_free(physics_system * system);
+int TheoJansen_app (void);
+void TheoJansen_init (physics_system * system);
+void TheoJansen_update (physics_system * system, int ticks);
+void TheoJansen_free (physics_system * system);
 
 const int SCREEN_HEIGHT = 480;
 const int SCREEN_WIDTH = 640;
@@ -36,9 +37,9 @@ int TheoJansen_app(void)
 {
   const I32 ENTITY_COUNT = 1;
 
-  window_manager manager;
-  physics_system physics_system;
-  physics_debug_system physics_debug_system;
+  window_manager        manager;
+  physics_system        physics_system;
+  physics_debug_system  physics_debug_system;
   int ticks = 0;
 
   window_manager_init(&manager, "Physics debug", SCREEN_HEIGHT, SCREEN_WIDTH);
@@ -86,13 +87,16 @@ int TheoJansen_app(void)
 static void make_leg(physics_system * system, cpFloat side, cpFloat offset, cpBody *chassis, cpBody *crank, cpVect anchor)
 {
 	cpVect a, b;
-	cpShape *shape;
-	
 	cpFloat leg_mass = 1.0f;
+	cpFloat diag;
+	cpShape *shape;
+  cpBody  *lower_leg;
+  cpBody  *upper_leg;
+	cpConstraint *constraint;
 
 	// make leg
 	a = cpvzero, b = cpv(0.0f, side);
-	cpBody *upper_leg = cpSpaceAddBody(system->space, cpBodyNew(leg_mass, cpMomentForSegment(leg_mass, a, b)));
+	upper_leg = cpSpaceAddBody(system->space, cpBodyNew(leg_mass, cpMomentForSegment(leg_mass, a, b)));
 	cpBodySetPos(upper_leg, cpv(offset, 0.0f));
 	
 	cpSpaceAddShape(system->space, cpSegmentShapeNew(upper_leg, a, b, seg_radius));
@@ -100,7 +104,7 @@ static void make_leg(physics_system * system, cpFloat side, cpFloat offset, cpBo
 	
 	// lower leg
 	a = cpvzero, b = cpv(0.0f, -1.0f*side);
-	cpBody *lower_leg = cpSpaceAddBody(system->space, cpBodyNew(leg_mass, cpMomentForSegment(leg_mass, a, b)));
+	lower_leg = cpSpaceAddBody(system->space, cpBodyNew(leg_mass, cpMomentForSegment(leg_mass, a, b)));
 	cpBodySetPos(lower_leg, cpv(offset, -side));
 	
 	shape = cpSpaceAddShape(system->space, cpSegmentShapeNew(lower_leg, a, b, seg_radius));
@@ -115,8 +119,7 @@ static void make_leg(physics_system * system, cpFloat side, cpFloat offset, cpBo
 	
 	cpSpaceAddConstraint(system->space, cpGearJointNew(upper_leg, lower_leg, 0.0f, 1.0f));
 	
-	cpConstraint *constraint;
-	cpFloat diag = cpfsqrt(side*side + offset*offset);
+	diag = cpfsqrt(side*side + offset*offset);
 	
 	constraint = cpSpaceAddConstraint(system->space, cpPinJointNew(crank, upper_leg, anchor, cpv(0.0f, side)));
 	cpPinJointSetDist(constraint, diag);
@@ -127,11 +130,20 @@ static void make_leg(physics_system * system, cpFloat side, cpFloat offset, cpBo
 
 void TheoJansen_init(physics_system * physics_system)
 {
-	cpSpaceSetIterations(physics_system->space, 20);
-
-	cpBody *staticBody = cpSpaceGetStaticBody(physics_system->space);
-	cpShape *shape;
+  int i;
+	int num_legs = 2;
 	cpVect a, b;
+	cpFloat chassis_mass = 2.0f;
+	cpFloat crank_mass = 1.0f;
+	cpFloat crank_radius = 13.0f;
+	cpFloat offset = 30.0f;
+	cpFloat side = 30.0f;
+	cpShape *shape;
+  cpBody  *chassis;
+	cpBody  *crank;
+	cpBody  *staticBody = cpSpaceGetStaticBody(physics_system->space);
+
+	cpSpaceSetIterations(physics_system->space, 20);
 	
 	// Create segments around the edge of the screen.
 	shape = cpSpaceAddShape(physics_system->space, cpSegmentShapeNew(staticBody, cpv(-SCREEN_WIDTH/2, -SCREEN_HEIGHT/2), cpv(-SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 0.0f));
@@ -148,31 +160,23 @@ void TheoJansen_init(physics_system * physics_system)
 	cpShapeSetElasticity(shape, 1.0f);
 	cpShapeSetFriction(shape, 1.0f);
 	cpShapeSetLayers(shape, NOT_GRABABLE_MASK);
-	
-	cpFloat offset = 30.0f;
 
 	// make chassis
-	cpFloat chassis_mass = 2.0f;
 	a = cpv(-offset, 0.0f), b = cpv(offset, 0.0f);
-	cpBody *chassis = cpSpaceAddBody(physics_system->space, cpBodyNew(chassis_mass, cpMomentForSegment(chassis_mass, a, b)));
+	chassis = cpSpaceAddBody(physics_system->space, cpBodyNew(chassis_mass, cpMomentForSegment(chassis_mass, a, b)));
 	
 	shape = cpSpaceAddShape(physics_system->space, cpSegmentShapeNew(chassis, a, b, seg_radius));
 	cpShapeSetGroup(shape, 1);
 	
 	// make crank
-	cpFloat crank_mass = 1.0f;
-	cpFloat crank_radius = 13.0f;
-	cpBody *crank = cpSpaceAddBody(physics_system->space, cpBodyNew(crank_mass, cpMomentForCircle(crank_mass, crank_radius, 0.0f, cpvzero)));
+	crank = cpSpaceAddBody(physics_system->space, cpBodyNew(crank_mass, cpMomentForCircle(crank_mass, crank_radius, 0.0f, cpvzero)));
 	
 	shape = cpSpaceAddShape(physics_system->space, cpCircleShapeNew(crank, crank_radius, cpvzero));
 	cpShapeSetGroup(shape, 1);
 	
 	cpSpaceAddConstraint(physics_system->space, cpPivotJointNew2(chassis, crank, cpvzero, cpvzero));
   
-	cpFloat side = 30.0f;
-	
-	int num_legs = 2;
-	for(int i=0; i<num_legs; i++){
+	for(i=0; i<num_legs; i++){
 		make_leg(physics_system, side,  offset, chassis, crank, cpvmult(cpvforangle((cpFloat)(2*i+0)/(cpFloat)num_legs*M_PI), crank_radius));
 		make_leg(physics_system, side, -offset, chassis, crank, cpvmult(cpvforangle((cpFloat)(2*i+1)/(cpFloat)num_legs*M_PI), crank_radius));
 	}
@@ -182,15 +186,16 @@ void TheoJansen_init(physics_system * physics_system)
 
 static void TheoJansen_update(physics_system * system, int ticks)
 {
+  int i;
+	int steps = 3;
 	cpFloat coef = (2.0f + tj_Keyboard.y)/3.0f;
 	cpFloat rate = tj_Keyboard.x*10.0f*coef;
+	cpFloat dt = 1.0f/60.0f/(cpFloat)steps;
+
 	cpSimpleMotorSetRate(tj_motor, rate);
 	cpConstraintSetMaxForce(tj_motor, (rate) ? 100000.0f : 0.0f);
 	
-	int steps = 3;
-	cpFloat dt = 1.0f/60.0f/(cpFloat)steps;
-	
-	for(int i=0; i<steps; i++){
+	for(i=0; i<steps; i++){
 		cpSpaceStep(system->space, dt);
 	}
 }

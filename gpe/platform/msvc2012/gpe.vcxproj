@@ -12,10 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ChipmunkDebugDraw.h" />
+    <ClInclude Include="..\..\include\fonts.h" />
     <ClInclude Include="..\..\include\glfw_check.h" />
     <ClInclude Include="..\..\include\gpr_assert.h" />
     <ClInclude Include="..\..\include\gpr_containers.h" />
-    <ClInclude Include="..\..\include\physics_debug.h" />
     <ClInclude Include="..\..\include\physics_debug_system.h" />
     <ClInclude Include="..\..\include\physics_system.h" />
     <ClInclude Include="..\..\include\ressource_manager.h" />
@@ -24,8 +24,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ChipmunkDebugDraw.c" />
+    <ClCompile Include="..\..\src\fonts.c" />
     <ClCompile Include="..\..\src\glfw_check.c" />
-    <ClCompile Include="..\..\src\physics_debug.c" />
     <ClCompile Include="..\..\src\physics_debug_system.c" />
     <ClCompile Include="..\..\src\physics_system.c" />
     <ClCompile Include="..\..\src\ressource_manager.c" />
@@ -107,7 +107,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>chipmunk.lib;GLFW.lib;SOIL.lib</AdditionalDependencies>
+      <AdditionalDependencies>chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
