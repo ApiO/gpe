@@ -33,11 +33,11 @@ void physics_debug_system_draw (physics_debug_system * system)
 
 void reshape(int width, int height)
 {
-	glViewport(0, 0, width, height);
-	
 	GLfloat scale = (GLfloat)cpfmin(width/640.0, height/480.0);
 	double hw = width*(0.5/scale);
 	double hh = height*(0.5/scale);
+
+	glViewport(0, 0, width, height);
 	
 	ChipmunkDebugDraw_SetPointLineScale(scale);
 	glLineWidth(scale);
