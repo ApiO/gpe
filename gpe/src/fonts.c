@@ -51,7 +51,7 @@ int fonts_getvalue(char *line, char *key)
   value_start_index = key_start_index + strlen(key);
 
   
-  tmp = (char *) malloc((strlen(line)-value_start_index)*sizeof(char));
+  tmp = (char *) malloc((strlen(line)-value_start_index+1)*sizeof(char));
   fonts_substring(value_start_index, strlen(line)-value_start_index, line, tmp);
   
   value_end_index = fonts_indexof(tmp, " ");
@@ -66,7 +66,7 @@ int fonts_getvalue(char *line, char *key)
   printf("KEY:\"%s\" VALUE:\"%s\"\n", key, result);
 
   free(result);
-  free(tmp); //crash uniquement avec la clef : "pages=" quand valeure n'a que 1 char
+  free(tmp);
 
   return -1;
 }
@@ -134,7 +134,7 @@ void fonts_2d_texture (char * text)
 
 void fonts_foo_load(void)
 { 
-  fonts_parsefont("QuicksandBook.fnt");
+  fonts_parsefont("C:\\Users\\utilisateur\\Desktop\\BMFont ressources\\QuicksandBook.fnt");
   //fonts_imgData = SOIL_load_image("C:\\Users\\utilisateur\\Desktop\\BMFont ressources\\QuicksandBook.png", &fonts_height, &fonts_width, &fonts_chanels, 0);
 }
 
