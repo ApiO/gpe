@@ -35,6 +35,7 @@ void window_manager_init (window_manager * manager, char * title, int height, in
   SCREEN_W = width;
   SCREEN_H = height;
 
+  fonts_foo_load();
 }
 
 void gl_init(int height, int width)
@@ -65,6 +66,7 @@ void window_manager_clear (void)
   glLoadIdentity();
 
   printFPS();
+  fonts_foo_draw();
 }
 
 void window_manager_swapBuffers (window_manager * manager)
@@ -85,6 +87,7 @@ void window_manager_swapBuffers (window_manager * manager)
 void window_manager_free(window_manager * manager)
 {
   glfwTerminate();
+  fonts_foo_free();
 }
 
 void printFPS()

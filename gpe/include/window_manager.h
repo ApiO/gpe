@@ -9,7 +9,7 @@
 #ifndef _window_manager_h_
 #define _window_manager_h_
 
-typedef struct
+typedef struct window_manager
 {
   int   running;
   int   restart;
