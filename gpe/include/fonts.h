@@ -23,7 +23,9 @@ typedef struct Charset
 	int Base;
 	int Width, Height;
 	int Pages;
+  int Chnl;
 	CharDescriptor Chars[256];
+  unsigned int tex_2d;
 } Charset;
 
 void fonts_foo_load(void);
