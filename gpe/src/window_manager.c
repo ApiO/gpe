@@ -35,7 +35,8 @@ void window_manager_init (window_manager * manager, char * title, int height, in
   SCREEN_W = width;
   SCREEN_H = height;
 
-  fonts_foo_load();
+  fonts_load();
+  fonts_print("bwaaaaaaa", 10, 10);
 }
 
 void gl_init(int height, int width)
@@ -65,8 +66,7 @@ void window_manager_clear (void)
   
   glLoadIdentity();
 
-  printFPS();
-  fonts_foo_draw();
+  //printFPS();
 }
 
 void window_manager_swapBuffers (window_manager * manager)
@@ -87,7 +87,7 @@ void window_manager_swapBuffers (window_manager * manager)
 void window_manager_free(window_manager * manager)
 {
   glfwTerminate();
-  fonts_foo_free();
+  fonts_free();
 }
 
 void printFPS()
@@ -106,11 +106,10 @@ void printFPS()
 	{
 		// Calculate the FPS as the number of frames divided by the interval in seconds
 		fps = (double)fpsFrameCount / (currentTime - t0Value);
-    sprintf_s(msg, "%.0f\n", fps);
+    sprintf_s(msg, "%.0f", fps);
     
     //printf_s(msg);
-
-    fonts_bitmap(msg, 10, 10);
+    fonts_print(msg, 10, 10);
 
 		// Reset the FPS frame counter and set the initial time to be now
 		fpsFrameCount = 0;

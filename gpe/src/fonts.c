@@ -5,24 +5,20 @@
 #include <string.h>
 
 #include <SOIL\SOIL.h>
-/*
 
-int fonts_height = 256;
-int fonts_width = 256;
-int fonts_chanels = 1;
-unsigned char * fonts_imgData;
 
-*/
+int   fonts_parseline(char *path, char *line);
+int   fonts_getKeyValue(char * line, char *key);
+int   fonts_indexof(char *str1, char *str2);
+int   fonts_last_indexof(char *str1, char *str2);
+int   fonts_getStringWidth(charset *font, char *text);
+int   fonts_renderString(char *text);
+void  fonts_substring(int start, int stop, char *text, char *out);
+char *fonts_getPathValue(char * line, char *key);
+char *fonts_getFilepath(char *filepath);
+char *fonts_strAppend(char *str1, char *str2);
 
-void fonts_print(char *text);
-int fonts_loadfont(char *filepath);
-int fonts_parseline(char *line);
-int  fonts_getKeyValue(char * line, char * key);
-char *fonts_getPathValue(char * line, char * key);
-void fonts_substring(int start, int stop, const char *text);
-int  fonts_indexof(char *str1, char *str2);
-
-Charset BMFont;
+charset BMFont;
 
 int fonts_indexof(char *str1, char *str2)
 {
@@ -30,10 +26,25 @@ int fonts_indexof(char *str1, char *str2)
   return tmp - str1;
 }
 
-void fonts_substring(int start, int stop, const char *src, char *dst)
+int fonts_last_indexof(char *str, char chr)
+{
+  int i, len;
+  len = strlen(str);
+  for (i=len-1; i>=0; i--)
+  {
+    if(str[i] == chr)
+    {
+      return i;
+    }
+  }
+
+  return NULL;
+}
+
+void fonts_substring(int start, int stop, char *src, char *out)
 {
    int count = stop - start;
-   sprintf(dst, "%.*s", count, src + start);
+   sprintf(out, "%.*s", count, src + start);
 }
 
 int fonts_getKeyValue(char *line, char *key)
@@ -90,36 +101,26 @@ char *fonts_getPathValue(char *line, char *key)
   return result;
 }
 
-int fonts_loadfont(char *filepath)
+int fonts_getStringWidth(charset *font, char *text)
 {
-  char line_buffer[BUFSIZ];
-  FILE *file = fopen(filepath, "r");
-  if (!file) {
-      printf("Couldn't open file \"%s\" for reading.\n", filepath);
-      return -1;
-  }
-
-  int succeed = 1;
-  while (fgets(line_buffer, sizeof(line_buffer), file) && succeed == 1) {
-    succeed = fonts_parseline(line_buffer);
-  }
-
-  fclose(file);
-
-  return succeed;
+  int w, l, i;
+  w = 0;
+  l = strlen(text);
+	for (i=0;i < l; i++) {
+		w += font->Chars[text[i]].Width;
+	}
+	return w+l;
 }
 
-int fonts_parseline(char *line)
+int fonts_parseline(char *path, char *line)
 {
-  CharDescriptor charDesc;
+  charDescriptor charDesc;
   int id ;
-  char *file;
+  char *filename;
+  char *imagepath;
 
-  //int i;
   if (fonts_indexof (line, "common ") > -1)
   {
-    //printf("common\n");
-    
     BMFont.LineHeight = fonts_getKeyValue(line, "lineHeight=");
     BMFont.Base = fonts_getKeyValue(line, "base=");
     BMFont.Width = fonts_getKeyValue(line, "scaleW=");
@@ -127,23 +128,23 @@ int fonts_parseline(char *line)
     BMFont.Pages = fonts_getKeyValue(line, "pages=");
   }
   else if (fonts_indexof(line, "page ") > -1)
-  {
-    char *fileTemp = "C:\\Users\\utilisateur\\Desktop\\BMFont ressources\\QuicksandBook_0.png";
-    file = fonts_getPathValue(line, "file=");
+  {    
+    filename = fonts_getPathValue(line, "file=");
+    imagepath = fonts_strAppend(path, filename);
     id = fonts_getKeyValue(line, "id=");
-    //printf("%s\n", file);
-
-    BMFont.tex_2d = SOIL_load_OGL_texture(fileTemp, //file, 
+    
+    printf("Loading image file:\n\t\"%s\"\n", imagepath);
+    BMFont.tex_2d[id] = SOIL_load_OGL_texture(imagepath, //file, 
       SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_POWER_OF_TWO);
 
-    if( !BMFont.tex_2d )
+    if( !BMFont.tex_2d[id] )
     {
-      printf("Couldn't open file \"%s\" for reading.\n", fileTemp);
-      free(file);
+      printf("Couldn't open file \"%s\" for reading.\n", imagepath);
+      free(filename);
       return -1;
     } 
     
-    free(file);
+    free(filename);
   }
   else if (fonts_indexof(line, "char ") > -1)
   {
@@ -164,53 +165,78 @@ int fonts_parseline(char *line)
   return 1;
 }
 
-void fonts_print(char *text)
+void fonts_print(char *text, int x, int y)
 {
   int i, txtLen;
   txtLen = strlen(text);
   
+  printf("text:\t\t\"%s\"\n", text);
+  printf("text width:\t%dpx\n", fonts_getStringWidth(&BMFont, text));
+  
+  printf("analysing text:\n");
   for (i=0; i < txtLen; i++)
   {
     //In C, you can use the char data type just like a number and it will automatically convert it to the ASCII value
     // ex: int i = '!' <=>  i = 33;
-    //printf("[char index]=%d, [char]=\'%c\', [ascii code]=%d, [FONT x]=%d, [FONT y]=%d\n", i, text[i], text[i], BMFont.Chars[text[i]].x , BMFont.Chars[text[i]].y);
+    printf("\t[char index]=%d, [char]=\'%c\', [ascii code]=%d, [FONT x]=%d, [FONT y]=%d\n", i, text[i], text[i], BMFont.Chars[text[i]].x , BMFont.Chars[text[i]].y);
   }
 }
 
-void fonts_bitmap (char *text, int x, int y)
-{
-}
-
-void fonts_outline (char *text)
-{
-}
-
-void fonts_texture_mapped_outline (char *text)
-{
-}
-
-void fonts_2d_texture (char *text)
-{
-}
-
-void fonts_foo_load(void)
+int fonts_load(char *filepath)
 { 
-  int state;
-  state = fonts_loadfont("C:\\Users\\utilisateur\\Desktop\\BMFont ressources\\QuicksandBook.fnt");
+  int state = 1;
+  char line_buffer[BUFSIZ];
+  char *path;
+  FILE *file = fopen(filepath, "r");
 
-  if(state == 1)
-  {
-    fonts_print("ASCII");
+  if (!file) {
+      printf("Couldn't open file \"%s\" for reading.\n", filepath);
+      return -1;
   }
-  //fonts_imgData = SOIL_load_image("C:\\Users\\utilisateur\\Desktop\\BMFont ressources\\QuicksandBook.png", &fonts_height, &fonts_width, &fonts_chanels, 0);
+
+  printf("Loading font:\n\t\"%s\"\n", filepath);
+  path = fonts_getFilepath(filepath);
+  while (fgets(line_buffer, sizeof(line_buffer), file) && state == 1) {
+    state = fonts_parseline(path, line_buffer);
+  }
+  fclose(file);
+  free(path);
+
+  return state;
 }
 
-void fonts_foo_draw(void)
+char *fonts_strAppend(char *str1, char *str2)
 {
-
+  char *s = (char *)malloc((strlen(str1) + strlen(str2))*sizeof(char));
+  sprintf(s, "%s%s", str1, str2);
+  return s;
 }
 
-void fonts_foo_free(void)
+int fonts_load(void)
 {
-    //SOIL_free_image_data(fonts_imgData);
+  return fonts_load("C:\\Users\\utilisateur\\Desktop\\BMFont ressources\\QuicksandBook.fnt");
+}
+
+char *fonts_getFilepath(char *filepath)
+{
+  char *path;
+  int index;
+  index = fonts_last_indexof(filepath,'\\');
+
+  if(index != NULL && index > 0)
+  { 
+    path = (char *) malloc(index+2);
+    fonts_substring(0, index+1, filepath, path);
+  }
+  else
+  {
+    path = (char *) malloc(strlen(path));
+    strcpy(path, path);
+  }
+  return path;
+}
+
+void fonts_free(void)
+{
+  //SOIL_free_image_data(BMFont.tex_2d);
 }
