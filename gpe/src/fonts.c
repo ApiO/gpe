@@ -141,10 +141,12 @@ int fonts_parseline(char *path, char *line)
     {
       printf("Couldn't open file \"%s\" for reading.\n", imagepath);
       free(filename);
+      free(imagepath);
       return -1;
     } 
     
     free(filename);
+    free(imagepath);
   }
   else if (fonts_indexof(line, "char ") > -1)
   {
@@ -207,7 +209,7 @@ int fonts_load(char *filepath)
 
 char *fonts_strAppend(char *str1, char *str2)
 {
-  char *s = (char *)malloc((strlen(str1) + strlen(str2))*sizeof(char));
+  char *s = (char *)malloc((strlen(str1) + strlen(str2) +1)*sizeof(char));
   sprintf(s, "%s%s", str1, str2);
   return s;
 }
