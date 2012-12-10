@@ -18,6 +18,13 @@ void physics_debug_system_init (physics_debug_system * system, cpSpace * space)
 void physics_debug_system_draw (physics_debug_system * system)
 {
 	int width, height;
+      	
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_POINT_SMOOTH);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glfwGetWindowSize(&width, &height);
 	reshape(width, height);
 
@@ -29,6 +36,12 @@ void physics_debug_system_draw (physics_debug_system * system)
 	ChipmunkDebugDrawShapes(system->space);
 	ChipmunkDebugDrawConstraints(system->space);
 	ChipmunkDebugDrawCollisionPoints(system->space);
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisable(GL_LINE_SMOOTH);
+  glDisable(GL_POINT_SMOOTH);
+  glDisable(GL_BLEND);
+  glBlendFunc(GL_NONE, GL_NONE);
 }
 
 void reshape(int width, int height)

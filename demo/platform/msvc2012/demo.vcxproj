@@ -11,12 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\fonts_test.c" />
     <ClCompile Include="..\..\src\main.c" />
     <ClCompile Include="..\..\src\physics_system_test.c" />
     <ClCompile Include="..\..\src\TheoJansen.c" />
     <ClCompile Include="..\..\src\window_test.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\fonts_test.h" />
     <ClInclude Include="..\..\src\physics_system_test.h" />
     <ClInclude Include="..\..\src\TheoJansen.h" />
     <ClInclude Include="..\..\src\window_test.h" />
@@ -30,12 +32,6 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\src\ressources\QuicksandBook.fnt">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </Text>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>

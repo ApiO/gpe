@@ -4,12 +4,47 @@
 #include <stdio.h>
 #include <GL/glfw.h>
 
-#include "fonts.h"
+#include "glbmfont.h"
 
-void gl_init(int height, int width);
-void printFPS();
+void _window_manager_gl_init(int height, int width);
+void _window_manager_set_fps();
 
-int SCREEN_W, SCREEN_H;
+double current_fps = 0.0;
+
+void _window_manager_set_fps (void)
+{
+	// Static values which only get initialised the first time the function runs
+	static double t0Value       = glfwGetTime(); // Set the initial time to now
+	static int    fpsFrameCount = 0;             // Set the initial FPS frame count to 0
+ 
+	// Get the current time in seconds since the program started (non-static, so executed every time)
+	double currentTime = glfwGetTime();
+ 
+	// Calculate and display the FPS every specified time interval
+	if ((currentTime - t0Value) > 0.1)
+	{
+		// Calculate the FPS as the number of frames divided by the interval in seconds
+		current_fps = (double)fpsFrameCount / (currentTime - t0Value);
+    
+		// Reset the FPS frame counter and set the initial time to be now
+		fpsFrameCount = 0;
+		t0Value = glfwGetTime();
+	}
+	else // FPS calculation time interval hasn't elapsed yet? Simply increment the FPS frame counter
+	{
+		fpsFrameCount++;
+	}
+}
+
+void _window_manager_gl_init (int height, int width)
+{
+  glViewport(0, 0, width, height);
+
+  glClearColor( 0.21f, 0.21f, 0.21f, 0.0f );
+  glClear( GL_COLOR_BUFFER_BIT );
+  glClear( GL_DEPTH_BUFFER_BIT );
+}
+
 
 void window_manager_init (window_manager * manager, char * title, int height, int width)
 {
@@ -30,43 +65,19 @@ void window_manager_init (window_manager * manager, char * title, int height, in
   //init de la fenêtre glfw
   glfwSetWindowTitle(title);
   
-  gl_init(height, width);
+  _window_manager_gl_init(height, width);
 
-  SCREEN_W = width;
-  SCREEN_H = height;
-
-  fonts_load();
-  fonts_print("bwaaaaaaa", 10, 10);
-}
-
-void gl_init(int height, int width)
-{
-  glViewport(0, 0, width, height);
-
-  glClearColor( 0.21f, 0.21f, 0.21f, 0.0f );
-  glClear(GL_COLOR_BUFFER_BIT);
-	
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_POINT_SMOOTH);
-
-  glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-  glHint(GL_POINT_SMOOTH_HINT, GL_DONT_CARE);
-	
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glbmfont_load();
 }
 
 void window_manager_clear (void)
 {
-  glClear( GL_COLOR_BUFFER_BIT );
-
-  // initialize viewing values 
-  glMatrixMode(GL_PROJECTION);
+  _window_manager_set_fps();
   
+  glClear( GL_COLOR_BUFFER_BIT );
+  glClear( GL_DEPTH_BUFFER_BIT );
+    
   glLoadIdentity();
-
-  //printFPS();
 }
 
 void window_manager_swapBuffers (window_manager * manager)
@@ -84,39 +95,13 @@ void window_manager_swapBuffers (window_manager * manager)
   manager->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
 }
 
-void window_manager_free(window_manager * manager)
+void window_manager_free (window_manager * manager)
 {
   glfwTerminate();
-  fonts_free();
+  glbmfont_free();
 }
 
-void printFPS()
+double window_manager_getFps (void)
 {
-	// Static values which only get initialised the first time the function runs
-	static double t0Value       = glfwGetTime(); // Set the initial time to now
-	static int    fpsFrameCount = 0;             // Set the initial FPS frame count to 0
-	double fps           = 0.0;           // Set the initial FPS value to 0.0
-  char   msg[8];
- 
-	// Get the current time in seconds since the program started (non-static, so executed every time)
-	double currentTime = glfwGetTime();
- 
-	// Calculate and display the FPS every specified time interval
-	if ((currentTime - t0Value) > 0.1)
-	{
-		// Calculate the FPS as the number of frames divided by the interval in seconds
-		fps = (double)fpsFrameCount / (currentTime - t0Value);
-    sprintf_s(msg, "%.0f", fps);
-    
-    //printf_s(msg);
-    fonts_print(msg, 10, 10);
-
-		// Reset the FPS frame counter and set the initial time to be now
-		fpsFrameCount = 0;
-		t0Value = glfwGetTime();
-	}
-	else // FPS calculation time interval hasn't elapsed yet? Simply increment the FPS frame counter
-	{
-		fpsFrameCount++;
-	}
+ return current_fps;
 }

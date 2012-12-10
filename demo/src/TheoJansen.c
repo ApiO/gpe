@@ -3,6 +3,7 @@
 #include "window_manager.h"
 #include "physics_system.h"
 #include "physics_debug_system.h"
+#include "glbmfont.h"
 #include <GL/glfw.h>
 
 int TheoJansen_app (void);
@@ -50,6 +51,8 @@ int TheoJansen_app(void)
   
   tj_Keyboard.x = 0.0f;
 
+  _DEV_init();
+
   //pseudo game loop
   while (manager.running)
   {
@@ -69,6 +72,7 @@ int TheoJansen_app(void)
     {
       tj_Keyboard.x = 0.0f;
     } 
+    _DEV_draw();
 
     TheoJansen_update(&physics_system, ticks);
 

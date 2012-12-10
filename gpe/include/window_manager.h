@@ -15,9 +15,10 @@ typedef struct window_manager
   int   restart;
 } window_manager;
 
-void window_manager_init (window_manager * manager, char * title, int height, int width);
-void window_manager_clear (void);
-void window_manager_swapBuffers (window_manager * manager);
-void window_manager_free (window_manager * manager);
+void    window_manager_init (window_manager * manager, char * title, int height, int width);
+void    window_manager_clear (void);
+void    window_manager_swapBuffers (window_manager * manager);
+void    window_manager_free (window_manager * manager);
+double  window_manager_getFps(void);
 
 #endif //_window_manager_h_

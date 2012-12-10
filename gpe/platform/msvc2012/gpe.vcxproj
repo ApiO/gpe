@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ChipmunkDebugDraw.h" />
-    <ClInclude Include="..\..\include\fonts.h" />
+    <ClInclude Include="..\..\include\glbmfont.h" />
     <ClInclude Include="..\..\include\glfw_check.h" />
     <ClInclude Include="..\..\include\gpr_assert.h" />
     <ClInclude Include="..\..\include\gpr_containers.h" />
@@ -24,7 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ChipmunkDebugDraw.c" />
-    <ClCompile Include="..\..\src\fonts.c" />
+    <ClCompile Include="..\..\src\glbmfont.c" />
     <ClCompile Include="..\..\src\glfw_check.c" />
     <ClCompile Include="..\..\src\physics_debug_system.c" />
     <ClCompile Include="..\..\src\physics_system.c" />

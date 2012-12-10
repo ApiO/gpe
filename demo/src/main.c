@@ -3,6 +3,7 @@
 //#include "window_test.h"
 //#include "physics_system_test.h"
 #include "TheoJansen.h"
+//#include "fonts_test.h"
 
 int main( int argc, const char* argv[] )
 {
@@ -12,7 +13,8 @@ int main( int argc, const char* argv[] )
   //window_test_foo();
   //physics_system_test_foo0();
   TheoJansen_foo();
-
+  //fonts_test_foo();
+  
   printf("- APP END -\n");
   scanf_s("%d", &CONSOLE_BREAK);
   return 0;
