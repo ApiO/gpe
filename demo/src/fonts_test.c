@@ -16,8 +16,7 @@ void fonts_test_foo(void)
   */
   window_manager_init(&manager, "FONTS debug", SCREEN_HEIGHT, SCREEN_WIDTH);
 
-  //glbmfont_load();
-  _DEV_init();
+  glbmfont_load();
 
   //pseudo game loop
   while (manager.running)
@@ -30,9 +29,7 @@ void fonts_test_foo(void)
     sprintf_s(buffer, "%.0f", fps);
     glbmfont_print(buffer, 10, 10);
     */
-    //glbmfont_print("A", 10, 10);
-    _DEV_draw();
-
+    glbmfont_print("A", 10, 10);
 
     window_manager_swapBuffers(&manager);
   }

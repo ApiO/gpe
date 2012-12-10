@@ -50,9 +50,7 @@ int TheoJansen_app(void)
   TheoJansen_init(&physics_system); //ici on charge les entités dans le space ss passer par le physics_system
   
   tj_Keyboard.x = 0.0f;
-
-  _DEV_init();
-
+  
   //pseudo game loop
   while (manager.running)
   {
@@ -72,7 +70,6 @@ int TheoJansen_app(void)
     {
       tj_Keyboard.x = 0.0f;
     } 
-    _DEV_draw();
 
     TheoJansen_update(&physics_system, ticks);
 

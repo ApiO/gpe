@@ -17,7 +17,7 @@ int   _glbmfont_parse_char (char *line);
 int   _glbmfont_getKeyValue (char * line, char *key);
 int   _glbmfont_indexof (char *str1, char *str2);
 int   _glbmfont_last_indexof (char *str1, char *str2);
-void  _glbmfont_renderChar (glbmfont_char *chrDesc, int *padX, int *padY);
+void  _glbmfont_renderChar (glbmfont_char *chrDesc, int *x, int *y, int *padX, int *screen_width, int *screen_height);
 void  _glbmfont_substring (int start, int stop, char *text, char *out);
 char *_glbmfont_getPathValue (char * line, char *key);
 char *_glbmfont_getFilepath (char *filepath);
@@ -165,7 +165,7 @@ _glbmfont_parse_page(char *line, char *path)
     imagepath, 
     SOIL_LOAD_AUTO, 
     SOIL_CREATE_NEW_ID, 
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT );
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_POWER_OF_TWO );
 
   if( _glbmfont.tex_2d[id] == 0 )
   {
@@ -187,8 +187,7 @@ _glbmfont_parse_char(char *line)
   glbmfont_char charDesc;
   int id;
 
-  //printf("char\n");
-  id = _glbmfont_getKeyValue(line, "id=");
+  id =                _glbmfont_getKeyValue(line, "id=");
   charDesc.x =        _glbmfont_getKeyValue(line, "x=");
   charDesc.y =        _glbmfont_getKeyValue(line, "y=");
   charDesc.width =    _glbmfont_getKeyValue(line, "width=");
@@ -199,52 +198,41 @@ _glbmfont_parse_char(char *line)
   charDesc.page =     _glbmfont_getKeyValue(line, "page=");
   charDesc.chnl =     _glbmfont_getKeyValue(line, "chnl=");
 
-  //les coord des 4 points de la texture du char : sens trigo, origine bord haut gauche
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].x =     charDesc.x;
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].y =     charDesc.y;
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x =  charDesc.x;
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y =  charDesc.y + charDesc.height;                     
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x = charDesc.x + charDesc.width;
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y = charDesc.y + charDesc.height;
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x =    charDesc.x + charDesc.width;
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y =    charDesc.y;
-
+  //calc des 4 points de la texture du char
+  // sens trigo : origine bord haut gauche
+  // conversion des coord en pixel des points en coord dans gl (float)
+  // au chargement de la texture Y est inversé pour que le fnt soit lisible naturellement
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].x =     (GLfloat)(charDesc.x / charDesc.width);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].y =     (GLfloat)(charDesc.y / charDesc.height);
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x =  (GLfloat)(charDesc.x / charDesc.width);
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y =  (GLfloat)((charDesc.y + charDesc.height) / charDesc.height);                     
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x = (GLfloat)((charDesc.x + charDesc.width) / charDesc.width);
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y = (GLfloat)((charDesc.y + charDesc.height) / charDesc.height);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x =    (GLfloat)((charDesc.x + charDesc.width) / charDesc.width);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y =    (GLfloat)(charDesc.y / charDesc.height);
+  
   _glbmfont.chars[id] = charDesc;
 
   return 1;
 }
 
-
 void 
-_glbmfont_renderChar (glbmfont_char *chrDesc, int padX, int padY)
+_glbmfont_renderChar (glbmfont_char *chrDesc, int *x, int *y, int *padX, int *screen_width, int *screen_height)
 {
-  int x, y;
   glBegin(GL_QUADS);
   {
-    x = chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].x;
-    y = chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].y;
-	  //glTexCoord2f(	(GLfloat)x, (GLfloat)y );
-	  glTexCoord2f(	(GLfloat)68, (GLfloat)20 );
-	  glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
-      
-    x = chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x;
-    y = chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y;
-	  //glTexCoord2f(	(GLfloat)x, (GLfloat)y );
-	  glTexCoord2f(	(GLfloat)68, (GLfloat)53 );
-	  glVertex2d(	(GLdouble)-0.5, (GLdouble) -0.5);
-                   
-    x = chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x;
-    y = chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y;  
-	  //glTexCoord2f(	(GLfloat)x, (GLfloat)y );
-	  glTexCoord2f(	(GLfloat)101, (GLfloat)53 );
-	  glVertex2d(	(GLdouble)0.5, (GLdouble)-0.5 );
-                
-    x = chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x;
-    y = chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y;     
-	  //glTexCoord2f(	(GLfloat)x, (GLfloat)y );
-	  glTexCoord2f(	(GLfloat)101, (GLfloat) 20 );
-	  glVertex2d(	(GLdouble)0.5, (GLdouble)0.5 );
-
+	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].x,
+                  chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].y );
+	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x, 
+                  chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y );
+	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x, 
+                  chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y );
+	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x, 
+                  chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y );
+	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
 	} glEnd();
 }
 
@@ -294,14 +282,18 @@ glbmfont_load(char *filepath)
 void 
 glbmfont_print(char *text, int x, int y)
 {
-  int i, len, posX;
+  int i, len, padX;
   char chr;
-  posX = 0;
+  int screen_width, screen_height;
   glbmfont_char chrDesc;
-  
+
+	glfwGetWindowSize(&screen_width, &screen_height);
+    
   len = strlen(text);
   
   glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
   for (i=0; i<len; i++)
   {
     chr = text[i];
@@ -327,89 +319,20 @@ glbmfont_print(char *text, int x, int y)
     //printf("\t[char index]=%d, [char]=\'%c\', [ascii code]=%d, [FONT x]=%d, [FONT y]=%d\n", i, text[i], text[i], chrDesc.x , chrDesc.y);
     glBindTexture(GL_TEXTURE_2D, _glbmfont.tex_2d[chrDesc.page]);
     //Filtering
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    
-    _glbmfont_renderChar(&chrDesc, x, y);
-    x = x + chrDesc.width;
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+
+    _glbmfont_renderChar(&chrDesc, &x, &y, &padX, &screen_width, &screen_height);
+    //posX = posX + chrDesc + chrDesc.xAdvance;
   }
-  glDisable(GL_TEXTURE_2D); //unbind texture too
+  glDisable(GL_BLEND);
+  glDisable(GL_TEXTURE_2D); //unbind texture
 }
 
 void 
 glbmfont_free(void)
 {
   //SOIL_free_image_data(BMFont.tex_2d);
-}
-
-GLuint img;
-void _DEV_init(void)
-{
-    img = SOIL_load_OGL_texture (
-      "d:\\temp.png", 
-      SOIL_LOAD_AUTO, 
-      SOIL_CREATE_NEW_ID, 
-		  SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
-}
-
-void _DEV_draw(void)
-{
-  glEnable(GL_TEXTURE_2D);
-  {
-    glBindTexture(GL_TEXTURE_2D, img);
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-    /*
-    //affiche le centre de l'image en plein écran
-    glBegin(GL_QUADS);
-    {
-	    glTexCoord2f(	.25f, .75f );
-	    glVertex2d(	-1, 1 );
-    
-	    glTexCoord2f(	.25f, .25f );
-	    glVertex2d(	-1, -1 );
-    
-	    glTexCoord2f(	.75f, .25f );
-	    glVertex2d(	1, -1 );
-    
-	    glTexCoord2f(	.75f, .75f );
-	    glVertex2d( 1, 1 );
-    } glEnd();
-    */
-    /*
-    //afficher l'image en plein écran
-    glBegin(GL_QUADS);
-    {
-	    glTexCoord2f(	0, 1 );
-	    glVertex2d(	-1, 1 );
-    
-	    glTexCoord2f(	0, 0 );
-	    glVertex2d(	-1, -1 );
-    
-	    glTexCoord2f(	1, 0 );
-	    glVertex2d(	1, -1 );
-    
-	    glTexCoord2f(	1, 1 );
-	    glVertex2d( 1, 1 );
-    } glEnd();
-    */
-
-     glBegin(GL_QUADS);
-    {
-	    glTexCoord2f(	.25f, .75f );
-	    glVertex2d(	-0.5, 0.5 );
-    
-	    glTexCoord2f(	.25f, .25f );
-	    glVertex2d(	-0.5, -0.5);
-    
-	    glTexCoord2f(	.75f, .25f );
-	    glVertex2d(	0.5, -0.5 );
-    
-	    glTexCoord2f(	.75f, .75f );
-	    glVertex2d( 0.5, 0.5 );
-    } glEnd();
-
-  } glDisable(GL_TEXTURE_2D); 
 }
