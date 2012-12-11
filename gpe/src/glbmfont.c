@@ -13,11 +13,11 @@
 
 int   _glbmfont_parse_common (char *line);
 int   _glbmfont_parse_page (char *line, char *path);
-int   _glbmfont_parse_char (char *line);
+int   _glbmfont_parse_char (char *line, int font_width, int font_height);
 int   _glbmfont_getKeyValue (char * line, char *key);
 int   _glbmfont_indexof (char *str1, char *str2);
 int   _glbmfont_last_indexof (char *str1, char *str2);
-void  _glbmfont_renderChar (glbmfont_char *chrDesc, int *x, int *y, int *padX, int *screen_width, int *screen_height);
+int  _glbmfont_renderChar (glbmfont_char *chrDesc, int x, int y, int screen_width, int screen_height, int *padX);
 void  _glbmfont_substring (int start, int stop, char *text, char *out);
 char *_glbmfont_getPathValue (char * line, char *key);
 char *_glbmfont_getFilepath (char *filepath);
@@ -182,7 +182,7 @@ _glbmfont_parse_page(char *line, char *path)
 }
 
 int 
-_glbmfont_parse_char(char *line)
+_glbmfont_parse_char(char *line, int font_width, int font_height)
 {
   glbmfont_char charDesc;
   int id;
@@ -200,40 +200,49 @@ _glbmfont_parse_char(char *line)
 
   //calc des 4 points de la texture du char
   // sens trigo : origine bord haut gauche
-  // conversion des coord en pixel des points en coord dans gl (float)
+  // conversion des coord des points de pixel vers coord dans gl (float)
   // au chargement de la texture Y est inversé pour que le fnt soit lisible naturellement
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].x =     (GLfloat)(charDesc.x / charDesc.width);
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].y =     (GLfloat)(charDesc.y / charDesc.height);
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x =  (GLfloat)(charDesc.x / charDesc.width);
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y =  (GLfloat)((charDesc.y + charDesc.height) / charDesc.height);                     
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x = (GLfloat)((charDesc.x + charDesc.width) / charDesc.width);
-  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y = (GLfloat)((charDesc.y + charDesc.height) / charDesc.height);
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x =    (GLfloat)((charDesc.x + charDesc.width) / charDesc.width);
-  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y =    (GLfloat)(charDesc.y / charDesc.height);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].x =     (GLfloat)((float)charDesc.x / (float)font_width);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_LEFT].y =     (GLfloat)((float)charDesc.y / (float)font_height);
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x =  (GLfloat)((float)charDesc.x / (float)font_width);
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y =  (GLfloat)((float)(charDesc.y + charDesc.height) / (float)font_height);                     
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x = (GLfloat)((float)(charDesc.x + charDesc.width) / (float)font_width);
+  charDesc.texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y = (GLfloat)((float)(charDesc.y + charDesc.height) / (float)font_height);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x =    (GLfloat)((float)(charDesc.x + charDesc.width) / (float)font_width);
+  charDesc.texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y =    (GLfloat)((float)charDesc.y / (float)font_height);
   
   _glbmfont.chars[id] = charDesc;
 
   return 1;
 }
 
-void 
-_glbmfont_renderChar (glbmfont_char *chrDesc, int *x, int *y, int *padX, int *screen_width, int *screen_height)
+#define GL_Y_FIX(f) (1 - (f))	
+int 
+_glbmfont_renderChar (glbmfont_char *chrDesc, int x, int y, int screen_width, int screen_height, int padX)
 {
   glBegin(GL_QUADS);
   {
-	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].x,
-                  chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].y );
-	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+	  glTexCoord2f( chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].x,
+      GL_Y_FIX(   chrDesc->texCoord[CHAR_TEX_BORDER_TOP_LEFT].y) );
+	  glVertex2d(	(GLdouble)((float)(x + padX + chrDesc->xOffset)/(float)screen_width), 
+                (GLdouble)((float)(y + chrDesc->yOffset + chrDesc->height)/(float)screen_height) );
+    
 	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].x, 
-                  chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y );
-	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+      GL_Y_FIX(   chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_LEFT].y) );
+	  glVertex2d(	(GLdouble)((float)(x + padX + chrDesc->xOffset)/(float)screen_width), 
+                (GLdouble)((float)(y + chrDesc->yOffset)/(float)screen_height) );
+
 	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].x, 
-                  chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y );
-	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+      GL_Y_FIX(   chrDesc->texCoord[CHAR_TEX_BORDER_BOTTOM_RIGHT].y) );
+	  glVertex2d(	(GLdouble)((float)(x + padX + chrDesc->xOffset + chrDesc->width)/(float)screen_width) , 
+                (GLdouble)((float)(y + chrDesc->yOffset)/(float)screen_height) );
+
 	  glTexCoord2f(	chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].x, 
-                  chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y );
-	  //glVertex2d(	(GLdouble)-0.5, (GLdouble)0.5 );
+      GL_Y_FIX(   chrDesc->texCoord[CHAR_TEX_BORDER_TOP_RIGHT].y) );
+	  glVertex2d(	(GLdouble)((float)(x + padX + chrDesc->xOffset + chrDesc->width)/(float)screen_width) , 
+                (GLdouble)((float)(y + chrDesc->yOffset + chrDesc->height)/(float)screen_height) );
 	} glEnd();
+  return padX + chrDesc->width;
 }
 
 int 
@@ -269,7 +278,7 @@ glbmfont_load(char *filepath)
     }
     else if (_glbmfont_indexof(line_buffer, "char ") > -1)
     {
-      state = _glbmfont_parse_char(line_buffer);
+      state = _glbmfont_parse_char(line_buffer, _glbmfont.width, _glbmfont.height);
     }
   }
 
@@ -286,6 +295,8 @@ glbmfont_print(char *text, int x, int y)
   char chr;
   int screen_width, screen_height;
   glbmfont_char chrDesc;
+
+  padX = 0;
 
 	glfwGetWindowSize(&screen_width, &screen_height);
     
@@ -324,7 +335,7 @@ glbmfont_print(char *text, int x, int y)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
-    _glbmfont_renderChar(&chrDesc, &x, &y, &padX, &screen_width, &screen_height);
+    padX = _glbmfont_renderChar(&chrDesc, x, y, screen_width, screen_height, padX);
     //posX = posX + chrDesc + chrDesc.xAdvance;
   }
   glDisable(GL_BLEND);

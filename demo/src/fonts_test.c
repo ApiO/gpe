@@ -10,10 +10,10 @@ const int SCREEN_WIDTH = 640;
 void fonts_test_foo(void)
 {
   window_manager manager;
-  /*
+  
   char buffer[255];
   double fps;
-  */
+  
   window_manager_init(&manager, "FONTS debug", SCREEN_HEIGHT, SCREEN_WIDTH);
 
   glbmfont_load();
@@ -24,12 +24,12 @@ void fonts_test_foo(void)
     window_manager_clear();
 
     //stuff
-    /*
+
     fps = window_manager_getFps();
-    sprintf_s(buffer, "%.0f", fps);
+    sprintf_s(buffer, "FPS: %f", fps);
     glbmfont_print(buffer, 10, 10);
-    */
-    glbmfont_print("A", 10, 10);
+    
+    //glbmfont_print("AB", 10, 10);
 
     window_manager_swapBuffers(&manager);
   }

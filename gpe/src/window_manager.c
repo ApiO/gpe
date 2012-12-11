@@ -21,7 +21,7 @@ void _window_manager_set_fps (void)
 	double currentTime = glfwGetTime();
  
 	// Calculate and display the FPS every specified time interval
-	if ((currentTime - t0Value) > 0.1)
+	if ((currentTime - t0Value) > 1)
 	{
 		// Calculate the FPS as the number of frames divided by the interval in seconds
 		current_fps = (double)fpsFrameCount / (currentTime - t0Value);

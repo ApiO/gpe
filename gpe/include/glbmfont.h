@@ -10,6 +10,11 @@
  *
  */
 
+ /*
+ TODO: 
+    - gestion du retour à la ligne dans le print : padY
+ */
+
 #ifndef glbmfont_h
 #define glbmfont_h
 
