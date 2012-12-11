@@ -23,6 +23,15 @@
 #define GLBMFONT_CHARS_SIZE   256
 #define GLBMFONT_TEX_2D_SIZE  8
 
+typedef enum gpeDock
+{
+  dock_top_left,
+  dock_top_right,
+  dock_bottom_left,
+  dock_bottom_right,
+  dock_center
+} gpeDock;
+
 typedef struct FVect
 {
   GLfloat x, y;
@@ -56,7 +65,7 @@ typedef struct glbmfont
 
 int  glbmfont_load(void);
 int  glbmfont_load(char *file);
-void glbmfont_print(char *text, int x, int y);
+void glbmfont_print(char *text, int x, int y, gpeDock dock);
 void glbmfont_free(void);
 
 #endif //glbmfont_h
