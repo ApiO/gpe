@@ -41,6 +41,8 @@ int TheoJansen_app(void)
   window_manager        manager;
   physics_system        physics_system;
   physics_debug_system  physics_debug_system;
+  char buffer[255];
+  double fps;
   int ticks = 0;
 
   window_manager_init(&manager, "Physics debug", SCREEN_HEIGHT, SCREEN_WIDTH);
@@ -49,6 +51,8 @@ int TheoJansen_app(void)
 
   TheoJansen_init(&physics_system); //ici on charge les entités dans le space ss passer par le physics_system
   
+  glbmfont_load();
+
   tj_Keyboard.x = 0.0f;
   
   //pseudo game loop
@@ -71,6 +75,10 @@ int TheoJansen_app(void)
       tj_Keyboard.x = 0.0f;
     } 
 
+    fps = window_manager_getFps();
+    sprintf_s(buffer, "FPS: %f", fps);
+    glbmfont_print(buffer, 0, 0);
+
     TheoJansen_update(&physics_system, ticks);
 
     physics_debug_system_draw(&physics_debug_system);
@@ -79,6 +87,7 @@ int TheoJansen_app(void)
     ticks += 1;
   }
   
+  glbmfont_free();
   TheoJansen_free(&physics_system);
   window_manager_free(&manager);
 

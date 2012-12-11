@@ -27,7 +27,7 @@ void fonts_test_foo(void)
 
     fps = window_manager_getFps();
     sprintf_s(buffer, "FPS: %f", fps);
-    glbmfont_print(buffer, 10, 10);
+    glbmfont_print(buffer, 0, 0);
     
     //glbmfont_print("AB", 10, 10);
 

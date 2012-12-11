@@ -6,10 +6,38 @@
 
 #include "glbmfont.h"
 
-void _window_manager_gl_init(int height, int width);
-void _window_manager_set_fps();
+void _window_manager_gl_init (int height, int width);
+void _window_manager_set_fps ();
+void _window_manager_reshape (void);
 
 double current_fps = 0.0;
+
+/// Return the min of two cpFloats.
+float fmin(float a, float b)
+{
+	return (a < b) ? a : b;
+}
+
+void _window_manager_reshape()
+{
+	GLfloat scale;;
+  int width, height;
+	double hw, hh;
+  
+	glfwGetWindowSize(&width, &height);
+  scale = (GLfloat)fmin(width/640.0, height/480.0);
+
+	hw = width*(0.5/scale);
+	hh = height*(0.5/scale);
+	glViewport(0, 0, width, height);
+	
+	glLineWidth(scale);
+	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-hw, hw, -hh, hh, -1.0, 1.0);
+	glTranslated(0.5, 0.5, 0.0);
+}
 
 void _window_manager_set_fps (void)
 {
@@ -73,6 +101,7 @@ void window_manager_init (window_manager * manager, char * title, int height, in
 void window_manager_clear (void)
 {
   _window_manager_set_fps();
+  _window_manager_reshape();
   
   glClear( GL_COLOR_BUFFER_BIT );
   glClear( GL_DEPTH_BUFFER_BIT );
