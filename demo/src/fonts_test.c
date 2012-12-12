@@ -23,6 +23,7 @@ void fonts_test_foo(void)
   while (manager.running)
   {
     window_manager_clear();
+
     /*
     //stuff
 
@@ -30,12 +31,20 @@ void fonts_test_foo(void)
     sprintf_s(buffer, "FPS: %f", fps);
     glbmfont_print(buffer, 0, 0);
     */
-    glbmfont_print("abcdefghijklmnopqrstuvwxyz", 10, 10, dock_top_left);
-    glbmfont_print("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10, 10, dock_top_right);
-    glbmfont_print("0123456789°+\nqdkjfsqkdfsqsdf", 0, 0, dock_center);
-    glbmfont_print("&é\"'(-è_çà)=^$*ù!:;,<ïöüäâîôû", 10, 10, dock_bottom_left);
-    glbmfont_print("~#{[|`\^@]}¤²", 10, 10, dock_bottom_right);
-    //glbmfont_print("FPS", 0, 0);
+    //*
+    glbmfont_print("abcdefghijklmno\npqrstuvwxyz", 0, 0, dock_top_left);
+    glbmfont_print("ABCDEF\nGHIJKLMNOPQRSTUVWXYZ", 10, 10, dock_top_right);
+    glbmfont_print("0123456789°+\nqdkjfsqkdfsqsdf\ndfg\n", 0, 0, dock_center);
+    glbmfont_print("&é\"'(-è_ç\nà)=^$*ù!:;,<ïöüäâîôû", 10, 10, dock_bottom_left);
+    glbmfont_print("~#{[|`\^\n@]}¤²", 10, 10, dock_bottom_right);
+    //*/
+    
+    /*
+    glbmfont_print("bas droit", 0, 0, dock_bottom_left);
+    glbmfont_print("bas droit", 0, 0, dock_bottom_right);
+    */
+
+    DEV_window_manager_drawAxes();
 
     window_manager_swapBuffers(&manager);
   }

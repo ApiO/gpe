@@ -20,8 +20,8 @@
 
 #include <GL/glfw.h>
 
-#define GLBMFONT_CHARS_SIZE   256
-#define GLBMFONT_TEX_2D_SIZE  8
+const int GLBMFONT_CHARS_SIZE  = 256;
+const int GLBMFONT_TEX_2D_SIZE = 8;
 
 typedef enum gpeDock
 {
@@ -35,7 +35,12 @@ typedef enum gpeDock
 typedef struct FVect
 {
   GLfloat x, y;
-} gpeVect;
+} FVect;
+
+typedef struct DVect
+{
+  GLdouble x, y;
+} DVect;
 
  //glbmfont_char holds the information for a single character
  // and precalc the glTexCoord values for each point per char
@@ -47,7 +52,7 @@ typedef struct glbmfont_char
 	int xAdvance;
 	int page;
   int chnl;
-  gpeVect texCoord[4];
+  FVect texCoord[4];
 } glbmfont_char;
 
 //glbmfont holds the descriptions that apply to all characters, 

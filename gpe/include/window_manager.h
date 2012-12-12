@@ -21,4 +21,6 @@ void    window_manager_swapBuffers (window_manager * manager);
 void    window_manager_free (window_manager * manager);
 double  window_manager_getFps(void);
 
+void    DEV_window_manager_drawAxes(void);
+
 #endif //_window_manager_h_

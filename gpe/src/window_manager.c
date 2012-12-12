@@ -25,7 +25,7 @@ void _window_manager_reshape()
 	double hw, hh;
   
 	glfwGetWindowSize(&width, &height);
-  scale = (GLfloat)fmin(width/640.0, height/480.0);
+  scale = (GLfloat)fmin((float)width/640.0f, (float)height/480.0f);
 
 	hw = width*(0.5/scale);
 	hh = height*(0.5/scale);
@@ -133,4 +133,17 @@ void window_manager_free (window_manager * manager)
 double window_manager_getFps (void)
 {
  return current_fps;
+}
+
+void DEV_window_manager_drawAxes(void)
+{
+  glColor3f(.42f, .42f, .8f);
+  glBegin(GL_LINES);
+    glVertex2f(0.f, 1.f);
+    glVertex2f(0.f, -1.f);
+  glEnd( );
+  glBegin(GL_LINES);
+    glVertex2f(-1.f, 0.f);
+    glVertex2f(1.f, 0.f);
+  glEnd( );
 }
