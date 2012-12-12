@@ -51,7 +51,6 @@ typedef struct glbmfont_char
 	int xOffset, yOffset;
 	int xAdvance;
 	int page;
-  int chnl;
   FVect texCoord[4];
 } glbmfont_char;
 
@@ -60,10 +59,8 @@ typedef struct glbmfont_char
 typedef struct glbmfont
 {
 	int lineHeight;
-	int base;
 	int width, height;
 	int pages; 
-  int chnl;
 	glbmfont_char chars[GLBMFONT_CHARS_SIZE];
   GLuint       tex_2d[GLBMFONT_TEX_2D_SIZE];
 } glbmfont;

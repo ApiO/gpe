@@ -170,7 +170,6 @@ int   _glbmfont_getLineWidth(glbmfont *font, char *text)
 int   _glbmfont_parse_common(glbmfont *font, char *line)
 {
   font->lineHeight = _glbmfont_getKeyValue(line, "lineHeight=");
-  font->base =       _glbmfont_getKeyValue(line, "base=");
   font->width =      _glbmfont_getKeyValue(line, "scaleW=");
   font->height =     _glbmfont_getKeyValue(line, "scaleH=");
   font->pages =      _glbmfont_getKeyValue(line, "pages=");
@@ -223,7 +222,6 @@ int   _glbmfont_parse_char(glbmfont *font, char *line)
   charDesc.yOffset =  _glbmfont_getKeyValue(line, "yoffset=");
   charDesc.xAdvance = _glbmfont_getKeyValue(line, "xadvance=");
   charDesc.page =     _glbmfont_getKeyValue(line, "page=");
-  charDesc.chnl =     _glbmfont_getKeyValue(line, "chnl=");
 
   //calc des 4 points de la texture du char
   // sens trigo : origine bord haut gauche
