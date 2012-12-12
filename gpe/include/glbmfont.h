@@ -61,8 +61,9 @@ typedef struct glbmfont
 	int lineHeight;
 	int width, height;
 	int pages; 
-	glbmfont_char chars[GLBMFONT_CHARS_SIZE];
+  int tex_count;
   GLuint       tex_2d[GLBMFONT_TEX_2D_SIZE];
+	glbmfont_char chars[GLBMFONT_CHARS_SIZE];
 } glbmfont;
 
 int  glbmfont_load(void);

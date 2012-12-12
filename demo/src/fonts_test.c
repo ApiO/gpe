@@ -32,15 +32,15 @@ void fonts_test_foo(void)
     glbmfont_print(buffer, 0, 0);
     */
     //*
-    glbmfont_print("abcdefghijklmno\npqrstuvwxyz", 0, 0, dock_top_left);
+    glbmfont_print("abcdefghijklmno\npqrstuvwxyz", 10, 10, dock_top_left);
     glbmfont_print("ABCDEF\nGHIJKLMNOPQRSTUVWXYZ", 10, 10, dock_top_right);
-    glbmfont_print("0123456789°+\nqdkjfsqkdfsqsdf\ndfg\n", 0, 0, dock_center);
+    glbmfont_print("0123456789°+\nqdkjfsqkdfsqsdf\ndfg\nklmm", 0, 0, dock_center);
     glbmfont_print("&é\"'(-è_ç\nà)=^$*ù!:;,<ïöüäâîôû", 10, 10, dock_bottom_left);
-    glbmfont_print("~#{[|`\^\n@]}¤²", 10, 10, dock_bottom_right);
+    glbmfont_print("~#{[|`\\^\n@]}¤²", 10, 10, dock_bottom_right);
     //*/
     
+    //glbmfont_print("bas droit", 0, 0, dock_bottom_left);
     /*
-    glbmfont_print("bas droit", 0, 0, dock_bottom_left);
     glbmfont_print("bas droit", 0, 0, dock_bottom_right);
     */
 

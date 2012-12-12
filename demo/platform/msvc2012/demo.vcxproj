@@ -104,7 +104,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\..\gpe\platform\msvc2012\build\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gpe.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gpe.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

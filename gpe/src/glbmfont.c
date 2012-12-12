@@ -20,13 +20,18 @@ void  _glbmfont_substring     (int start, int stop, char *text, char *out);
 char *_glbmfont_getPathValue  (char * line, char *key);
 char *_glbmfont_getFilepath   (char *filepath);
 char *_glbmfont_strAppend     (char *str1, char *str2);
+int   _glbmfont_count_lines   (glbmfont *font, char *text);
 int   _glbmfont_parse_common  (glbmfont *font, char *line);
 int   _glbmfont_parse_page    (glbmfont *font, char *line, char *path);
 int   _glbmfont_parse_char    (glbmfont *font, char *line);
-void  _glbmfont_renderLine    (glbmfont *font, char *line, float pad_x, float pad_y, float screen_width,
-                               float screen_height, float scale, gpeDock dock);
-float _glbmfont_renderChar    (glbmfont_char *chrDesc, float pad_x, float pad_y, 
-                               float screen_width, float screen_height, float scale);
+void  _glbmfont_renderLine    (glbmfont *font, char *line, FVect padding, float screen_width,
+                                float screen_height, float scale, gpeDock dock);
+FVect _glbmfont_getLine_padd  (glbmfont *font, gpeDock dock, 
+                                char *line, int line_index, float line_height, int line_count, 
+                                float pad_x , float pad_y, 
+                                float screen_width, float screen_height, float scale);
+float _glbmfont_renderChar    (glbmfont_char *chrDesc, FVect padding, 
+                                float screen_width, float screen_height, float scale);
 
 glbmfont _glbmfont;
 
@@ -163,6 +168,23 @@ int   _glbmfont_getLineWidth(glbmfont *font, char *text)
   return value;
 }
 
+int   _glbmfont_count_lines (glbmfont *font, char *text)
+{
+  int count, i, len;
+  count=1;
+  len = strlen(text);
+  
+  for (i=0; i < len; i++)
+  {
+    if(text[i] == '\n')
+    {
+     count = count +1;
+    }
+  }
+  
+  return count;
+}
+
 /*
  *  LOAD: private parsing stuff
 */
@@ -205,6 +227,8 @@ int   _glbmfont_parse_page(glbmfont *font, char *line, char *path)
   free(filename);
   free(imagepath);
 
+  font->tex_count = font->tex_count + 1;
+
   return 1;
 }
 
@@ -244,43 +268,15 @@ int   _glbmfont_parse_char(glbmfont *font, char *line)
  *  PRINT: private rendering stuff
  */
 
-void  _glbmfont_renderLine (glbmfont *font, char *line, 
-                            float pad_x, float pad_y, 
+void  _glbmfont_renderLine (glbmfont *font, char *line, FVect padding,
                             float screen_width, float screen_height, 
                             float scale, gpeDock dock)
 {
   int i, len;
-  float line_width;
   char chr;
   glbmfont_char *chrDesc;
   
   len = strlen(line);
-
-  switch (dock)
-  {
-    case dock_top_left:
-      pad_x = pad_x - 1.f;
-      pad_y = 1.f - pad_y;
-      break;
-    case dock_top_right:
-      line_width = (float)_glbmfont_getLineWidth(font, line);
-      pad_x = 1.f - pad_x - (line_width/screen_width) * scale;
-      pad_y = 1.f - pad_y;
-      break;
-    case dock_center:
-      line_width = (float)_glbmfont_getLineWidth(font, line) * scale;
-      pad_x = pad_x - (line_width/2.f)/screen_width;
-      break;
-    case dock_bottom_left:
-      pad_x = pad_x - 1.f;
-      pad_y = pad_y - 1.f;
-      break;
-    case dock_bottom_right:
-      line_width = (float)_glbmfont_getLineWidth(font, line);
-      pad_x = 1.f - pad_x - (line_width/screen_width) * scale;
-      pad_y = pad_y - 1.f;
-      break;
-  }
   
   for (i=0; i<len; i++)
   {
@@ -295,7 +291,7 @@ void  _glbmfont_renderLine (glbmfont *font, char *line,
     else
     {
       chrDesc = &font->chars[chr];
-      if(chrDesc->width == 0)
+      if(chrDesc->width <= 0)
       { 
         //lettre courrante n'est pas dans le sprite
         chrDesc = &font->chars[CHAR_MISS];
@@ -311,25 +307,24 @@ void  _glbmfont_renderLine (glbmfont *font, char *line,
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
     
-    pad_x = _glbmfont_renderChar(chrDesc, pad_x, pad_y, screen_width, screen_height, scale);
+    padding.x = _glbmfont_renderChar(chrDesc, padding, screen_width, screen_height, scale);
     
     glDisable(GL_TEXTURE_2D);
   }
 }
 
-float _glbmfont_renderChar (glbmfont_char *chrDesc, 
-                            float pad_x, float pad_y, 
+float _glbmfont_renderChar (glbmfont_char *chrDesc, FVect padding, 
                             float screen_width, float screen_height, float scale)
 {
   DVect quads[4];
-  quads[BOTTOM_LEFT].x =  (GLdouble) (pad_x + ((float)chrDesc->xOffset / screen_width) * scale);
-  quads[BOTTOM_LEFT].y =  (GLdouble)  pad_y - ((float)(chrDesc->yOffset + chrDesc->height)/screen_height)* scale;
-  quads[TOP_LEFT].x =     (GLdouble) (pad_x + ((float)chrDesc->xOffset / screen_width) * scale);
-  quads[TOP_LEFT].y =     (GLdouble) (pad_y - ((float)chrDesc->yOffset/screen_height) * scale);
-  quads[TOP_RIGHT].x =    (GLdouble) (pad_x + ((float)(chrDesc->xOffset + chrDesc->width)/screen_width) * scale);
-  quads[TOP_RIGHT].y =    (GLdouble) (pad_y - ((float)chrDesc->yOffset/screen_height) * scale);
-  quads[BOTTOM_RIGHT].x = (GLdouble) (pad_x + ((float)(chrDesc->xOffset + chrDesc->width)/screen_width) * scale);
-  quads[BOTTOM_RIGHT].y = (GLdouble)  pad_y - ((float)(chrDesc->yOffset + chrDesc->height)/screen_height)* scale;
+  quads[BOTTOM_LEFT].x =  (GLdouble) (padding.x + ((float)chrDesc->xOffset / screen_width) * scale);
+  quads[BOTTOM_LEFT].y =  (GLdouble)  padding.y - ((float)(chrDesc->yOffset + chrDesc->height)/screen_height)* scale;
+  quads[TOP_LEFT].x =     (GLdouble) (padding.x + ((float)chrDesc->xOffset / screen_width) * scale);
+  quads[TOP_LEFT].y =     (GLdouble) (padding.y - ((float)chrDesc->yOffset/screen_height) * scale);
+  quads[TOP_RIGHT].x =    (GLdouble) (padding.x + ((float)(chrDesc->xOffset + chrDesc->width)/screen_width) * scale);
+  quads[TOP_RIGHT].y =    (GLdouble) (padding.y - ((float)chrDesc->yOffset/screen_height) * scale);
+  quads[BOTTOM_RIGHT].x = (GLdouble) (padding.x + ((float)(chrDesc->xOffset + chrDesc->width)/screen_width) * scale);
+  quads[BOTTOM_RIGHT].y = (GLdouble)  padding.y - ((float)(chrDesc->yOffset + chrDesc->height)/screen_height)* scale;
 
   glBegin(GL_QUADS);
   {             
@@ -354,7 +349,45 @@ float _glbmfont_renderChar (glbmfont_char *chrDesc,
                   quads[TOP_RIGHT].y );
 	} glEnd();
 
-  return pad_x + (float)chrDesc->xAdvance/screen_width * scale;
+  return padding.x + (float)chrDesc->xAdvance/screen_width * scale;
+}
+
+
+FVect _glbmfont_getLine_padd (glbmfont *font, gpeDock dock, 
+                              char *line, int line_index, float line_height, int line_count, 
+                              float pad_x , float pad_y, 
+                              float screen_width, float screen_height, float scale)
+{
+  float line_width;
+  FVect padding;
+  
+  switch (dock)
+  {
+    case dock_top_left:
+      padding.x = pad_x - 1.f;
+      padding.y = 1.f - (line_index * line_height);
+      break;
+    case dock_top_right:
+      line_width = (float)_glbmfont_getLineWidth(font, line);
+      padding.x = 1.f - pad_x - (line_width/screen_width) * scale;
+      padding.y = 1.f - (line_index * line_height);
+      break;
+    case dock_center:
+      line_width = (float)_glbmfont_getLineWidth(font, line) * scale;
+      padding.x = pad_x - (line_width/2.f)/screen_width;
+      padding.y = pad_y + line_height * (((float)line_count / 2) - line_index );
+      break;
+    case dock_bottom_left:
+      padding.x = pad_x - 1.f;
+      padding.y = pad_y + ((line_index+1) * line_height) - 1.f;
+      break;
+    case dock_bottom_right:
+      line_width = (float)_glbmfont_getLineWidth(font, line);
+      padding.x = 1.f - pad_x - (line_width/screen_width) * scale;
+      padding.y = pad_y + ((line_index+1) * line_height) - 1.f;
+      break;
+  }
+  return padding;
 }
 
 
@@ -380,7 +413,8 @@ int   glbmfont_load(char *filepath)
       return -1;
   }
 
-  //printf("Loading font:\n\t\"%s\"\n", filepath);
+  font.tex_count = 0;
+
   path = _glbmfont_getFilepath(filepath);
   while (fgets(line_buffer, sizeof(line_buffer), file) && state == 1)
   {
@@ -409,11 +443,18 @@ int   glbmfont_load(char *filepath)
 void  glbmfont_print(char *text, int x, int y, gpeDock dock)
 {
   const float scale = 2.f;
-  int i, begin_index, len;
+  int i, begin_index, len, line_index, line_count;
   int screen_width, screen_height;
   float f_screen_width, f_screen_height;
-  float pad_x, pad_y, line_height, line_count;
+  float pad_x, pad_y, line_height;
   char *buffer;
+  FVect padding;
+
+  len = strlen(text);
+  if(len == 0)
+  {
+    return;
+  }
 
 	glfwGetWindowSize(&screen_width, &screen_height);
   
@@ -421,36 +462,38 @@ void  glbmfont_print(char *text, int x, int y, gpeDock dock)
   f_screen_height = (float)screen_height;
   pad_x = (float)x/f_screen_width;
   pad_y = (float)y/f_screen_height;
-  line_height = (float)_glbmfont.lineHeight / f_screen_height * scale;
-  line_count = 0.f;
+  line_index = 0;
   begin_index = 0;
-  len = strlen(text);
+  line_count = _glbmfont_count_lines(&_glbmfont, text);
+  line_height = (float)_glbmfont.lineHeight / screen_height * scale;
   
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+ 
   for (i=0; i<len; i++)
   {
     if(text[i] == '\n')
     {
       buffer = (char *) malloc((i - begin_index + 1)*sizeof(char));
       _glbmfont_substring(begin_index, i, text, buffer);
-
-      _glbmfont_renderLine(&_glbmfont, buffer, pad_x , pad_y + (line_count * line_height), f_screen_width, f_screen_height, scale, dock);
+      
+      padding = _glbmfont_getLine_padd(&_glbmfont, dock, buffer, line_index, line_height, line_count, pad_x, pad_y, f_screen_width, f_screen_height, scale);
+      _glbmfont_renderLine(&_glbmfont, buffer, padding, f_screen_width, f_screen_height, scale, dock);
 
       free(buffer);
-      line_count = line_count + 1;
       begin_index = i+1;
+      line_index = line_index+1;
     }
   }
 
   //draw last line
   if(begin_index < len)
   {
-    buffer = (char *) malloc((len - begin_index + 1)*sizeof(char));
+    buffer = (char *) malloc((len - begin_index+1)*sizeof(char));
     _glbmfont_substring(begin_index, len, text, buffer);
-
-    _glbmfont_renderLine(&_glbmfont, buffer, pad_x , pad_y + (line_count * line_height), f_screen_width, f_screen_height, scale, dock);
+    
+    padding = _glbmfont_getLine_padd(&_glbmfont, dock, buffer, line_index, line_height, line_count, pad_x, pad_y, f_screen_width, f_screen_height, scale);
+    _glbmfont_renderLine(&_glbmfont, buffer, padding, f_screen_width, f_screen_height, scale, dock);
     
     free(buffer);
   }
@@ -461,5 +504,17 @@ void  glbmfont_print(char *text, int x, int y, gpeDock dock)
 
 void  glbmfont_free(void)
 {
-  //SOIL_free_image_data(BMFont.tex_2d);
+  int i, tex_count;
+  tex_count = _glbmfont.tex_count;
+
+  if(tex_count<1)
+  {
+    return;
+  }
+
+  for( i=0; i< tex_count; i++)
+  {
+    glDeleteTextures(1, &_glbmfont.tex_2d[i]);
+  }
+  _glbmfont.tex_count = 0;
 }

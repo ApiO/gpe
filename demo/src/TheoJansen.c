@@ -76,8 +76,12 @@ int TheoJansen_app(void)
     } 
 
     fps = window_manager_getFps();
-    sprintf_s(buffer, "FPS: %f", fps);
+    sprintf_s(buffer, "FPS: %.4f", fps);
+    glbmfont_print(buffer, 0, 0, dock_top_left);
+    glbmfont_print(buffer, 0, 0, dock_top_right);
     glbmfont_print(buffer, 0, 0, dock_center);
+    glbmfont_print(buffer, 0, 0, dock_bottom_left);
+    glbmfont_print(buffer, 0, 0, dock_bottom_right);
 
     TheoJansen_update(&physics_system, ticks);
 

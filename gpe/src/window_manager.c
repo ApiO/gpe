@@ -10,7 +10,9 @@ void _window_manager_gl_init (int height, int width);
 void _window_manager_set_fps ();
 void _window_manager_reshape (void);
 
-double current_fps = 0.0;
+double current_fps = 0.0;	
+double t0Value; // Set the initial time to now
+int    fpsFrameCount;
 
 /// Return the min of two cpFloats.
 float fmin(float a, float b)
@@ -40,16 +42,12 @@ void _window_manager_reshape()
 }
 
 void _window_manager_set_fps (void)
-{
-	// Static values which only get initialised the first time the function runs
-	static double t0Value       = glfwGetTime(); // Set the initial time to now
-	static int    fpsFrameCount = 0;             // Set the initial FPS frame count to 0
- 
+{ 
 	// Get the current time in seconds since the program started (non-static, so executed every time)
 	double currentTime = glfwGetTime();
  
 	// Calculate and display the FPS every specified time interval
-	if ((currentTime - t0Value) > 1)
+	if ((currentTime - t0Value) > 1.0)
 	{
 		// Calculate the FPS as the number of frames divided by the interval in seconds
 		current_fps = (double)fpsFrameCount / (currentTime - t0Value);
@@ -96,6 +94,10 @@ void window_manager_init (window_manager * manager, char * title, int height, in
   _window_manager_gl_init(height, width);
 
   glbmfont_load();
+
+  current_fps = 0.0;
+  t0Value = glfwGetTime();;
+  fpsFrameCount = 0;
 }
 
 void window_manager_clear (void)
@@ -107,6 +109,8 @@ void window_manager_clear (void)
   glClear( GL_DEPTH_BUFFER_BIT );
     
   glLoadIdentity();
+
+   DEV_window_manager_drawAxes();
 }
 
 void window_manager_swapBuffers (window_manager * manager)

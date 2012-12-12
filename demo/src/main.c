@@ -2,16 +2,16 @@
 //#include "glfw_check.h"
 //#include "window_test.h"
 //#include "physics_system_test.h"
-//#include "TheoJansen.h"
-#include "fonts_test.h"
+#include "TheoJansen.h"
+//#include "fonts_test.h"
 
 int main( int argc, const char* argv[] )
 {
   //glfw_check_foo();
   //window_test_foo();
   //physics_system_test_foo0();
-  //TheoJansen_foo();
-  fonts_test_foo();
+  TheoJansen_foo();
+  //fonts_test_foo();
   
   return 0;
 }
