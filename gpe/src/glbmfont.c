@@ -301,10 +301,12 @@ void  _glbmfont_renderLine (glbmfont *font, char *line, FVect padding,
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->tex_2d[chrDesc->page]);
+    
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+    
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
     
     padding.x = _glbmfont_renderChar(chrDesc, padding, screen_width, screen_height, scale);
@@ -467,6 +469,9 @@ void  glbmfont_print(char *text, int x, int y, gpeDock dock)
   line_count = _glbmfont_count_lines(&_glbmfont, text);
   line_height = (float)_glbmfont.lineHeight / screen_height * scale;
   
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
  
@@ -498,8 +503,8 @@ void  glbmfont_print(char *text, int x, int y, gpeDock dock)
     free(buffer);
   }
 
-  glBlendFunc(GL_NONE, GL_NONE);
   glDisable(GL_BLEND);
+  glBlendFunc(GL_NONE, GL_NONE);
 }
 
 void  glbmfont_free(void)
