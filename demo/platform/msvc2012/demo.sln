@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "demo.vcxproj", "{748017B8-D423-4D8B-8EDF-E3F2E995C401}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpe", "..\..\..\gpe\platform\msvc2012\gpe.vcxproj", "{E3503211-4061-4CE2-9133-0CBBEEF66C0A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpr", "..\..\..\..\gpr\msvc\vc11\gpr\gpr.vcxproj", "{32A4B122-4B41-409B-99AE-0B813C9F420A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,10 @@ Global
 		{E3503211-4061-4CE2-9133-0CBBEEF66C0A}.Debug|Win32.Build.0 = Debug|Win32
 		{E3503211-4061-4CE2-9133-0CBBEEF66C0A}.Release|Win32.ActiveCfg = Release|Win32
 		{E3503211-4061-4CE2-9133-0CBBEEF66C0A}.Release|Win32.Build.0 = Release|Win32
+		{32A4B122-4B41-409B-99AE-0B813C9F420A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{32A4B122-4B41-409B-99AE-0B813C9F420A}.Debug|Win32.Build.0 = Debug|Win32
+		{32A4B122-4B41-409B-99AE-0B813C9F420A}.Release|Win32.ActiveCfg = Release|Win32
+		{32A4B122-4B41-409B-99AE-0B813C9F420A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
