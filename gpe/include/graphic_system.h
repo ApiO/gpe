@@ -6,7 +6,8 @@
 #endif
 #include <GL\GL.h>
 
-#include <gpr_types.h>
+#include "gpr_types.h"
+#include "gpr_containers.h"
 
 typedef struct gpe_graphic
 {
@@ -18,9 +19,18 @@ typedef struct gpe_graphic
   F32 shear_x, shear_y;
   I32 z;
 } gpe_graphic;
+GPR_IDLUT_INIT(gpe_graphic);
 
-U32   graphic_system_add  (gpe_graphic *gData, U32 tex_id);
-void  graphic_remove  (gpe_graphic *gData, U32 tex_id);
-void  graphic_system_render (gpe_graphic *gData);
+typedef struct graphic_manager
+{
+  gpr_idlut_t(gpe_graphic) table;
+  U32 physics_count; 
+} graphic_manager;
+
+void  graphic_system_init     (graphic_manager *system);
+U32   graphic_system_add      (graphic_manager *system, U32 tex_id);
+void  graphic_system_remove   (graphic_manager *system, U32 graphic_id);
+void  graphic_system_render   (graphic_manager *system);
+void  graphic_system_free     (graphic_manager *system);
 
 #endif //graphic_system_h

@@ -98,7 +98,7 @@
       <AdditionalDependencies>gpr.lib;chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib;$(ProjectDir)\..\..\..\..\gpr\msvc\vc11\gpr\build\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\lib\$(Configuration)\;$(ProjectDir)\..\..\..\..\gpr\msvc\vc11\gpr\build\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
@@ -121,7 +121,7 @@
       <AdditionalDependencies>gpr.lib;chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib;$(ProjectDir)\..\..\..\..\gpr\msvc\vc11\gpr\build\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\lib\$(Configuration)\;$(ProjectDir)\..\..\..\..\gpr\msvc\vc11\gpr\build\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
