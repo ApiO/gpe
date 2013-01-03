@@ -15,6 +15,8 @@ void graphic_system_test_foo(void)
   
   window_manager_init(&manager, "graphic debug", 600, 800);
   
+  gpr_memory_init(4*1024*1024);
+
   //graphic inits
   graphic_system_init(&graphics, 4);
 
