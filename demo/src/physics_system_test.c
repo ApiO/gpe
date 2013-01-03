@@ -11,6 +11,8 @@ void physics_system_test_foo0(void)
   window_manager manager;
   physics_system system;
   physics_debug_system debug;
+  
+  gpr_memory_init(4*1024*1024);
 
   window_manager_init(&manager, "Physics debug", 600, 800);
   physics_system_init(&system, 0, -100, ENTITY_COUNT);
@@ -25,7 +27,8 @@ void physics_system_test_foo0(void)
     physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
-  
+
+  gpr_memory_shutdown();
   window_manager_free(&manager);
 }
 

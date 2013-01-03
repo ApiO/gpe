@@ -43,7 +43,8 @@ int TheoJansen_app(void)
   physics_debug_system  physics_debug_system;
 
   int ticks = 0;
-
+  
+  gpr_memory_init(4*1024*1024);
   window_manager_init(&manager, "Physics debug", SCREEN_HEIGHT, SCREEN_WIDTH);
   physics_system_init(&physics_system, 0, -500, ENTITY_COUNT);
   physics_debug_system_init(&physics_debug_system, physics_system.space);
@@ -81,7 +82,8 @@ int TheoJansen_app(void)
     window_manager_swapBuffers(&manager);
     ticks += 1;
   }
-  
+
+  gpr_memory_shutdown();
   glbmfont_free();
   TheoJansen_free(&physics_system);
   window_manager_free(&manager);

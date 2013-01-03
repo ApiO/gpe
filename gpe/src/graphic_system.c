@@ -1,10 +1,29 @@
 #include "graphic_system.h"
-#include "gpr_memory.h"
 
-const int TOP_LEFT      = 0;
-const int BOTTOM_LEFT   = 1;
-const int BOTTOM_RIGHT  = 2;
-const int TOP_RIGHT     = 3;
+#include <GL/glfw.h>
+
+#include "gpr_memory.h"
+#include "gpr_array.h"
+
+typedef struct DVect
+{
+  GLdouble x, y;
+} DVect;
+
+void _graphic_system_render_quads (gpe_graphic *graphic, DVect *quad, float screen_width, float screen_height);
+
+
+void _graphic_system_render_quads (gpe_graphic *graphic, DVect *quad, float screen_width, float screen_height)
+{
+  quad[TEX_TOP_LEFT].x =     (GLdouble) ((float)graphic->x / screen_width) ;
+  quad[TEX_TOP_LEFT].y =     (GLdouble) ((float)(graphic->y + graphic->h)/screen_height);
+  quad[TEX_BOTTOM_LEFT].x =  (GLdouble) ((float)graphic->x / screen_width);
+  quad[TEX_BOTTOM_LEFT].y =  (GLdouble) ((float)graphic->y / screen_height);
+  quad[TEX_BOTTOM_RIGHT].x = (GLdouble) ((float)(graphic->x + graphic->w)/screen_width);
+  quad[TEX_BOTTOM_RIGHT].y = (GLdouble) ((float)graphic->y / screen_height);
+  quad[TEX_TOP_RIGHT].x =    (GLdouble) ((float)(graphic->x + graphic->w)/screen_width);
+  quad[TEX_TOP_RIGHT].y =    (GLdouble) ((float)(graphic->y + graphic->h)/screen_height);
+}
 
 void graphic_system_init (graphic_system *system, U32 object_count)
 {
@@ -28,46 +47,81 @@ void graphic_system_remove (graphic_system *system, U32 graphic_id)
 
 void graphic_system_render (graphic_system *system)
 {
-  /*
-  sort par gpe_graphic->z puis gpe_graphic->tex_id
-  parser par z ascendant pour limiter le changement de texture lors du changement de z
-  puis faire le rendu par z descendant
-  */
   unsigned int i;
-  gpe_graphic graphic;
+  gpe_graphic *graphic;
+  DVect quad[4];
+  int screen_width, screen_height;
+  
+	glfwGetWindowSize(&screen_width, &screen_height);
+  
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   for(i=0; i < system->physics_count; i++)
   {
-    graphic = (gpe_graphic)system->table.items[i].value;
-    
+    graphic = &(gpe_graphic)system->table.items[i].value;
+
+    _graphic_system_render_quads(graphic, quad, (float)screen_width, (float)screen_height);
+
     //init GL
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, graphic.text_id);
+    glBindTexture(GL_TEXTURE_2D, graphic->text_id);
     
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-
+    
+    glColor4f(1.0f, 1.0f, 1.0f, 1.f);
     //rendu de l'élément
     glBegin(GL_QUADS);
     {
-      glTexCoord2f( 0, 0 );
- 	    glVertex2d(   0, 0 );
-
-      glTexCoord2f( 0, 0 );
- 	    glVertex2d(   0, 0 );
-
-      glTexCoord2f( 0, 0 );
- 	    glVertex2d(   0, 0 );
-
-      glTexCoord2f( 0, 0 );
- 	    glVertex2d(   0, 0 );
-	  } glEnd();
+ 	    glTexCoord2f( graphic->texCoord[TEX_TOP_LEFT].x,
+                    graphic->texCoord[TEX_TOP_LEFT].y );
+ 	    glVertex2d(	  quad[TEX_TOP_LEFT].x, 
+                    quad[TEX_TOP_LEFT].y );
+      
+ 	    glTexCoord2f(	graphic->texCoord[TEX_BOTTOM_LEFT].x, 
+                    graphic->texCoord[TEX_BOTTOM_LEFT].y );
+ 	    glVertex2d(	  quad[TEX_BOTTOM_LEFT].x, 
+                    quad[TEX_BOTTOM_LEFT].y );
+      
+ 	    glTexCoord2f(	graphic->texCoord[TEX_BOTTOM_RIGHT].x, 
+                    graphic->texCoord[TEX_BOTTOM_RIGHT].y) ;
+ 	    glVertex2d(	  quad[TEX_BOTTOM_RIGHT].x, 
+                    quad[TEX_BOTTOM_RIGHT].y );
+ 
+ 	    glTexCoord2f(	graphic->texCoord[TEX_TOP_RIGHT].x, 
+                    graphic->texCoord[TEX_TOP_RIGHT].y) ;
+ 	    glVertex2d(	  quad[TEX_TOP_RIGHT].x, 
+                    quad[TEX_TOP_RIGHT].y );
+	  } 
+    glEnd();
     
     //reset GL
     glDisable(GL_TEXTURE_2D);
+
+    glColor4f(.0f, 1.f, .0f, .5f);
+    glBegin(GL_LINE_LOOP);
+    {
+ 	    glVertex2d(	  quad[TEX_TOP_LEFT].x, 
+                    quad[TEX_TOP_LEFT].y );
+ 	    glVertex2d(	  quad[TEX_BOTTOM_LEFT].x, 
+                    quad[TEX_BOTTOM_LEFT].y );
+ 	    glVertex2d(	  quad[TEX_BOTTOM_RIGHT].x, 
+                    quad[TEX_BOTTOM_RIGHT].y );
+ 	    glVertex2d(	  quad[TEX_TOP_RIGHT].x, 
+                    quad[TEX_TOP_RIGHT].y );
+    } 
+    glEnd();
   }
+
+  glDisable(GL_BLEND);
+  glBlendFunc(GL_NONE, GL_NONE);
 }
 
 gpe_graphic* graphic_system_lookup (graphic_system *system, U32 graphic_id)

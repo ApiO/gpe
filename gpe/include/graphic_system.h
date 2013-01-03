@@ -9,10 +9,20 @@
 #include "gpr_types.h"
 #include "gpr_idlut.h"
 
+const int TEX_TOP_LEFT      = 0;
+const int TEX_BOTTOM_LEFT   = 1;
+const int TEX_BOTTOM_RIGHT  = 2;
+const int TEX_TOP_RIGHT     = 3;
+
+typedef struct FVect
+{
+  GLfloat x, y;
+} FVect;
+
 typedef struct gpe_graphic
 {
   GLuint  text_id;
-  GLfloat texCoord[4];
+  FVect   texCoord[4];
   F32     x, y, w, h;
   F32     scale;
   F32     r, a;

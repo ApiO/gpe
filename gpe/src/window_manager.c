@@ -121,6 +121,8 @@ void window_manager_clear (window_manager *manager)
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
   glLoadIdentity();
+  
+  glColor4f(1.0f, 1.0f, 1.0f, 1.f);
 
   if(manager->display_fps)  
   {
