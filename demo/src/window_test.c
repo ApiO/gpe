@@ -10,6 +10,8 @@ void window_test_foo(void)
   //Esc to close window (hard codé dans manager pour le moment)
   while (manager.running)
   {
+    window_manager_clear(&manager);
+    //stuff
     window_manager_swapBuffers(&manager);
   }
   

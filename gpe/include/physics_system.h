@@ -29,13 +29,13 @@ typedef struct
   cpBody  *body;
   cpShape *shapes;
   int      shapes_count;
-} gpe_physics_entity;
-GPR_IDLUT_INIT(gpe_physics_entity)
+} gpe_physics;
+GPR_IDLUT_INIT(gpe_physics)
 
 typedef struct
 {
   cpSpace *space;
-  gpr_idlut_t(gpe_physics_entity)  
+  gpr_idlut_t(gpe_physics)  
            table;
   U32      physics_count;   //nombre d'entitées physique dans la table physics
   U32     *toUpdate;        //liste des id d'élément à updater pour le tick courrant

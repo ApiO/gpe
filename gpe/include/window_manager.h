@@ -6,21 +6,20 @@
     virrer la ref à chipmunk : ici à cause de types, remplaçables (cpVect, cpFloat), dans les signature des draw
 */
 
-#ifndef _window_manager_h_
-#define _window_manager_h_
+#ifndef window_manager_h
+#define window_manager_h
 
 typedef struct window_manager
 {
-  int   running;
-  int   restart;
+  int     running;
+  int     restart;
+  double  fps;
+  bool    display_fps;
 } window_manager;
 
-void    window_manager_init (window_manager * manager, char * title, int height, int width);
-void    window_manager_clear (void);
-void    window_manager_swapBuffers (window_manager * manager);
-void    window_manager_free (window_manager * manager);
-double  window_manager_getFps(void);
+void    window_manager_init         (window_manager * manager, char * title, int height, int width);
+void    window_manager_clear        (window_manager * manager);
+void    window_manager_swapBuffers  (window_manager * manager);
+void    window_manager_free         (window_manager * manager);
 
-void    DEV_window_manager_drawAxes(void);
-
-#endif //_window_manager_h_
+#endif //window_manager_h

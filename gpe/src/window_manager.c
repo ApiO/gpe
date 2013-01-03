@@ -7,10 +7,10 @@
 #include "glbmfont.h"
 
 void _window_manager_gl_init (int height, int width);
-void _window_manager_set_fps ();
+void _window_manager_set_fps (window_manager *manager);
 void _window_manager_reshape (void);
+void _DEV_window_manager_drawAxes(void);
 
-double current_fps = 0.0;	
 double t0Value; // Set the initial time to now
 int    fpsFrameCount;
 
@@ -41,7 +41,7 @@ void _window_manager_reshape()
 	glTranslated(0.5, 0.5, 0.0);
 }
 
-void _window_manager_set_fps (void)
+void _window_manager_set_fps (window_manager *manager)
 { 
 	// Get the current time in seconds since the program started (non-static, so executed every time)
 	double currentTime = glfwGetTime();
@@ -50,7 +50,7 @@ void _window_manager_set_fps (void)
 	if ((currentTime - t0Value) > 1.0)
 	{
 		// Calculate the FPS as the number of frames divided by the interval in seconds
-		current_fps = (double)fpsFrameCount / (currentTime - t0Value);
+		manager->fps = (double)fpsFrameCount / (currentTime - t0Value);
     
 		// Reset the FPS frame counter and set the initial time to be now
 		fpsFrameCount = 0;
@@ -71,11 +71,25 @@ void _window_manager_gl_init (int height, int width)
   glClear( GL_DEPTH_BUFFER_BIT );
 }
 
+void _DEV_window_manager_drawAxes(void)
+{
+  glColor3f(.42f, .42f, .8f);
+  glBegin(GL_LINES);
+    glVertex2f(0.f, 1.f);
+    glVertex2f(0.f, -1.f);
+  glEnd( );
+  glBegin(GL_LINES);
+    glVertex2f(-1.f, 0.f);
+    glVertex2f(1.f, 0.f);
+  glEnd( );
+}
 
 void window_manager_init (window_manager * manager, char * title, int height, int width)
 {
   manager->running = GL_TRUE;
   manager->restart = 0;
+  manager->display_fps = true;
+  manager->fps = 0.0;
  
   // Initialize GLFW
   if( !glfwInit() )
@@ -95,24 +109,30 @@ void window_manager_init (window_manager * manager, char * title, int height, in
 
   glbmfont_load();
 
-  current_fps = 0.0;
   t0Value = glfwGetTime();;
   fpsFrameCount = 0;
 }
 
-void window_manager_clear (void)
+void window_manager_clear (window_manager *manager)
 {
-  _window_manager_set_fps();
+  char buffer[255];
   _window_manager_reshape();
   
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
   glLoadIdentity();
 
-   DEV_window_manager_drawAxes();
+  if(manager->display_fps)  
+  {
+    _window_manager_set_fps(manager);
+    sprintf_s(buffer, "FPS: %.0f", manager->fps);
+    glbmfont_print(buffer, 0, 0, dock_top_right);
+  }
+
+  _DEV_window_manager_drawAxes();
 }
 
-void window_manager_swapBuffers (window_manager * manager)
+void window_manager_swapBuffers (window_manager *manager)
 {
   manager->restart = !(!glfwGetKey( GLFW_KEY_ENTER ) && glfwGetWindowParam( GLFW_OPENED ));
 
@@ -127,26 +147,8 @@ void window_manager_swapBuffers (window_manager * manager)
   manager->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
 }
 
-void window_manager_free (window_manager * manager)
+void window_manager_free (window_manager *manager)
 {
   glfwTerminate();
   glbmfont_free();
-}
-
-double window_manager_getFps (void)
-{
- return current_fps;
-}
-
-void DEV_window_manager_drawAxes(void)
-{
-  glColor3f(.42f, .42f, .8f);
-  glBegin(GL_LINES);
-    glVertex2f(0.f, 1.f);
-    glVertex2f(0.f, -1.f);
-  glEnd( );
-  glBegin(GL_LINES);
-    glVertex2f(-1.f, 0.f);
-    glVertex2f(1.f, 0.f);
-  glEnd( );
 }

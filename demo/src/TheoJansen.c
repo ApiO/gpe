@@ -41,8 +41,7 @@ int TheoJansen_app(void)
   window_manager        manager;
   physics_system        physics_system;
   physics_debug_system  physics_debug_system;
-  char buffer[255];
-  double fps;
+
   int ticks = 0;
 
   window_manager_init(&manager, "Physics debug", SCREEN_HEIGHT, SCREEN_WIDTH);
@@ -58,11 +57,8 @@ int TheoJansen_app(void)
   //pseudo game loop
   while (manager.running)
   {
-    window_manager_clear();
-
-    fps = window_manager_getFps();
-    sprintf_s(buffer, "FPS: %.4f", fps);
-
+    window_manager_clear(&manager);
+    
     if (glfwGetKey( GLFW_KEY_RIGHT ) && glfwGetWindowParam( GLFW_OPENED ))
     {
       tj_Keyboard.x = 1.0f;
@@ -77,22 +73,10 @@ int TheoJansen_app(void)
     {
       tj_Keyboard.x = 0.0f;
     } 
-
-    //////////////////////////////////////
-
+    
     TheoJansen_update(&physics_system, ticks);
 
-
     physics_debug_system_draw(&physics_debug_system);
-
-    glbmfont_print(buffer, 0, 0, dock_top_left);
-    glbmfont_print(buffer, 0, 0, dock_top_right);
-    glbmfont_print(buffer, 0, 0, dock_center);
-    glbmfont_print(buffer, 0, 0, dock_bottom_left);
-    glbmfont_print(buffer, 0, 0, dock_bottom_right);
-
-
-    //////////////////////////////////////
 
     window_manager_swapBuffers(&manager);
     ticks += 1;

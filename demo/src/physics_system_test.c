@@ -21,7 +21,7 @@ void physics_system_test_foo0(void)
   //pseudo game loop
   while (manager.running)
   {
-    window_manager_clear();
+    window_manager_clear(&manager);
     physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
@@ -73,7 +73,7 @@ void physics_system_test_foo1(void)
   //pseudo game loop
   while (manager.running)
   {
-    window_manager_clear();
+    window_manager_clear(&manager);
     physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
@@ -103,7 +103,7 @@ void physics_system_test_foo2(void)
   //pseudo game loop
   while (manager.running)
   {
-    window_manager_clear();
+    window_manager_clear(&manager);
     physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
