@@ -7,7 +7,7 @@
 #include <GL\GL.h>
 
 #include "gpr_types.h"
-#include "gpr_containers.h"
+#include "gpr_idlut.h"
 
 typedef struct gpe_graphic
 {

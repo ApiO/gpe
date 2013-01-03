@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include "physics_system.h"
+#include "gpr_memory.h"
 
 #define GRABABLE_MASK_BIT (1<<31)
 #define NOT_GRABABLE_MASK (~GRABABLE_MASK_BIT)
 
-void physics_system_init (physics_system * system, int gravity_x, int gravity_y, int object_count)
+void physics_system_init (physics_system *system, int gravity_x, int gravity_y, int object_count)
 {
   system->capacity = object_count;
-  gpr_idlut_init(gpe_physics, &system->table, object_count);
+  gpr_idlut_init(gpe_physics, &system->table, gpr_default_allocator, object_count);
   
   cpSpace *space = cpSpaceNew();
   system->space = space;

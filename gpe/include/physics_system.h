@@ -1,8 +1,8 @@
 #ifndef physics_system_H_
 #define physics_system_H_
 
-#include "gpr_containers.h"
 #include <chipmunk\chipmunk.h>
+#include "gpr_idlut.h"
 
 typedef enum
 {
