@@ -10,8 +10,17 @@
 
 typedef struct gpe_graphic
 {
+  GLuint text_id;
   F32 x, y;
-  //GLuint text_id;
+  F32 scale;
+  F32 tex_w, tex_h;
+  F32 r, a;
+  F32 shear_x, shear_y;
+  I32 z;
 } gpe_graphic;
+
+U32   graphic_system_add  (gpe_graphic *gData, U32 tex_id);
+void  graphic_remove  (gpe_graphic *gData, U32 tex_id);
+void  graphic_system_render (gpe_graphic *gData);
 
 #endif //graphic_system_h
