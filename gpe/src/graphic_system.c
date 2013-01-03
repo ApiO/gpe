@@ -1,12 +1,19 @@
 #include "graphic_system.h"
 
+const int TOP_LEFT      = 0;
+const int BOTTOM_LEFT   = 1;
+const int BOTTOM_RIGHT  = 2;
+const int TOP_RIGHT     = 3;
+
 void graphic_system_init (graphic_system *system, U32 object_count)
 {
   gpr_idlut_init(gpe_graphic, &system->table, object_count);
+  system->physics_count = 0;
+  system->capacity = object_count;
 }
 
 //return idlut id of the tex within the system
-U32 graphic_system_add (graphic_system *system, U32 tex_id)
+U32 graphic_system_add (graphic_system *system, GLuint tex_id)
 {
   gpe_graphic graphic = { tex_id };
   system->physics_count = system->physics_count + 1;
@@ -25,7 +32,7 @@ void graphic_system_render (graphic_system *system)
   parser par z ascendant pour limiter le changement de texture lors du changement de z
   puis faire le rendu par z descendant
   */
-  int i;
+  unsigned int i;
   gpe_graphic graphic;
   for(i=0; i < system->physics_count; i++)
   {
@@ -62,6 +69,12 @@ void graphic_system_render (graphic_system *system)
   }
 }
 
+gpe_graphic* graphic_system_lookup (graphic_system *system, U32 graphic_id)
+{
+  return gpr_idlut_lookup(gpe_graphic, &system->table, graphic_id);
+}
+
 void graphic_system_free (graphic_system *system)
 {
+  gpr_idlut_free(gpe_graphic, &system->table);
 }

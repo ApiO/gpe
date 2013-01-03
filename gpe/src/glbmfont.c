@@ -399,7 +399,7 @@ FVect _glbmfont_getLine_padd (glbmfont *font, gpeDock dock,
 
 int   glbmfont_load(void)
 {
-  return glbmfont_load("C:\\temp\\QuicksandBook.fnt");
+  return glbmfont_load("D:\\temp\\QuicksandBook.fnt");
 }
 
 int   glbmfont_load(char *filepath)

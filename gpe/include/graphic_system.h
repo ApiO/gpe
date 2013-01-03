@@ -11,13 +11,13 @@
 
 typedef struct gpe_graphic
 {
-  GLuint text_id;
-  F32 x, y;
-  F32 scale;
-  F32 tex_w, tex_h;
-  F32 r, a;
-  F32 shear_x, shear_y;
-  I32 z;
+  GLuint  text_id;
+  GLfloat texCoord[4];
+  F32     x, y, w, h;
+  F32     scale;
+  F32     r, a;
+  F32     shear_x, shear_y;
+  I32     z;
 } gpe_graphic;
 GPR_IDLUT_INIT(gpe_graphic);
 
@@ -28,10 +28,11 @@ typedef struct graphic_system
   U32   capacity;
 } graphic_system;
 
-void  graphic_system_init     (graphic_system *system, U32 object_count);
-U32   graphic_system_add      (graphic_system *system, U32 tex_id);
-void  graphic_system_remove   (graphic_system *system, U32 graphic_id);
-void  graphic_system_render   (graphic_system *system);
-void  graphic_system_free     (graphic_system *system);
+void          graphic_system_init   (graphic_system *system, U32 object_count);
+U32           graphic_system_add    (graphic_system *system, GLuint tex_id);
+gpe_graphic*  graphic_system_lookup (graphic_system *system, U32 graphic_id);
+void          graphic_system_remove (graphic_system *system, U32 graphic_id);
+void          graphic_system_render (graphic_system *system);
+void          graphic_system_free   (graphic_system *system);
 
 #endif //graphic_system_h
