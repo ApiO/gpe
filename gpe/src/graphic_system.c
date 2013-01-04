@@ -6,22 +6,18 @@
 #include "gpr_memory.h"
 #include "gpr_array.h"
 
+typedef gpr_array_t(gpe_graphic*) graphic_array;
 
 typedef struct DVect
 {
   GLdouble x, y;
 } DVect;
 
-typedef struct graphic_node
-{
-  gpe_graphic   *graphic;
-  graphic_node  *next_node;
-} graphic_node;
-
   //--TEMP------------
 bool sort_printed = false;////////TEMP/////////////////////////////////////////////////////////////
 
-void _graphc_system_sort (graphic_system *system, void *out);
+void _graphic_system_qsort (graphic_array *out, I32 count);
+void _graphic_system_print_array (graphic_array *out, I32 count);
 void _graphic_system_draw (gpe_graphic *graphic, float screen_width,
                             float screen_height, bool border);
 void _graphic_system_render_quad (gpe_graphic *graphic, DVect *quad, 
@@ -61,89 +57,7 @@ void graphic_system_remove (graphic_system *system, U32 graphic_id)
 {
   gpr_idlut_remove(gpe_graphic, &system->table, graphic_id);
 }
-/*
-void graphic_system_render_hjhk (graphic_system *system)
-{
-  unsigned int i;
-  gpe_graphic *graphic;
-  DVect quad[4];
-  int screen_width, screen_height;
 
-	glfwGetWindowSize(&screen_width, &screen_height);
-  
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  for(i=0; i < system->physics_count; i++)
-  {
-    graphic = &(gpe_graphic)system->table.items[i].value;
-
-    _graphic_system_render_quad(graphic, quad, (float)screen_width, 
-                                (float)screen_height);
-
-    //init GL
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, graphic->text_id);
-    
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
-                      GL_LINEAR_MIPMAP_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                      GL_LINEAR_MIPMAP_LINEAR );
-    
-    glColor4f(1.0f, 1.0f, 1.0f, 1.f);
-    //rendu de l'élément
-    glBegin(GL_QUADS);
-    {
- 	    glTexCoord2f( graphic->texCoord[TOP_LEFT].x,
-                    graphic->texCoord[TOP_LEFT].y );
- 	    glVertex2d(	  quad[TOP_LEFT].x, 
-                    quad[TOP_LEFT].y );
-      
- 	    glTexCoord2f(	graphic->texCoord[BOTTOM_LEFT].x, 
-                    graphic->texCoord[BOTTOM_LEFT].y );
- 	    glVertex2d(	  quad[BOTTOM_LEFT].x, 
-                    quad[BOTTOM_LEFT].y );
-      
- 	    glTexCoord2f(	graphic->texCoord[BOTTOM_RIGHT].x, 
-                    graphic->texCoord[BOTTOM_RIGHT].y) ;
- 	    glVertex2d(	  quad[BOTTOM_RIGHT].x, 
-                    quad[BOTTOM_RIGHT].y );
- 
- 	    glTexCoord2f(	graphic->texCoord[TOP_RIGHT].x, 
-                    graphic->texCoord[TOP_RIGHT].y) ;
- 	    glVertex2d(	  quad[TOP_RIGHT].x, 
-                    quad[TOP_RIGHT].y );
-	  } 
-    glEnd();
-    
-    //reset GL
-    glDisable(GL_TEXTURE_2D);
-
-    //Debug: show text borders
-    if(system->border)
-    {
-      glColor4f(.0f, 1.f, .0f, .5f);
-      glBegin(GL_LINE_LOOP);
-      {
- 	      glVertex2d( quad[TOP_LEFT].x, quad[TOP_LEFT].y );
- 	      glVertex2d( quad[BOTTOM_LEFT].x, quad[BOTTOM_LEFT].y );
- 	      glVertex2d( quad[BOTTOM_RIGHT].x, quad[BOTTOM_RIGHT].y );
- 	      glVertex2d( quad[TOP_RIGHT].x, quad[TOP_RIGHT].y );
-      } 
-      glEnd();
-    }
-  }
-
-  glDisable(GL_BLEND);
-  glBlendFunc(GL_NONE, GL_NONE);
-}
-*/
 gpe_graphic* graphic_system_lookup (graphic_system *system, U32 graphic_id)
 {
   return gpr_idlut_lookup(gpe_graphic, &system->table, graphic_id);
@@ -158,38 +72,24 @@ void graphic_system_render (graphic_system *system)
 {
   int i;
   int screen_width, screen_height;
-  bool loop = true;
-  graphic_node gn;
   GLuint *currTex;
+  gpe_graphic *graphic;
 
-  gpr_array_t(graphic_node) arr;
-  gpr_array_init(graphic_node, arr, gpr_default_allocator);
+  if (system->physics_count == 0) return;
 
-  for( i = system->physics_count-1; i >= 0; i-- )
+  graphic_array arr;
+  gpr_array_init(gpe_graphic*, arr, gpr_default_allocator);
+  
+  for( i = 0; i < system->physics_count; i++ )
   {
-    gn.graphic = &(gpe_graphic)system->table.items[i].value;
-    gn.next_node = i == system->physics_count-1 ? 
-                    NULL : &gpr_array_item(arr, i+1);
-
-    gpr_array_push_back(graphic_node, arr, gn);
+    graphic = &system->table.items[i].value;
+    gpr_array_push_back(gpe_graphic*, arr, graphic);
   }
 
   //sort
-
-  ////////TEMP/////////////////////////////////////////////////////////////
-  if(!sort_printed)
-  {
-    unsigned int j;
-    gpe_graphic *graphic;
-    printf("---[after sorting]\n");
-    for ( j = 0; j < system->physics_count; j++)
-    {
-      graphic = gpr_array_item(arr, j).graphic;
-      printf("tex_id=%d | z=%d\n", graphic->text_id, graphic->z);
-    }
-    sort_printed = true;
-  }
-  ////////TEMP/////////////////////////////////////////////////////////////
+  _graphic_system_print_array(&arr, system->physics_count);
+  _graphic_system_qsort(&arr, system->physics_count);
+  _graphic_system_print_array(&arr, system->physics_count);
 
 	glfwGetWindowSize(&screen_width, &screen_height);
 
@@ -206,30 +106,20 @@ void graphic_system_render (graphic_system *system)
                     GL_LINEAR_MIPMAP_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
                     GL_LINEAR_MIPMAP_LINEAR );
-
-  gn = gpr_array_item(arr, 0);
+                    
   currTex = NULL;
 
-  while (loop)
+  for ( i = 0; i < system->physics_count; i++)
   {
-    if (currTex != &gn.graphic->text_id)
+    graphic = gpr_array_item(arr, i);
+    if (currTex != &graphic->text_id)
     {
-      glBindTexture(GL_TEXTURE_2D, gn.graphic->text_id);
-
-      currTex = &gn.graphic->text_id;
+      glBindTexture(GL_TEXTURE_2D, graphic->text_id);
+      currTex = &graphic->text_id;
     }
 
-    _graphic_system_draw(gn.graphic, (float)screen_width, (float)screen_height, 
+    _graphic_system_draw(graphic, (float)screen_width, (float)screen_height, 
                           system->border);
-    
-    if(gn.next_node == NULL)
-    {
-      loop = false;
-    }
-    else
-    {
-      gn = *gn.next_node;
-    }
   }
 
   glDisable(GL_TEXTURE_2D);
@@ -239,8 +129,9 @@ void graphic_system_render (graphic_system *system)
   gpr_array_destroy(arr);
 }
 
-void _graphic_system_draw(gpe_graphic *graphic, float screen_width, 
-                          float screen_height, bool border)
+
+void _graphic_system_draw (gpe_graphic *graphic, float screen_width, 
+                           float screen_height, bool border)
 {
   DVect quad[4];
   _graphic_system_render_quad(graphic, quad, screen_width, screen_height);
@@ -293,4 +184,24 @@ void _graphic_system_draw(gpe_graphic *graphic, float screen_width,
     } 
     glEnd();
   }
+}
+
+void _graphic_system_print_array (graphic_array *out, I32 count)
+{
+  gpe_graphic *graphic;
+  if(!sort_printed)
+  {
+    unsigned int j;
+    printf("---[after sorting]\n");
+    for ( j = 0; j < count; j++)
+    {
+      graphic = out->data[j];
+      printf("z = %d | tex_id = %d\n", graphic->z, graphic->text_id);
+    }
+    sort_printed = true;
+  }
+}
+
+void _graphic_system_qsort (graphic_array *out, I32 count)
+{
 }

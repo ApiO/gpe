@@ -59,7 +59,7 @@ void graphic_system_test_foo(void)
     graphic->texCoord[TOP_RIGHT].x = 1;
     graphic->texCoord[TOP_RIGHT].y = 0; 
 
-    printf("tex_id=%d | z=%d\n", graphic->text_id, graphic->z);
+    printf("z = %d | tex_id = %d\n", graphic->z, graphic->text_id);
   }
 
   //pseudo game loop
