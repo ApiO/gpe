@@ -128,7 +128,7 @@ void window_manager_clear (window_manager *manager)
   {
     _window_manager_set_fps(manager);
     sprintf_s(buffer, "FPS: %.0f", manager->fps);
-    glbmfont_print(buffer, 0, 0, dock_top_right);
+    glbmfont_print(buffer, 5, 0, dock_top_right);
   }
 
   _DEV_window_manager_drawAxes();

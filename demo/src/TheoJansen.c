@@ -76,6 +76,7 @@ int TheoJansen_app(void)
     } 
     
     TheoJansen_update(&physics_system, ticks);
+    glbmfont_print("press ENTER: reload app\npress ESC: exit app", 10, 0, dock_top_left, .9f);
 
     physics_debug_system_draw(&physics_debug_system);
 

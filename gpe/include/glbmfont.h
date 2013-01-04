@@ -69,6 +69,7 @@ typedef struct glbmfont
 int  glbmfont_load(void);
 int  glbmfont_load(char *file);
 void glbmfont_print(char *text, int x, int y, gpeDock dock);
+void glbmfont_print(char *text, int x, int y, gpeDock dock, float scale);
 void glbmfont_free(void);
 
 #endif //glbmfont_h

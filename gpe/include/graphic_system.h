@@ -9,10 +9,10 @@
 #include "gpr_types.h"
 #include "gpr_idlut.h"
 
-const int TEX_TOP_LEFT      = 0;
-const int TEX_BOTTOM_LEFT   = 1;
-const int TEX_BOTTOM_RIGHT  = 2;
-const int TEX_TOP_RIGHT     = 3;
+const int TOP_LEFT      = 0;
+const int BOTTOM_LEFT   = 1;
+const int BOTTOM_RIGHT  = 2;
+const int TOP_RIGHT     = 3;
 
 typedef struct FVect
 {
@@ -28,6 +28,7 @@ typedef struct gpe_graphic
   F32     r, a;
   F32     shear_x, shear_y;
   I32     z;
+  I32 id;/////////////////////////////////////////////////////////////////////
 } gpe_graphic;
 GPR_IDLUT_INIT(gpe_graphic);
 

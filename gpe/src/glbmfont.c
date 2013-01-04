@@ -445,6 +445,11 @@ int   glbmfont_load(char *filepath)
 void  glbmfont_print(char *text, int x, int y, gpeDock dock)
 {
   const float scale = 2.f;
+  glbmfont_print(text, x, y, dock, scale);
+}
+
+void  glbmfont_print(char *text, int x, int y, gpeDock dock, float scale)
+{
   int i, begin_index, len, line_index, line_count;
   int screen_width, screen_height;
   float f_screen_width, f_screen_height;
