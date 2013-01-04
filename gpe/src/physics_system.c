@@ -64,8 +64,9 @@ void  physics_system_update (physics_system * system, float dt)
 {
 }
 
-void  physics_system_free (physics_system * system, U32 id)
+void  physics_system_free (physics_system * system)
 {
+  gpr_idlut_destroy(gpe_physics, &system->table);
 }
 
 //DEV :: ajoute un shape directement au space : ne passe pas par idlut. doit être utilisé pour dev/test sur physics_debug

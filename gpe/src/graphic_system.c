@@ -30,6 +30,7 @@ void graphic_system_init (graphic_system *system, U32 object_count)
   gpr_idlut_init(gpe_graphic, &system->table, gpr_default_allocator, object_count);
   system->physics_count = 0;
   system->capacity = object_count;
+  system->border = true;
 }
 
 //return idlut id of the tex within the system
@@ -105,19 +106,23 @@ void graphic_system_render (graphic_system *system)
     //reset GL
     glDisable(GL_TEXTURE_2D);
 
-    glColor4f(.0f, 1.f, .0f, .5f);
-    glBegin(GL_LINE_LOOP);
+    //Debug: show text borders
+    if(system->border)
     {
- 	    glVertex2d(	  quad[TEX_TOP_LEFT].x, 
-                    quad[TEX_TOP_LEFT].y );
- 	    glVertex2d(	  quad[TEX_BOTTOM_LEFT].x, 
-                    quad[TEX_BOTTOM_LEFT].y );
- 	    glVertex2d(	  quad[TEX_BOTTOM_RIGHT].x, 
-                    quad[TEX_BOTTOM_RIGHT].y );
- 	    glVertex2d(	  quad[TEX_TOP_RIGHT].x, 
-                    quad[TEX_TOP_RIGHT].y );
-    } 
-    glEnd();
+      glColor4f(.0f, 1.f, .0f, .5f);
+      glBegin(GL_LINE_LOOP);
+      {
+ 	      glVertex2d(	  quad[TEX_TOP_LEFT].x, 
+                      quad[TEX_TOP_LEFT].y );
+ 	      glVertex2d(	  quad[TEX_BOTTOM_LEFT].x, 
+                      quad[TEX_BOTTOM_LEFT].y );
+ 	      glVertex2d(	  quad[TEX_BOTTOM_RIGHT].x, 
+                      quad[TEX_BOTTOM_RIGHT].y );
+ 	      glVertex2d(	  quad[TEX_TOP_RIGHT].x, 
+                      quad[TEX_TOP_RIGHT].y );
+      } 
+      glEnd();
+    }
   }
 
   glDisable(GL_BLEND);

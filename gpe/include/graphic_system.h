@@ -36,6 +36,7 @@ typedef struct graphic_system
   gpr_idlut_t(gpe_graphic) table;
   U32   physics_count; 
   U32   capacity;
+  bool  border;
 } graphic_system;
 
 void          graphic_system_init   (graphic_system *system, U32 object_count);

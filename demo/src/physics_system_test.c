@@ -27,7 +27,9 @@ void physics_system_test_foo0(void)
     physics_debug_system_draw(&debug);
     window_manager_swapBuffers(&manager);
   }
-
+  
+  physics_system_free (&system);
+	cpSpaceFree(system.space);
   gpr_memory_shutdown();
   window_manager_free(&manager);
 }
@@ -82,11 +84,10 @@ void physics_system_test_foo1(void)
   }
   
   window_manager_free(&manager);
-
-  for (i = 0; i < ENTITY_COUNT; i++)
-  {
-    physics_system_remove(&system, ids[i]);
-  }
+  
+  physics_system_free (&system);
+	cpSpaceFree(system.space);
+  gpr_memory_shutdown();
 }
 
 void physics_system_test_foo2(void)
@@ -112,4 +113,7 @@ void physics_system_test_foo2(void)
   }
   
   window_manager_free(&manager);
+  physics_system_free (&system);
+	cpSpaceFree(system.space);
+  gpr_memory_shutdown();
 }

@@ -83,9 +83,9 @@ int TheoJansen_app(void)
     ticks += 1;
   }
 
-  gpr_memory_shutdown();
   glbmfont_free();
   TheoJansen_free(&physics_system);
+  gpr_memory_shutdown();
   window_manager_free(&manager);
 
   return manager.restart;
@@ -209,6 +209,6 @@ static void TheoJansen_update(physics_system * system, int ticks)
 
 void TheoJansen_free(physics_system * system)
 {
-  //free children
-	//cpSpaceFree(system->space);
+  physics_system_free (system);
+	cpSpaceFree(system->space);
 }
