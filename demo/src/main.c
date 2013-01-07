@@ -4,7 +4,10 @@
 //#include "physics_system_test.h"
 //#include "TheoJansen.h"
 //#include "fonts_test.h"
-#include "graphic_system_test.h"
+//#include "graphic_system_test.h"
+#include "graphic_sort_test.h"
+
+
 
 int main( int argc, const char* argv[] )
 {
@@ -13,7 +16,10 @@ int main( int argc, const char* argv[] )
   //physics_system_test_foo0();
   //TheoJansen_foo();
   //fonts_test_foo();
-  graphic_system_test_foo();
+  
+  foo();
+
+  //foo();
 
   return 0;
 }

@@ -16,8 +16,9 @@ void graphic_system_test_foo(void)
   int i;
   window_manager manager;
   graphic_system graphics;
-  U32 patate_ids[PATATE_COUNT];
-  GLuint tex_id[PATATE_TEX_COUNT];
+  gpe_graphic   *graphic;
+  U32            patate_ids[PATATE_COUNT];
+  GLuint         tex_id[PATATE_TEX_COUNT];
   
   window_manager_init(&manager, "graphic debug", 600, 800);
   
@@ -43,8 +44,7 @@ void graphic_system_test_foo(void)
   {
     patate_ids[i] = graphic_system_add(&graphics, tex_id[i%2 ? 1 : 0]);
 
-    gpe_graphic *graphic = graphic_system_lookup(&graphics, patate_ids[i]);
-    graphic->id = i;  ////////TEMP/////////////////////////////////////////////////////////////
+    graphic = graphic_system_lookup(&graphics, patate_ids[i]);
     graphic->x = (F32)(-64+600*cos(2*M_PI/PATATE_COUNT*i));
     graphic->y = (F32)(-64+400*sin(2*M_PI/PATATE_COUNT*i));
     graphic->z = i%3 ? 2 : i%2 ? 1 : 0;
@@ -59,7 +59,7 @@ void graphic_system_test_foo(void)
     graphic->texCoord[TOP_RIGHT].x = 1;
     graphic->texCoord[TOP_RIGHT].y = 0; 
 
-    printf("z = %d | tex_id = %d\n", graphic->z, graphic->text_id);
+    printf("z = %d | tex_id = %d\n", graphic->z, graphic->tex_id);
   }
 
   //pseudo game loop

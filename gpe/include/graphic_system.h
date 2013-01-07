@@ -8,11 +8,13 @@
 
 #include "gpr_types.h"
 #include "gpr_idlut.h"
+#include "gpr_array.h"
 
 const int TOP_LEFT      = 0;
 const int BOTTOM_LEFT   = 1;
 const int BOTTOM_RIGHT  = 2;
 const int TOP_RIGHT     = 3;
+
 
 typedef struct FVect
 {
@@ -21,23 +23,26 @@ typedef struct FVect
 
 typedef struct gpe_graphic
 {
-  GLuint  text_id;
+  GLuint  tex_id;
   FVect   texCoord[4];
   F32     x, y, w, h;
   F32     scale;
   F32     r, a;
   F32     shear_x, shear_y;
   I32     z;
-  I32 id;////////TEMP/////////////////////////////////////////////////////////////
 } gpe_graphic;
 GPR_IDLUT_INIT(gpe_graphic);
+
+typedef gpr_array_t(gpe_graphic*) graphic_array;
 
 typedef struct graphic_system
 {
   gpr_idlut_t(gpe_graphic) table;
+  graphic_array graphics;
   U32   physics_count; 
   U32   capacity;
-  bool  border;
+  bool  sort;
+  bool  debug;
 } graphic_system;
 
 void          graphic_system_init   (graphic_system *system, U32 object_count);
