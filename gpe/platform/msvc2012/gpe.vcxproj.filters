@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\src\ressource_manager.c" />
+    <ClCompile Include="..\..\src\window_manager.c">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glfw_check.c">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics_system.c">
+      <Filter>systems\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ChipmunkDebugDraw.c">
+      <Filter>systems\physics\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics_debug_system.c">
+      <Filter>systems\physics\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glbmfont.c">
+      <Filter>fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphic_system.c">
+      <Filter>systems\graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphic_sort_test.c">
+      <Filter>systems\graphic</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\ressource_manager.h" />
+    <ClInclude Include="..\..\include\window_manager.h">
+      <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\glfw_check.h">
+      <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics_system.h">
+      <Filter>systems\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics_debug_system.h">
+      <Filter>systems\physics\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ChipmunkDebugDraw.h">
+      <Filter>systems\physics\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\glbmfont.h">
+      <Filter>fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphic_system.h">
+      <Filter>systems\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphic_sort_test.h">
+      <Filter>systems\graphic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="systems">
+      <UniqueIdentifier>{5d65f49e-1ce3-4356-91ca-aed415c3c7e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="window">
+      <UniqueIdentifier>{fb48b180-8011-4499-8b39-29c716910cb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="systems\physics">
+      <UniqueIdentifier>{d7924164-6877-4c6d-8b8e-8cd2cad971f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="systems\physics\debug">
+      <UniqueIdentifier>{90502a6c-7a34-4489-9e77-4f849f6708ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fonts">
+      <UniqueIdentifier>{c0224462-1ce4-47d5-886a-fe85e5ae4c01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="systems\graphic">
+      <UniqueIdentifier>{b4f7ccb1-36f5-4bc1-91b7-422edd3a4aa3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
