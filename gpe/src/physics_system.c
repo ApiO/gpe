@@ -8,7 +8,7 @@
 void physics_system_init (physics_system *system, int gravity_x, int gravity_y, int object_count)
 {
   system->capacity = object_count;
-  gpr_idlut_init(gpe_physics, &system->table, gpr_default_allocator, object_count);
+  gpr_idlut_init(gpe_physics, &system->table, gpr_default_allocator);
   
   cpSpace *space = cpSpaceNew();
   system->space = space;
@@ -32,7 +32,7 @@ void load_segment_shape(gpe_physics *physics, physics_system * system, gpe_physi
 }
 
 //U32 physics_system_load (physics_system * system, gpe_physics_type type, char * data)
-U32 physics_system_load (physics_system * system, gpe_physics_type type, gpe_physics_segment data)
+U64 physics_system_load (physics_system * system, gpe_physics_type type, gpe_physics_segment data)
 {
   gpe_physics physics;
 

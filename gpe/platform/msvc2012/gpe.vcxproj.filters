@@ -26,6 +26,9 @@
     <ClCompile Include="..\..\src\graphic_sort_test.c">
       <Filter>systems\graphic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\gl_renderer.c">
+      <Filter>systems\graphic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ressource_manager.h" />
@@ -51,6 +54,9 @@
       <Filter>systems\graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphic_sort_test.h">
+      <Filter>systems\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\gl_renderer.h">
       <Filter>systems\graphic</Filter>
     </ClInclude>
   </ItemGroup>

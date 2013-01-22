@@ -37,8 +37,8 @@ void physics_system_test_foo0(void)
 void physics_system_test_foo1(void)
 {
   const I32 ENTITY_COUNT = 3;
-  U32 ids[ENTITY_COUNT];
-  I32 currentId = 0;
+  U64 ids[ENTITY_COUNT];
+  I64 currentId = 0;
 
   window_manager manager;
   physics_system system;

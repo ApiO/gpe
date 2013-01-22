@@ -10,41 +10,62 @@
 
 const int ELEMENTS = 4;
 
-void _qsort(graphic_array *arr);
+//void _sort(graphic_array *arr);
 void _system_init(graphic_system *system);
-void _print_array (char * title, graphic_array *arr, I32 count);
+//void _print_array (char * title, graphic_array *arr, I32 count);
 
-int _random(int min, int max) 
+int _graphic_sort_random(int min, int max) 
 { 
-  return (min + (rand () % (max-min+1))); 
+  return (min + (rand() % (max-min+1))); 
 } 
 
 void _system_init(graphic_system *system)
 {
   int i;
-  U32 elemet_id;
+  U64 elemet_id;
   gpe_graphic *graphic;
   GLuint tex_id;
   
-  graphic_system_init(system, (U32)ELEMENTS);
+  graphic_system_init(system);
 
   for(i=0; i < ELEMENTS; i++)
   {
-    tex_id = (GLuint)_random(0,3);
-
+    tex_id = (GLuint)_graphic_sort_random(0,3);
+    
     elemet_id = graphic_system_add(system, tex_id);
 
     graphic = graphic_system_lookup(system, elemet_id);
 
     graphic->tex_id = tex_id;
-    graphic->z = _random(0,4);
+    graphic->z = _graphic_sort_random(0,4);
   }
 }
 
-void _qsort(graphic_array *arr);
+/*
+void _sort(graphic_array *arr)
+{
+  const int MAX_LEVELS = 64;
+  int i = 0;
+  gpe_graphic *beg[MAX_LEVELS], *end[MAX_LEVELS], *left, *right, piv, *swap;
+
+  beg[0] = arr->data[0];
+  end[0] = arr->data[arr->size-1];
+  while (i>=0)
+  {
+    left = beg[i]; 
+    right = end[i]-1;
+
+    if (left->z < right->z && left->tex_id < right->tex_id)
+    {
+      //piv = arr[
+    }
+  }
+}
+  */
 
 void foo(void)
 {
+/*
   graphic_system system;
 
   gpr_memory_init(4*1024*1024);
@@ -55,30 +76,32 @@ void foo(void)
 
   _print_array("before sorting", &system.graphics, system.graphics.size);
   //sort
+  _sort(&system.graphics);
   _print_array("after sorting", &system.graphics, system.graphics.size);
 
   graphic_system_free(&system);
   gpr_memory_shutdown();
+  */
 }
-
+/*
 void _print_array (char *title, graphic_array *arr, I32 count)
 {
-
   gpe_graphic *graphic;
 
-  unsigned int j;
+  int j;
   printf("%s\n", title);
   for ( j = 0; j < count; j++)
   {
     graphic = arr->data[j];
+    //graphic = arr->data[j]->graphic;
     printf("z = %d | tex_id = %d\n", graphic->z, graphic->tex_id);
   }
 }
-
+*/
 
 void _quickSort(int *arr, int elements) {
 
-  #define  MAX_LEVELS  300
+  const int MAX_LEVELS = 64;
 
   int  piv, beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, swap ;
 
@@ -108,7 +131,7 @@ void _quickSort(int *arr, int elements) {
   }
 }
 
-void foo_bkp(void)
+void foo_hgkghjk(void)
 {
   const int range = 100;
   int i;

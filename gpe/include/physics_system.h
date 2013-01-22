@@ -30,20 +30,18 @@ typedef struct
   cpShape *shapes;
   int      shapes_count;
 } gpe_physics;
-GPR_IDLUT_INIT(gpe_physics)
 
 typedef struct
 {
   cpSpace *space;
-  gpr_idlut_t(gpe_physics)  
-           table;
-  U32      physics_count;   //nombre d'entitées physique dans la table physics
-  U32     *toUpdate;        //liste des id d'élément à updater pour le tick courrant
-  U32      capacity;
+  gpr_idlut_t  table;
+  U32          physics_count;   //nombre d'entitées physique dans la table physics
+  U32         *toUpdate;        //liste des id d'élément à updater pour le tick courrant
+  U32          capacity;
 } physics_system;
 
 void  physics_system_init (physics_system * system, int gravity_x, int gravity_y, int object_count);
-U32   physics_system_load (physics_system * system, gpe_physics_type type, gpe_physics_segment data);
+U64   physics_system_load (physics_system * system, gpe_physics_type type, gpe_physics_segment data);
 //U32   physics_system_load (physics_system * system, gp_physics_type type, char * data);
 void  physics_system_remove (physics_system * system, U32 id);
 void  physics_system_submitUpdate (physics_system * system, U32 id, char * data);

@@ -1,54 +1,35 @@
 #ifndef graphic_system_h
 #define graphic_system_h
 
-#if _WIN32
-  #include <windows.h>
-#endif
-#include <GL\GL.h>
-
 #include "gpr_types.h"
 #include "gpr_idlut.h"
 #include "gpr_array.h"
 
-const int TOP_LEFT      = 0;
-const int BOTTOM_LEFT   = 1;
-const int BOTTOM_RIGHT  = 2;
-const int TOP_RIGHT     = 3;
+#include "gl_renderer.h"
 
-
-typedef struct FVect
-{
-  GLfloat x, y;
-} FVect;
-
-typedef struct gpe_graphic
+typedef struct
 {
   GLuint  tex_id;
-  FVect   texCoord[4];
   F32     x, y, w, h;
   F32     scale;
   F32     r, a;
   F32     shear_x, shear_y;
   I32     z;
+  I32     dev;
 } gpe_graphic;
-GPR_IDLUT_INIT(gpe_graphic);
 
-typedef gpr_array_t(gpe_graphic*) graphic_array;
 
-typedef struct graphic_system
+typedef struct
 {
-  gpr_idlut_t(gpe_graphic) table;
-  graphic_array graphics;
-  U32   physics_count; 
-  U32   capacity;
-  bool  sort;
-  bool  debug;
+  gpr_idlut_t     table;
+  gpe_gl_renderer renderer;
 } graphic_system;
 
-void          graphic_system_init   (graphic_system *system, U32 object_count);
-U32           graphic_system_add    (graphic_system *system, GLuint tex_id);
-gpe_graphic*  graphic_system_lookup (graphic_system *system, U32 graphic_id);
-void          graphic_system_remove (graphic_system *system, U32 graphic_id);
+void          graphic_system_init   (graphic_system *system);
+U64           graphic_system_add    (graphic_system *system, GLuint tex_id);
+gpe_graphic*  graphic_system_lookup (graphic_system *system, U64 graphic_id);
+void          graphic_system_remove (graphic_system *system, U64 graphic_id);
+void          graphic_system_update (graphic_system *system);
 void          graphic_system_render (graphic_system *system);
 void          graphic_system_free   (graphic_system *system);
 
