@@ -8,9 +8,15 @@
 #define TOP_RIGHT     3
 
 void _gl_renderer_draw_graphic(gpe_gl_graphic *graphic, bool debug);
+void _gl_renderer_render_graphic_debug  (U32 index, DVect quad[4]);
 
 
-void gl_renderer_add(gpe_gl_renderer *renderer, gpe_gl_graphic graphic)
+void gl_renderer_init  (gpe_gl_renderer *renderer)
+{
+  renderer->gl_list = glGenLists(1);
+}
+
+void gl_renderer_add (gpe_gl_renderer *renderer, gpe_gl_graphic graphic, U32 index)
 {
   int screen_width, screen_height;
 
@@ -43,7 +49,21 @@ void gl_renderer_add(gpe_gl_renderer *renderer, gpe_gl_graphic graphic)
   gpr_array_push_back(gpe_gl_graphic, &renderer->graphics, graphic);
 }
 
-void gl_renderer_draw(gpe_gl_renderer *renderer)
+void gl_renderer_update (gpe_gl_renderer *renderer)
+{
+  int i;
+  gpe_gl_graphic *graphic;
+  
+  glNewList(renderer->gl_list, GL_COMPILE);
+  {
+    glColor4f(.0f, 1.f, .0f, .5f);
+    for (i=0; i < renderer->graphics.size; i++)
+      _gl_renderer_render_graphic_debug(i, renderer->graphics.data[i].quad);
+    
+  } glEndList();
+}
+
+void gl_renderer_draw (gpe_gl_renderer *renderer)
 {
   U32 i;
   GLuint *curr_tex;
@@ -76,13 +96,20 @@ void gl_renderer_draw(gpe_gl_renderer *renderer)
     }
     _gl_renderer_draw_graphic(graphic, renderer->debug);
   } while(i!=0);
-          
+      
   glDisable(GL_TEXTURE_2D);
   glDisable(GL_BLEND);
   glBlendFunc(GL_NONE, GL_NONE);
-
+  
   gpr_array_destroy(&renderer->graphics);
   renderer->init = true;
+
+  if(renderer->debug)
+  {
+    glCallList(renderer->gl_list);
+    glDeleteLists(renderer->gl_list, 1);
+  }
+
 }
 
 void _gl_renderer_draw_graphic(gpe_gl_graphic *graphic, bool debug)
@@ -113,19 +140,16 @@ void _gl_renderer_draw_graphic(gpe_gl_graphic *graphic, bool debug)
   glEnd();
 
   glDisable(GL_TEXTURE_2D);
-    /*
-  //Debug: show tex borders
-  if(debug)
+}
+
+void _gl_renderer_render_graphic_debug  (U32 index, DVect *quad)
+{
+  glBegin(GL_LINE_LOOP);
   {
-    glColor4f(.0f, 1.f, .0f, .5f);
-    glBegin(GL_LINE_LOOP);
-    {
- 	    glVertex2d( graphic->quad[TOP_LEFT].x, graphic->quad[TOP_LEFT].y );
- 	    glVertex2d( graphic->quad[BOTTOM_LEFT].x, graphic->quad[BOTTOM_LEFT].y );
- 	    glVertex2d( graphic->quad[BOTTOM_RIGHT].x, graphic->quad[BOTTOM_RIGHT].y );
- 	    glVertex2d( graphic->quad[TOP_RIGHT].x, graphic->quad[TOP_RIGHT].y );
-    } 
-    glEnd();
-  }
-    */
+ 	  glVertex2d(quad[TOP_LEFT].x, quad[TOP_LEFT].y );
+ 	  glVertex2d(quad[BOTTOM_LEFT].x, quad[BOTTOM_LEFT].y );
+ 	  glVertex2d(quad[BOTTOM_RIGHT].x, quad[BOTTOM_RIGHT].y );
+ 	  glVertex2d(quad[TOP_RIGHT].x, quad[TOP_RIGHT].y );
+  } 
+  glEnd();
 }

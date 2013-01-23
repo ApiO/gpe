@@ -16,22 +16,26 @@ typedef struct
 	int depth;
 } gpe_isort_t;
 
-void _graphic_system_mergesort(size_t n, gpe_weight_t array[]);
-void _graphic_system_insertsort(gpe_weight_t *s, gpe_weight_t *t);
-void _graphic_system_combsort(size_t n, gpe_weight_t a[]);
-void _graphic_system_introsort(size_t n, gpe_weight_t array[]);
-void _graphic_system_bind_gl_item(gpe_graphic *graphic, gpe_gl_graphic *gl_graphic);
+void _graphic_system_mergesort (U32 n, gpe_weight_t array[]);
+void _graphic_system_insertsort (gpe_weight_t *s, gpe_weight_t *t);
+void _graphic_system_combsort (U32 n, gpe_weight_t a[]);
+void _graphic_system_introsort (U32 n, gpe_weight_t array[]);
+void _graphic_system_bind_gl_item (gpe_graphic *graphic, gpe_gl_graphic *gl_graphic);
 
 void graphic_system_init (graphic_system *system)
 {
   gpr_idlut_init(gpe_graphic, &(system->table), gpr_default_allocator);
 }
 
-//return idlut id of the tex within the system
 U64 graphic_system_add (graphic_system *system, GLuint tex_id)
 {
   gpe_graphic graphic;
   graphic.tex_id = tex_id;
+  return gpr_idlut_add(gpe_graphic, &system->table, &graphic);
+}
+
+U64 graphic_system_add (graphic_system *system, gpe_graphic graphic)
+{
   return gpr_idlut_add(gpe_graphic, &system->table, &graphic);
 }
 
@@ -43,11 +47,6 @@ void graphic_system_remove (graphic_system *system, U64 graphic_id)
 gpe_graphic* graphic_system_lookup (graphic_system *system, U64 graphic_id)
 {
   return gpr_idlut_lookup(gpe_graphic, &system->table, graphic_id);
-}
-
-void graphic_system_free (graphic_system *system)
-{
-  gpr_idlut_destroy(gpe_graphic, &system->table);
 }
 
 void graphic_system_update (graphic_system *system)
@@ -92,28 +91,35 @@ void graphic_system_update (graphic_system *system)
     }
 
     //sort
-    //_graphic_system_introsort(w.size, w.data);
     _graphic_system_mergesort(w.size, w.data);
-    /*
-    //print sort
-    for( i=0; i<w.size; i++)
-    {
-      graphic = gpr_idlut_begin(gpe_graphic, &system->table) + w.data[i].index;
-      printf("id= %d\tz= %d\tex_id= %d\twidth= %f.5\n", graphic->dev, graphic->z, graphic->tex_id, w.data[i].weight);
-    }
-    */
+
+    if(system->renderer.debug) gl_renderer_init(&system->renderer);
+
     //push graph to renderer
     for( i=0; i<w.size; i++)
     {
       gpe_gl_graphic gl_graphic;
       graphic = gpr_idlut_begin(gpe_graphic, &system->table) + w.data[i].index;
       _graphic_system_bind_gl_item(graphic, &gl_graphic);
-      gl_renderer_add(&system->renderer, gl_graphic);
+      gl_renderer_add(&system->renderer, gl_graphic, i);
     }
+    
+    if(system->renderer.debug) gl_renderer_update(&system->renderer);
 
     gpr_array_destroy(&w);
   }
 }
+
+void graphic_system_render (graphic_system *system)
+{
+  gl_renderer_draw(&system->renderer);
+}
+
+void graphic_system_free (graphic_system *system)
+{
+  gpr_idlut_destroy(gpe_graphic, &system->table);
+}
+
 
 void _graphic_system_bind_gl_item(gpe_graphic *graphic, gpe_gl_graphic *gl_graphic)
 {
@@ -127,24 +133,18 @@ void _graphic_system_bind_gl_item(gpe_graphic *graphic, gpe_gl_graphic *gl_graph
   gl_graphic->a = graphic->a;
   gl_graphic->shear_x = graphic->shear_x;
   gl_graphic->shear_y = graphic->shear_y;
-  //gl_graphic->z = graphic->z;
 }
 
-void graphic_system_render (graphic_system *system)
-{
-  gl_renderer_draw(&system->renderer);
-}
-
-void _graphic_system_combsort(size_t n, gpe_weight_t a[])
+void _graphic_system_combsort(U32 n, gpe_weight_t a[])
 {
 	const double shrink_factor = 1.2473309501039786540366528676643;
 	int do_swap;
-	size_t gap = n;
+	U32 gap = n;
 	gpe_weight_t tmp, *i, *j;
 	do {
 		if (gap > 2) 
     {
-			gap = (size_t)(gap / shrink_factor);
+			gap = (U32)(gap / shrink_factor);
 			if (gap == 9 || gap == 10) gap = 11;
 		}
 		do_swap = 0;
@@ -169,7 +169,7 @@ void _graphic_system_insertsort(gpe_weight_t *s, gpe_weight_t *t)
 			swap_tmp = *j; *j = *(j-1); *(j-1) = swap_tmp;
 }
 
-void _graphic_system_introsort(size_t n, gpe_weight_t a[])
+void _graphic_system_introsort(U32 n, gpe_weight_t a[])
 {
 	int d;
 	gpe_isort_t *top, *stack;
@@ -184,7 +184,7 @@ void _graphic_system_introsort(size_t n, gpe_weight_t a[])
 		return;
 	}
 	for (d = 2; 1ul<<d < n; ++d);
-	stack = (gpe_isort_t*)malloc(sizeof(gpe_isort_t) * ((sizeof(size_t)*d)+2));
+	stack = (gpe_isort_t*)malloc(sizeof(gpe_isort_t) * ((sizeof(U32)*d)+2));
 	top = stack; s = a; t = a + (n-1); d <<= 1;
 	while (1) 
   {
@@ -244,7 +244,7 @@ void _graphic_system_introsort(size_t n, gpe_weight_t a[])
 	}
 }
 
-void _graphic_system_mergesort(size_t n, gpe_weight_t array[])
+void _graphic_system_mergesort(U32 n, gpe_weight_t array[])
 {
 	gpe_weight_t *a2[2], *a, *b;
 	int curr, shift;
@@ -269,7 +269,7 @@ void _graphic_system_mergesort(size_t n, gpe_weight_t array[])
 				}
 			}
 		} else {
-			size_t i, step = 1ul<<shift;
+			U32 i, step = 1ul<<shift;
 			for (i = 0; i < n; i += step<<1) {
 				gpe_weight_t *p, *j, *k, *ea, *eb;
 				if (n < i + step) {

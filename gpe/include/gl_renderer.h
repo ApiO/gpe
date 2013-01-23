@@ -34,11 +34,15 @@ typedef struct
 typedef struct 
 {
   gpr_array_t(gpe_gl_graphic) graphics;
-  bool init;
-  bool debug;
+  bool     init;
+  bool     debug;
+  GLuint   gl_list;
+  I32      count;
 } gpe_gl_renderer;
 
-void gl_renderer_add  (gpe_gl_renderer *renderer, gpe_gl_graphic graphic);
-void gl_renderer_draw (gpe_gl_renderer *renderer);
+void gl_renderer_init    (gpe_gl_renderer *renderer);
+void gl_renderer_add     (gpe_gl_renderer *renderer, gpe_gl_graphic graphic, U32 index);
+void gl_renderer_update  (gpe_gl_renderer *renderer);
+void gl_renderer_draw    (gpe_gl_renderer *renderer);
 
 #endif //GL_RENDERER_H

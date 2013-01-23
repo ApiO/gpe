@@ -15,7 +15,6 @@ typedef struct
   F32     r, a;
   F32     shear_x, shear_y;
   I32     z;
-  I32     dev;
 } gpe_graphic;
 
 
@@ -25,8 +24,10 @@ typedef struct
   gpe_gl_renderer renderer;
 } graphic_system;
 
+
 void          graphic_system_init   (graphic_system *system);
 U64           graphic_system_add    (graphic_system *system, GLuint tex_id);
+U64           graphic_system_add    (graphic_system *system, gpe_graphic graphic);
 gpe_graphic*  graphic_system_lookup (graphic_system *system, U64 graphic_id);
 void          graphic_system_remove (graphic_system *system, U64 graphic_id);
 void          graphic_system_update (graphic_system *system);
