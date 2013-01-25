@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\src\main.c" />
+    <ClCompile Include="..\..\src\physics_system_test.c">
+      <Filter>SAMPLES\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\window_test.c">
+      <Filter>SAMPLES\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TheoJansen.c">
+      <Filter>SAMPLES\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fonts_test.c">
+      <Filter>SAMPLES\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphic_system_test.c">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\renderer_test.c">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gl_tmp.c">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\physics_system_test.h">
+      <Filter>SAMPLES\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\window_test.h">
+      <Filter>SAMPLES\window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\TheoJansen.h">
+      <Filter>SAMPLES\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fonts_test.h">
+      <Filter>SAMPLES\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\graphic_system_test.h">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\renderer_test.h">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gl_tmp.h">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="SAMPLES">
+      <UniqueIdentifier>{5d07cf7f-ae8c-431d-8bf2-691f8c631c5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SAMPLES\physics">
+      <UniqueIdentifier>{ccd13c9b-3778-4eb9-ae3a-a4845e79398e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SAMPLES\window">
+      <UniqueIdentifier>{59223cf4-fcaf-4f47-b12a-093d6e3ce4bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SAMPLES\fonts">
+      <UniqueIdentifier>{e0ef48a3-a388-4c10-a9fb-7afb61e91a6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SAMPLES\graphic">
+      <UniqueIdentifier>{abcb312f-8bd3-49b2-a7f1-71249dd1a50c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

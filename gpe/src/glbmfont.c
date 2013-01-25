@@ -25,8 +25,8 @@ int   _glbmfont_parse_common  (glbmfont *font, char *line);
 int   _glbmfont_parse_page    (glbmfont *font, char *line, char *path);
 int   _glbmfont_parse_char    (glbmfont *font, char *line);
 void  _glbmfont_renderLine    (glbmfont *font, char *line, FVect padding, float screen_width,
-                                float screen_height, float scale, gpeDock dock);
-FVect _glbmfont_getLine_padd  (glbmfont *font, gpeDock dock, 
+                                float screen_height, float scale, gpe_dock dock);
+FVect _glbmfont_getLine_padd  (glbmfont *font, gpe_dock dock, 
                                 char *line, int line_index, float line_height, int line_count, 
                                 float pad_x , float pad_y, 
                                 float screen_width, float screen_height, float scale);
@@ -270,7 +270,7 @@ int   _glbmfont_parse_char(glbmfont *font, char *line)
 
 void  _glbmfont_renderLine (glbmfont *font, char *line, FVect padding,
                             float screen_width, float screen_height, 
-                            float scale, gpeDock dock)
+                            float scale, gpe_dock dock)
 {
   int i, len;
   char chr;
@@ -355,7 +355,7 @@ float _glbmfont_renderChar (glbmfont_char *chrDesc, FVect padding,
 }
 
 
-FVect _glbmfont_getLine_padd (glbmfont *font, gpeDock dock, 
+FVect _glbmfont_getLine_padd (glbmfont *font, gpe_dock dock, 
                               char *line, int line_index, float line_height, int line_count, 
                               float pad_x , float pad_y, 
                               float screen_width, float screen_height, float scale)
@@ -399,7 +399,7 @@ FVect _glbmfont_getLine_padd (glbmfont *font, gpeDock dock,
 
 int   glbmfont_load(void)
 {
-  return glbmfont_load("D:\\temp\\QuicksandBook.fnt");
+  return glbmfont_load("..\\..\\src\\ressources\\QuicksandBook.fnt");
 }
 
 int   glbmfont_load(char *filepath)
@@ -442,13 +442,13 @@ int   glbmfont_load(char *filepath)
   return state;
 }
 
-void  glbmfont_print(char *text, int x, int y, gpeDock dock)
+void  glbmfont_print(char *text, int x, int y, gpe_dock dock)
 {
   const float scale = 2.f;
   glbmfont_print(text, x, y, dock, scale);
 }
 
-void  glbmfont_print(char *text, int x, int y, gpeDock dock, float scale)
+void  glbmfont_print(char *text, int x, int y, gpe_dock dock, float scale)
 {
   int i, begin_index, len, line_index, line_count;
   int screen_width, screen_height;

@@ -23,28 +23,28 @@
 const int GLBMFONT_CHARS_SIZE  = 256;
 const int GLBMFONT_TEX_2D_SIZE = 8;
 
-typedef enum gpeDock
+typedef enum
 {
   dock_top_left,
   dock_top_right,
   dock_bottom_left,
   dock_bottom_right,
   dock_center
-} gpeDock;
+} gpe_dock;
 
-typedef struct FVect
+typedef struct 
 {
   GLfloat x, y;
 } FVect;
 
-typedef struct DVect
+typedef struct
 {
   GLdouble x, y;
 } DVect;
 
  //glbmfont_char holds the information for a single character
  // and precalc the glTexCoord values for each point per char
-typedef struct glbmfont_char
+typedef struct
 {
 	int x, y;
 	int width, height;
@@ -66,10 +66,10 @@ typedef struct glbmfont
 	glbmfont_char chars[GLBMFONT_CHARS_SIZE];
 } glbmfont;
 
-int  glbmfont_load(void);
-int  glbmfont_load(char *file);
-void glbmfont_print(char *text, int x, int y, gpeDock dock);
-void glbmfont_print(char *text, int x, int y, gpeDock dock, float scale);
-void glbmfont_free(void);
+int  glbmfont_load  (void);
+int  glbmfont_load  (char *file);
+void glbmfont_print (char *text, int x, int y, gpe_dock dock);
+void glbmfont_print (char *text, int x, int y, gpe_dock dock, float scale);
+void glbmfont_free  (void);
 
 #endif //glbmfont_h

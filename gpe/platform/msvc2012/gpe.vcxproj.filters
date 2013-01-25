@@ -29,6 +29,15 @@
     <ClCompile Include="..\..\src\gl_renderer.c">
       <Filter>systems\graphic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\renderer.c">
+      <Filter>systems\graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\rsx_mngr_temp.c">
+      <Filter>systems\graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scene_graph_system.c">
+      <Filter>systems\graphic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ressource_manager.h" />
@@ -57,6 +66,15 @@
       <Filter>systems\graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\gl_renderer.h">
+      <Filter>systems\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\renderer.h">
+      <Filter>systems\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rsx_mngr_temp.h">
+      <Filter>systems\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\scene_graph_system.h">
       <Filter>systems\graphic</Filter>
     </ClInclude>
   </ItemGroup>

@@ -23,7 +23,7 @@ void _system_init(graphic_system *system)
 {
   int i;
   U64 elemet_id;
-  gpe_graphic *graphic;
+  gpe_graphic_t *graphic;
   GLuint tex_id;
   
   graphic_system_init(system);

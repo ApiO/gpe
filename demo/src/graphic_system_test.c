@@ -14,10 +14,9 @@
 F64 _dev_clock_diff(clock_t start, clock_t end);
 void _graphic_system_test_foo2_init(graphic_system *graphics_1, graphic_system *graphics_2, int ct, GLuint tex_id[]);
 
-
 void graphic_system_test_foo(void)
 {
-  #define ITEM_COUNT 10
+  #define ITEM_COUNT 5
   #define ITEM_TEX_COUNT 2
   int i;
   window_manager manager;
@@ -45,7 +44,7 @@ void graphic_system_test_foo(void)
     
   for(i=0; i < ITEM_COUNT; i++)
   {
-    gpe_graphic graphic;
+    gpe_graphic_t graphic;
     graphic.tex_id = tex_id[i%2 ? 1 : 0];
     graphic.x = (F32)(-64+600*cos(2*M_PI/ITEM_COUNT*i));
     graphic.y = (F32)(-64+400*sin(2*M_PI/ITEM_COUNT*i));

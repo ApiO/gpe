@@ -19,7 +19,10 @@
     <ClInclude Include="..\..\include\graphic_system.h" />
     <ClInclude Include="..\..\include\physics_debug_system.h" />
     <ClInclude Include="..\..\include\physics_system.h" />
+    <ClInclude Include="..\..\include\renderer.h" />
     <ClInclude Include="..\..\include\ressource_manager.h" />
+    <ClInclude Include="..\..\include\rsx_mngr_temp.h" />
+    <ClInclude Include="..\..\include\scene_graph_system.h" />
     <ClInclude Include="..\..\include\window_manager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -31,7 +34,10 @@
     <ClCompile Include="..\..\src\graphic_system.c" />
     <ClCompile Include="..\..\src\physics_debug_system.c" />
     <ClCompile Include="..\..\src\physics_system.c" />
+    <ClCompile Include="..\..\src\renderer.c" />
     <ClCompile Include="..\..\src\ressource_manager.c" />
+    <ClCompile Include="..\..\src\rsx_mngr_temp.c" />
+    <ClCompile Include="..\..\src\scene_graph_system.c" />
     <ClCompile Include="..\..\src\window_manager.c" />
   </ItemGroup>
   <ItemGroup>
