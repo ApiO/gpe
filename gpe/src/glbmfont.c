@@ -301,13 +301,13 @@ void  _glbmfont_renderLine (glbmfont *font, char *line, FVect padding,
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->tex_2d[chrDesc->page]);
-    
+    /*
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-
+    */
     
     padding.x = _glbmfont_renderChar(chrDesc, padding, screen_width, screen_height, scale);
     

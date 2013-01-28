@@ -10,18 +10,16 @@
  *
  */
 
- /*
- TODO: 
-    - gestion du retour à la ligne dans le print : padY
- */
-
 #ifndef glbmfont_h
 #define glbmfont_h
 
 #include <GL/glfw.h>
-
-const int GLBMFONT_CHARS_SIZE  = 256;
-const int GLBMFONT_TEX_2D_SIZE = 8;
+/*
+#include "gpr_types.h"
+#include "gpr_hash.h"
+*/
+#define GLBMFONT_CHARS_SIZE 256
+#define GLBMFONT_TEX_2D_SIZE 8
 
 typedef enum
 {
@@ -58,13 +56,21 @@ typedef struct
 //  as well as the descriptors for every character
 typedef struct glbmfont
 {
+  char *path;
 	int lineHeight;
 	int width, height;
 	int pages; 
   int tex_count;
-  GLuint       tex_2d[GLBMFONT_TEX_2D_SIZE];
+  GLuint        tex_2d[GLBMFONT_TEX_2D_SIZE];
 	glbmfont_char chars[GLBMFONT_CHARS_SIZE];
 } glbmfont;
+
+/*
+typedef struct
+{
+  gpr_hash_t glbmfont;
+} font_system;
+*/
 
 int  glbmfont_load  (void);
 int  glbmfont_load  (char *file);

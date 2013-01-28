@@ -1,6 +1,7 @@
 #ifndef window_manager_h
 #define window_manager_h
 
+#include "gpr_types.h"
 #include "glbmfont.h"
 
 typedef struct window_manager
@@ -8,7 +9,9 @@ typedef struct window_manager
   int     running;
   int     restart;
   double  fps;
-  bool    display_fps;
+  I32     display_fps;
+  I32     display_axes;
+  GLuint  axes_cmd;
 } window_manager;
 
 void window_manager_init        (window_manager *m, char * title, int height, int width);

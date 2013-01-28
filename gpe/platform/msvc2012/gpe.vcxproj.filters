@@ -38,6 +38,9 @@
     <ClCompile Include="..\..\src\scene_graph_system.c">
       <Filter>systems\graphic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\font_system.c">
+      <Filter>fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ressource_manager.h" />
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\scene_graph_system.h">
       <Filter>systems\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\font_system.h">
+      <Filter>fonts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

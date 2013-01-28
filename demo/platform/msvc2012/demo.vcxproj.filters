@@ -23,6 +23,9 @@
     <ClCompile Include="..\..\src\gl_tmp.c">
       <Filter>SAMPLES\graphic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\font_system_test.c">
+      <Filter>SAMPLES\fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\physics_system_test.h">
@@ -45,6 +48,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\gl_tmp.h">
       <Filter>SAMPLES\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\font_system_test.h">
+      <Filter>SAMPLES\fonts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
