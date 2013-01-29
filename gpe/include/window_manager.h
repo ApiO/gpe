@@ -11,7 +11,7 @@ typedef struct window_manager
   double  fps;
   I32     display_fps;
   I32     display_axes;
-  GLuint  axes_cmd;
+  GLfloat axes_verticies[64];
 } window_manager;
 
 void window_manager_init        (window_manager *m, char * title, int height, int width);

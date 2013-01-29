@@ -4,19 +4,19 @@
 #include <stdlib.h>
 #include <SOIL\SOIL.h>
 #include <assert.h>
+#include "gpr_murmur_hash.h"
 
 char *default_font = "QuicksandBook";
 char *default_font_path = "..\\..\\src\\ressources\\QuicksandBook.fnt";
 
-static inline U64   _hash_key (char *s);
-static inline I32   _indexof (char *str1, char *str2);
-static inline I32   _last_indexof (char *str1, char str2);
-static inline char *_substring (int start, int stop, char *src);
-static inline char *_strappend (char *str1, char *str2);
+static I32   _indexof (char *str1, char *str2);
+static I32   _last_indexof (char *str1, char str2);
+static char *_substring (int start, int stop, char *src);
+static char *_strappend (char *str1, char *str2);
 I32   _fsys_parse_common   (gpe_bmfont *f, char *line);
 I32   _fsys_parse_page     (gpe_bmfont *f, char *line, char *path);
 I32   _fsys_parse_char     (gpe_bmfont *f, char *line);
-I32   _fsys_load_font      (gpe_bmfont *f);
+I32   _fsys_load_font      (gpe_bmfont *f, char *file_path);
 I32   _fsys_get_key_value  (char *line, char *key);
 char *_fsys_get_font_path  (char *filepath);
 char *_fsys_get_path_value (char *line, char *key);
@@ -36,20 +36,17 @@ void font_system_init()
     exit( EXIT_FAILURE );
 }
 
-I32 font_system_load_font (char *key, char *path)
+I32 font_system_load_font (char *key, char *file_path)
 {
-  if(strlen(key) > FS_KEY_SIZE) return -1;
-  if(strlen(path) > FS_TEXT_SIZE) return -2;
-  {
-    gpe_bmfont f;
-    strcpy(f.file_path, path);
-    gpr_hash_init(gpe_font_char, &f.chars, gpr_default_allocator);
-    gpr_array_init(GLuint, &f.tex, gpr_default_allocator);
+  gpe_bmfont f;
+   
+  gpr_hash_init(gpe_font_char, &f.chars, gpr_default_allocator);
+  gpr_array_init(GLuint, &f.tex, gpr_default_allocator);
 
-    _fsys_load_font(&f);
+  _fsys_load_font(&f, file_path);
 
-    gpr_hash_set(gpe_bmfont, &_fontsystem.fonts, _hash_key(key), &f);
-  }
+  gpr_hash_set(gpe_bmfont, &_fontsystem.fonts, gpr_murmur_hash_64(key, strlen(key), FS_HASH_SEED), &f);
+
   return 0;
 }
 
@@ -58,37 +55,49 @@ U64  font_system_text_init (void)
   return font_system_text_init(default_font);
 }
 
-U64  font_system_text_init (char *key)
+U64  font_system_text_init (char *font_key)
 {
   gpe_font_string s;
-  s.cmd = 0;
-  strcpy(s.font_key, key);
+  s.font_key = gpr_murmur_hash_64(font_key, strlen(font_key), FS_HASH_SEED);
+  gpr_array_init(gpe_text_line, &s.lines, gpr_default_allocator);
   return gpr_idlut_add(gpe_font_string, &_fontsystem.texts, &s);
 }
 
-void font_system_text_print (U64 i, char *t, int x, int y, gpe_dock2 dock)
+
+void  font_system_text_set (U64 id, char *t)
+{
+  /*
+  pour chaques lignes dans le texte
+    on ajoute un gpe_text_line au gpe_font_string correspondant à l'id
+      on génére la liste de commande et renseigne le gpe_text_line.command
+  */
+}
+
+void font_system_text_print (U64 id, int x, int y, gpe_dock2 dock)
 {
   //TODO
-  gpe_font_string *o = gpr_idlut_lookup(gpe_font_string, &_fontsystem.texts, i);
-  if( o->cmd ==0)
-  {
-    //o->cmd = glGenLists(1);
-    //gen command
-  } else if(strcmp(o->text, t) != 0)
-  {
-    //regen command
-  }
+  gpe_font_string *o = gpr_idlut_lookup(gpe_font_string, &_fontsystem.texts, id);
 
-  //init gl : bindTex, blend ...
-  //glCallList(o->cmd);
+  //init gl 
+  //pour chaques lignes
+  //  transfo en prenant le docking en compte
+  //  glCallList(o->cmd);
   //reset gl
 }
 
-void font_system_text_remove (U64 i)
+void font_system_text_destroy (U64 id)
 {
-  gpe_font_string *fs = gpr_idlut_lookup(gpe_font_string, &_fontsystem.texts, i);
-  if (fs->cmd>0) glDeleteLists(fs->cmd, 1);
-  gpr_idlut_remove(gpe_font_string, &_fontsystem.texts, i);
+  U32 i;
+  gpe_font_string *fs = gpr_idlut_lookup(gpe_font_string, &_fontsystem.texts, id);
+  
+  for (i=0; i < fs->lines.size; i++)
+  {
+    GLuint cid = gpr_array_item(&fs->lines, i).command;
+    if(cid > 0) glDeleteLists(cid, 1);
+  }
+  gpr_array_destroy(&fs->lines);
+  
+  gpr_idlut_remove(gpe_font_string, &_fontsystem.texts, id);
 }
 
 void font_system_free ()
@@ -98,9 +107,10 @@ void font_system_free ()
   //clean texts
   for (i=0; i<_fontsystem.texts.num_items; i++)
   {
-    //clean cmds
-    GLuint cmd = (gpr_idlut_begin(gpe_font_string, &_fontsystem.texts) + i)->cmd;
-    if (cmd>0) glDeleteLists(cmd, 1);
+    gpe_text_lines *tl = &(gpr_idlut_begin(gpe_font_string, &_fontsystem.texts) + i)->lines;
+    for (j=0; j < tl->size; j++)
+      glDeleteLists(gpr_array_item(tl, j).command, 1);
+    gpr_array_destroy(tl);
   }
   gpr_idlut_destroy(gpe_font_string, &_fontsystem.texts);
 
@@ -122,16 +132,6 @@ void font_system_free ()
 /*
  *  PRIVATE
  */
-
-
-static inline U64 _hash_key(char *s)
-{
-  U32 i, len;
-  U64 hash = 0;
-  len = strlen(s);
-  for(i = 0; i < len; ++i) hash = 65599 * hash + s[i];
-  return hash ^ (hash >> 16);
-}
 
 I32 _fsys_parse_common (gpe_bmfont *f, char *line)
 {
@@ -167,7 +167,7 @@ I32 _fsys_parse_page (gpe_bmfont *f, char *line, char *path)
   }
 
   gpr_array_push_back(GLuint, &f->tex, tex_id);
-  assert(gpr_array_item(&f->tex, tex_id) == id); //contrôle du point "5" cf ".h"
+  assert(gpr_array_item(&f->tex, id) == tex_id); //contrôle du point "5" cf ".h"
     
   free(filename);
   free(imagepath);
@@ -180,19 +180,19 @@ I32 _fsys_parse_char (gpe_bmfont *f, char *line)
   return 1;
 }
 
-I32 _fsys_load_font (gpe_bmfont *f)
+I32 _fsys_load_font (gpe_bmfont *f, char *file_path)
 { 
   char line_buffer[BUFSIZ];
   char *path;
-  FILE *file = fopen(f->file_path, "r");
+  FILE *file = fopen(file_path, "r");
   I32 state = 1;
 
   if (!file) {
-      printf("Couldn't open file \"%s\" for reading.\n", f->file_path);
+      printf("Couldn't open file \"%s\" for reading.\n", file_path);
       return -1;
   }
 
-  path = _fsys_get_font_path(f->file_path);
+  path = _fsys_get_font_path(file_path);
   while (fgets(line_buffer, sizeof(line_buffer), file) && state == 1)
   {
     if (_indexof(line_buffer, "common ") > -1) 
@@ -256,7 +256,7 @@ char *_fsys_get_font_path (char *filepath)
   return path;
 }
 
-static inline I32 _last_indexof (char *str, char chr)
+static I32 _last_indexof (char *str, char chr)
 {
   U32 i, len;
   len = strlen(str);
@@ -264,7 +264,7 @@ static inline I32 _last_indexof (char *str, char chr)
   return NULL;
 }
 
-static inline char *_substring (int start, int stop, char *src)
+static char *_substring (int start, int stop, char *src)
 {
   //char out[BUFSIZ];
   char *out = (char*)malloc(stop-start+1);
@@ -298,7 +298,7 @@ char *_fsys_get_path_value (char *line, char *key)
   return result;
 }
 
-static inline char *_strappend (char *str1, char *str2)
+static char *_strappend (char *str1, char *str2)
 {
   char *s = (char *)malloc((strlen(str1) + strlen(str2) +1)*sizeof(char));
   sprintf(s, "%s%s", str1, str2);

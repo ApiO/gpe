@@ -5,14 +5,15 @@
 #include <GL/glfw.h>
 
 //static void _DEV_drawAxes(void);
-static void _debug_init(window_manager *m);
-void _window_manager_gl_init (int height, int width);
-void _window_manager_set_fps (window_manager *manager);
+void _wm_debug_init_axes (window_manager *m, GLfloat height, GLfloat width);
+void _wm_debug_draw_axes (window_manager *m);
+void _wm_gl_init (int height, int width);
+void _wm_set_fps (window_manager *manager);
 
 double t0Value; // Set the initial time to now
 int    fpsFrameCount;
 
-void _window_manager_set_fps (window_manager *m)
+void _wm_set_fps (window_manager *m)
 { 
 	double currentTime = glfwGetTime();
 	if ((currentTime - t0Value) > 1.0)
@@ -26,10 +27,10 @@ void _window_manager_set_fps (window_manager *m)
 		fpsFrameCount++;
 }
 
-void _window_manager_gl_init (int height, int width)
+void _wm_gl_init (int height, int width)
 {
   glViewport(0, 0, width, height);
-
+  
   glClearColor( .1f, .1f, .1f, 0.0f );
 
   glShadeModel(GL_SMOOTH);							  // Enable Smooth Shading
@@ -42,6 +43,8 @@ void _window_manager_gl_init (int height, int width)
   
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+
+  glOrtho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f,  -1.0f, 1.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -65,8 +68,8 @@ void window_manager_init (window_manager *m, char * title, int height, int width
 
   glfwSetWindowTitle(title);
   
-  _window_manager_gl_init(height, width);
-  _debug_init(m);
+  _wm_gl_init(height, width);
+  _wm_debug_init_axes(m, (GLfloat)height, (GLfloat)width);
 
   glbmfont_load();
 
@@ -76,17 +79,11 @@ void window_manager_init (window_manager *m, char * title, int height, int width
 
 void window_manager_clear (window_manager *m)
 {  
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  glClear( GL_COLOR_BUFFER_BIT );
+  glClear( GL_DEPTH_BUFFER_BIT );
   glLoadIdentity();
   
-  if(m->display_axes) glCallList(m->axes_cmd);
-
-  if(!m->display_fps) return;  
-  
-  char buffer[255];
-  _window_manager_set_fps(m);
-  sprintf_s(buffer, "FPS: %.0f", m->fps);
-  glbmfont_print(buffer, 5, 0, dock_top_right);
+  if(m->display_axes) _wm_debug_draw_axes(m);
 }
 
 void window_manager_swapBuffers (window_manager *m)
@@ -96,6 +93,14 @@ void window_manager_swapBuffers (window_manager *m)
   if(m->restart == 1) {
     m->running = 0;
     return;
+  }
+
+  if(m->display_fps)
+  {
+    char buffer[255];
+    _wm_set_fps(m);
+    sprintf_s(buffer, "FPS: %.0f", m->fps);
+    glbmfont_print(buffer, 5, 0, dock_top_right);
   }
 
   glfwSwapBuffers();
@@ -111,38 +116,48 @@ void window_manager_print (window_manager *m, char * t, int x, int y, gpe_dock d
 
 void window_manager_free (window_manager *m)
 {
-  glDeleteLists(m->axes_cmd, 1);
   glfwTerminate();
   glbmfont_free();
 }
 
-static void _debug_init(window_manager *m)
+void _wm_debug_init_axes(window_manager *m, GLfloat height, GLfloat width)
 {
-  m->axes_cmd = glGenLists(1);
-  glNewList(m->axes_cmd, GL_COMPILE);
-  {
-    glColor3f(.4f, .4f, .4f);
-    glBegin(GL_LINES); glVertex2f(-1.f, .5f);   glVertex2f(1.f, .5f);   glEnd();
-    glBegin(GL_LINES); glVertex2f(-1.f, -.5f);  glVertex2f(1.f, -.5f);  glEnd();
-    glBegin(GL_LINES); glVertex2f(-.5f, 1.f);   glVertex2f(-.5f, -1.f); glEnd();
-    glBegin(GL_LINES); glVertex2f(.5f, 1.f);    glVertex2f(.5f, -1.f);  glEnd();
-    glBegin(GL_LINES); glVertex2f(-1.f, 0.f);   glVertex2f(0.f, 0.f);   glEnd();
-    glBegin(GL_LINES); glVertex2f(0.f, 0.f);    glVertex2f(0.f,-10.f);  glEnd();
+  GLfloat axes_verticies[64] = { 
+    0,0, 0,height/4,
+    0,0, width/4,0,
+    -width,height/2,   width,height/2,
+    -width,-height/2,  width,-height/2,
+    -width/2,height,   -width/2,-height,
+    width/2,height,    width/2,-height,
+    -width,0,           0,0,
+    0,0,                0,-height,
+    -.75f*width,height,  -.75f*width,-height,
+    -.25f*width,height,  -.25f*width,-height,
+    .25f*width,height,   .25f*width,-height,
+    .75f*width,height,   .75f*width,-height,
+    width,-.75f*height,  -width,-.75f*height,
+    width,-.25f*height,  -width,-.25f*height,
+    width,.25f*height,   -width,.25f*height,
+    width,.75f*height,   -width,.75f*height 
+  };
 
+   memcpy(m->axes_verticies, axes_verticies, sizeof(axes_verticies));
+}
+
+void _wm_debug_draw_axes (window_manager *m)
+{
+    glEnableClientState( GL_VERTEX_ARRAY );
     
-    glColor3f(.2f, .2f, .2f);
-    glBegin(GL_LINES); glVertex2f(-.75f, 1.f);  glVertex2f(-.75f, -1.f);  glEnd();
-    glBegin(GL_LINES); glVertex2f(-.25f, 1.f);  glVertex2f(-.25f, -1.f);  glEnd();
-    glBegin(GL_LINES); glVertex2f(.25f, 1.f);   glVertex2f(.25f, -1.f);   glEnd();
-    glBegin(GL_LINES); glVertex2f(.75f, 1.f);   glVertex2f(.75f, -1.f);   glEnd();
-    glBegin(GL_LINES); glVertex2f(1.f, -.75f);  glVertex2f(-1.f, -.75f);  glEnd();
-    glBegin(GL_LINES); glVertex2f(1.f, -.25f);  glVertex2f(-1.f, -.25f);  glEnd();
-    glBegin(GL_LINES); glVertex2f(1.f, .25f);   glVertex2f(-1.f, .25f);   glEnd();
-    glBegin(GL_LINES); glVertex2f(1.f, .75f);   glVertex2f(-1.f, .75f);   glEnd();
-
-    glColor3f(0.f, 1.f, 0.f);
-    glBegin(GL_LINES); glVertex2f(0.f, 1.f);    glVertex2f(0.f, 0.f);   glEnd();
-    glColor3f(1.f, 0.f, 0.f);
-    glBegin(GL_LINES); glVertex2f(0.f, 0.f);    glVertex2f(1.f, 0.f);   glEnd();
-  } glEndList();
+    glPushMatrix();
+    {
+      glVertexPointer(2, GL_FLOAT, 0, m->axes_verticies);
+      glLineWidth(3);
+      glColor3f(0.f, 1.f, 0.f); glDrawArrays(GL_LINES, 0, 2);
+      glColor3f(1.f, 0.f, 0.f); glDrawArrays(GL_LINES, 2, 2);
+      glLineWidth(1);
+      glColor3f(.4f, .4f, .4f); glDrawArrays(GL_LINES, 4, 12);
+      glColor3f(.2f, .2f, .2f); glDrawArrays(GL_LINES, 16, 16);
+    } glPopMatrix();
+  
+    glDisableClientState( GL_VERTEX_ARRAY );
 }

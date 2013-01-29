@@ -19,17 +19,18 @@ void font_system_test_foo()
   font_system_init();
 
   tid = font_system_text_init();
+  font_system_text_set(tid, "toto");
 
   while(w.running)
   {
     window_manager_clear(&w);
     
-    font_system_text_print(tid, "toto", 0, 0, dock_center2);
+    font_system_text_print(tid, 0, 0, dock_center2);
 
     window_manager_swapBuffers(&w);
   }
 
-  font_system_text_remove(tid);
+  font_system_text_destroy(tid);
 
   font_system_free();
   window_manager_free(&w);
