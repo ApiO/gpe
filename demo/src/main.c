@@ -10,8 +10,8 @@
 #include "renderer_test.h"
 #include "gl_tmp.h"
 */
-#include "font_system_test.h"
 
+#include "font_system_test.h"
 
 int main( int argc, const char* argv[] )
 {
@@ -26,7 +26,7 @@ int main( int argc, const char* argv[] )
   renderer_test_foo();
   GL_TMP_H_FOO();
 */
-  font_system_test_foo();
 
+  font_system_test_foo();
   return 0;
 }

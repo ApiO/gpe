@@ -23,6 +23,159 @@
 #define TEX_HEIGHT  128
 #define TEX_WIDTH   128
 
+
+typedef struct
+{
+  GLint tex_coord[8];
+  GLfloat verticies[8];
+} gp_t_tmp;
+
+
+typedef struct
+{
+	I32     x, y, h, w;
+  F64     x_off, y_off;
+} gp_t_chr;
+
+void _t_init__(gp_t_tmp *text, gp_t_chr *chr);
+
+
+void GL_TMP_H_FOO()
+{
+  U32             tex_id;
+  window_manager  w;
+  gp_t_tmp  t;
+  gp_t_chr  chr;
+
+  gpr_memory_init(410241024);
+
+  window_manager_init(&w, "simple gl rendering test", HEIGHT, WIDTH);
+  w.display_fps = false;
+  w.display_axes = true;
+
+  tex_id = SOIL_load_OGL_texture (
+    "..\\..\\src\\ressources\\patate2.png", 
+    SOIL_LOAD_AUTO, 
+    SOIL_CREATE_NEW_ID, 
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_POWER_OF_TWO );
+
+  chr.h = TEX_HEIGHT;
+  chr.w = TEX_WIDTH;
+  chr.x = 0;
+  chr.y = 0;
+  chr.x_off = 0;
+  chr.y_off = 0;
+
+  _t_init__(&t, &chr);
+
+  if(tex_id != 0)
+  {
+    while(w.running)
+    {
+      window_manager_clear(&w);
+      
+        glColor3f(1.f, 1.f, 1.f);
+        glBindTexture(GL_TEXTURE_2D, tex_id);  
+        glTexCoordPointer(2, GL_INT, 0, t.tex_coord);
+        glVertexPointer(2, GL_FLOAT, 0, t.verticies);
+        glDrawArrays(GL_QUADS, 0, 4);
+      
+      window_manager_swapBuffers(&w);
+    }
+    
+    glDeleteTextures(1, &tex_id);
+  }
+
+  window_manager_clear(&w);
+  gpr_memory_shutdown();
+}
+
+void _t_init__(gp_t_tmp *text, gp_t_chr *chr)
+{
+  U32 tmp = 0;
+  F32 line_pad_x = 0;
+  F32 line_pad_y = 0;
+
+  text->tex_coord[tmp] =   chr->x;  
+  text->tex_coord[tmp+1] = chr->y;
+  text->tex_coord[tmp+2] = chr->x;
+  text->tex_coord[tmp+3] = chr->y + chr->h;
+  text->tex_coord[tmp+4] = chr->x + chr->w;
+  text->tex_coord[tmp+5] = chr->y + chr->h;
+  text->tex_coord[tmp+6] = chr->x + chr->w;
+  text->tex_coord[tmp+7] = chr->y;
+
+  /*
+  text->tex_coord[tmp] =   (GLfloat)chr->x/TEX_WIDTH;  
+  text->tex_coord[tmp+1] = (GLfloat)chr->y/TEX_HEIGHT;
+  text->tex_coord[tmp+2] = (GLfloat)chr->x/TEX_WIDTH;
+  text->tex_coord[tmp+3] = (GLfloat)(chr->y + chr->h)/TEX_HEIGHT;
+  text->tex_coord[tmp+4] = (GLfloat)(chr->x + chr->w/TEX_WIDTH);
+  text->tex_coord[tmp+5] = (GLfloat)(chr->y + chr->h)/TEX_HEIGHT;
+  text->tex_coord[tmp+6] = (GLfloat)(chr->x + chr->w)/TEX_WIDTH;
+  text->tex_coord[tmp+7] = (GLfloat)chr->y/TEX_HEIGHT;
+  */
+
+  text->verticies[tmp] =   (GLfloat)chr->x_off+line_pad_x;    
+  text->verticies[tmp+1] = (GLfloat)chr->y_off+chr->h+line_pad_y;
+  text->verticies[tmp+2] = (GLfloat)chr->x_off+line_pad_x;
+  text->verticies[tmp+3] = (GLfloat)chr->y_off+line_pad_y;
+  text->verticies[tmp+4] = (GLfloat)chr->x_off+chr->w+line_pad_x;
+  text->verticies[tmp+5] = (GLfloat)chr->y_off+line_pad_y;
+  text->verticies[tmp+6] = (GLfloat)chr->x_off+chr->w+line_pad_x;
+  text->verticies[tmp+7] = (GLfloat)chr->y_off+chr->h+line_pad_y;
+  /*
+  line_pad_x = TEX_WIDTH*2;
+  line_pad_y = TEX_HEIGHT;
+  tmp = 8;
+
+  text->tex_coord[tmp] =   (GLfloat)chr->x;  
+  text->tex_coord[tmp+1] = (GLfloat)chr->y;
+  text->tex_coord[tmp+2] = (GLfloat)chr->x;
+  text->tex_coord[tmp+3] = (GLfloat)chr->y + chr->h;
+  text->tex_coord[tmp+4] = (GLfloat)chr->x + chr->w;
+  text->tex_coord[tmp+5] = (GLfloat)chr->y + chr->h;
+  text->tex_coord[tmp+6] = (GLfloat)chr->x + chr->w;
+  text->tex_coord[tmp+7] = (GLfloat)chr->y;
+
+  text->verticies[tmp] =   (GLfloat)chr->x_off+line_pad_x;    
+  text->verticies[tmp+1] = (GLfloat)chr->y_off+chr->h+line_pad_y;
+  text->verticies[tmp+2] = (GLfloat)chr->x_off+line_pad_x;
+  text->verticies[tmp+3] = (GLfloat)chr->y_off+line_pad_y;
+  text->verticies[tmp+4] = (GLfloat)chr->x_off+chr->w+line_pad_x;
+  text->verticies[tmp+5] = (GLfloat)chr->y_off+line_pad_y;
+  text->verticies[tmp+6] = (GLfloat)chr->x_off+chr->w+line_pad_x;
+  text->verticies[tmp+7] = (GLfloat)chr->y_off+chr->h+line_pad_y;
+  */
+}
+
+
+/*
+#include "gl_tmp.h"
+
+#include <stdio.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <time.h>
+
+#if _WIN32
+  #include <windows.h>
+#endif
+#include <GL\GL.h>
+#include <SOIL\SOIL.h>
+#include <GL\glfw.h>
+
+#include "gpr_types.h"
+#include "gpr_array.h"
+
+#include "window_manager.h"
+
+#define HEIGHT      600
+#define WIDTH       800
+#define ITEM_COUNT  42
+#define TEX_HEIGHT  128
+#define TEX_WIDTH   128
+
 typedef F64 Matrix[4][4];
 
 typedef struct
@@ -68,7 +221,7 @@ void GL_TMP_H_FOO()
     "..\\..\\src\\ressources\\patate2.png", 
     SOIL_LOAD_AUTO, 
     SOIL_CREATE_NEW_ID, 
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_POWER_OF_TWO );
+                SOIL_FLAG_MIPMAPS | SOIL_FLAG_POWER_OF_TWO );
 
   for (i=0; i < ITEM_COUNT; i ++)
   {
@@ -88,13 +241,10 @@ void GL_TMP_H_FOO()
     {
       window_manager_clear(&w);
       
-	    glMatrixMode(GL_MODELVIEW);
-	    glLoadIdentity();
-
       glPushMatrix();
       {
-        glTranslatef(-64+WIDTH/2, -64+HEIGHT/2, .0f);
-        _print_textured_vertex_array(&gb, tex_id);
+	      glTranslatef(-64+WIDTH/2, -64+HEIGHT/2, .0f);
+	      _print_textured_vertex_array(&gb, tex_id);
       } glPopMatrix();
 
       window_manager_swapBuffers(&w);
@@ -119,12 +269,6 @@ void _print_textured_vertex_array(graph_buffer *gb, GLuint tex_id)
 {
   int i;
 
-  glEnableClientState( GL_VERTEX_ARRAY );
-  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      
-  glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, tex_id);  
 
   glColor3f(1.f, 1.f, 1.f);
@@ -138,20 +282,13 @@ void _print_textured_vertex_array(graph_buffer *gb, GLuint tex_id)
       glTranslatef(g->x, g->y, .0f);
 	    glRotatef(.0f, .0f, .0f, .0f);
 	    glScalef( g->scale_x, g->scale_y, g->scale_z);
-
+      
       glTexCoordPointer(2, GL_FLOAT, 0, tex_coord);
       glVertexPointer(3, GL_FLOAT, 0, verticies);
 
       glDrawArrays(GL_QUADS, 0, 4);
 
     } glPopMatrix();
-    
   }   
-      
-  glDisable(GL_TEXTURE_2D);
-
-  glDisable(GL_BLEND);
-  glBlendFunc(GL_NONE, GL_NONE);
-  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-  glDisableClientState( GL_VERTEX_ARRAY );
 }
+*/
