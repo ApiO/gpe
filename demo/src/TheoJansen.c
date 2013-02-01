@@ -3,7 +3,7 @@
 #include "window_manager.h"
 #include "physics_system.h"
 #include "physics_debug_system.h"
-#include "glbmfont.h"
+//#include "glbmfont.h"
 #include <GL/glfw.h>
 
 int TheoJansen_app (void);
@@ -51,7 +51,7 @@ int TheoJansen_app(void)
 
   TheoJansen_init(&physics_system); //ici on charge les entités dans le space ss passer par le physics_system
   
-  glbmfont_load();
+  //glbmfont_load();
 
   tj_Keyboard.x = 0.0f;
   
@@ -76,7 +76,7 @@ int TheoJansen_app(void)
     } 
     
     TheoJansen_update(&physics_system, ticks);
-    glbmfont_print("press ENTER: reload app\npress ESC: exit app", 10, 0, dock_top_left, .9f);
+    //glbmfont_print("press ENTER: reload app\npress ESC: exit app", 10, 0, dock_top_left, .9f);
 
     physics_debug_system_draw(&physics_debug_system);
 
@@ -84,7 +84,7 @@ int TheoJansen_app(void)
     ticks += 1;
   }
 
-  glbmfont_free();
+  //glbmfont_free();
   TheoJansen_free(&physics_system);
   gpr_memory_shutdown();
   window_manager_free(&manager);

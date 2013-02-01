@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\fonts_test.c" />
     <ClCompile Include="..\..\src\font_system_test.c" />
     <ClCompile Include="..\..\src\gl_tmp.c" />
     <ClCompile Include="..\..\src\graphic_system_test.c" />
@@ -22,7 +21,6 @@
     <ClCompile Include="..\..\src\window_test.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\fonts_test.h" />
     <ClInclude Include="..\..\src\font_system_test.h" />
     <ClInclude Include="..\..\src\gl_tmp.h" />
     <ClInclude Include="..\..\src\graphic_system_test.h" />

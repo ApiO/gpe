@@ -1,5 +1,6 @@
 #include "renderer_test.h"
 
+/*
 #if _WIN32
   #include <windows.h>
 #endif
@@ -61,10 +62,11 @@ void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
     gpr_array_push_back(gpe_scene_item_t, gb, scene_item);
   }
 }
-
+*/
 
 void renderer_test_foo()
 {
+/*
   int i;
   window_manager window;
   graphic_buffer gb;
@@ -92,4 +94,5 @@ void renderer_test_foo()
   rsx_mngr_temp_destroy(&r);
   window_manager_free(&window);
   gpr_memory_shutdown();
+  */
 }

@@ -1,17 +1,17 @@
 ﻿#include "font_system.h"
 
 #include <string.h>
-#include <stdlib.h>
 #include <SOIL\SOIL.h>
 #include <assert.h>
 #include "gpr_murmur_hash.h"
 #include "gpr_tmp_allocator.h"
+#include "gpr_sort.h"
 
 typedef struct
 {
-  char c;
-  U64  tex_key;
-  U32  x, line_index;
+  wchar_t c;
+  U64     tex_key;
+  U32     x, line_index;
 } fsys_char_pos_t;
 typedef gpr_array_t(fsys_char_pos_t) fsys_poses;
 
@@ -36,20 +36,19 @@ I32   _fsys_get_key_value_int (char *line, char *key);
 char *_fsys_get_key_value     (char *line, char *key);
 char *_fsys_get_font_path     (char *filepath, gpr_allocator_t *a);
 char *_fsys_get_path_value    (char *line, char *key, gpr_allocator_t *a);
-
-
-void _fsys_set_poses      (gpe_text *text, char *t, gpe_bmfont *font, fsys_poses *poses, fsys_lines_padx *lines, gpr_allocator_t *a);
 void _fsys_set_lines_pad  (fsys_lines_padx *lines, U32 max, gpe_text_align align);
-void _fsys_sort_poses     (fsys_poses *poses);
-void _fsys_create_command (gpe_text *text, gpe_bmfont *font, fsys_poses *poses, fsys_lines_padx *lines, gpr_allocator_t *a);
+void _fsys_set_poses      (gpe_text *text, wchar_t *t, gpe_bmfont *font, fsys_poses *poses,
+                            fsys_lines_padx *lines, gpr_allocator_t *a);
+void _fsys_create_command (gpe_text *text, gpe_bmfont *font, fsys_poses *poses, 
+                            fsys_lines_padx *lines, gpr_allocator_t *a);
 
 #define FSYS_H_TEX_SEED    0
 #define FSYS_H_FONT_SEED   0
+#define _poses_comp(a, b) ((a).tex_key < (b).tex_key)
 
-static char *default_font_path = "..\\..\\src\\ressources\\QuicksandBook.fnt";
+static char *default_font_path = "..\\..\\src\\ressources\\consolas.24\\consolas.24.fnt";
 static font_system _fontsystem;
-static U64 missing_char_key;
-
+static wchar_t missing_char_key = L'_';
 
 /*
  *  PUBLIC
@@ -60,7 +59,6 @@ void font_system_init(gpr_allocator_t *a)
   _fontsystem.a = a;
   gpr_hash_init(gpe_bmfont, &_fontsystem.fonts, a);
   gpr_idlut_init(gpe_text, &_fontsystem.texts, a);
-  missing_char_key = (U64)'?';
 
   if (font_system_load_font(FSYS_DEFAULT_FONT_NAME, default_font_path) < 0)
     exit( EXIT_FAILURE );
@@ -85,10 +83,11 @@ U64  font_system_text_init (char *font_key)
   gpe_text s;
   s.font_key = gpr_murmur_hash_64(font_key, strlen(font_key), FSYS_H_FONT_SEED);
   s.cmd_id = 0;
+  s.cmd_id = glGenLists(1);
   return gpr_idlut_add(gpe_text, &_fontsystem.texts, &s);
 }
 
-void  font_system_text_set (U64 id, char *t, gpe_text_align align)
+void  font_system_text_set (U64 id, wchar_t *t, gpe_text_align align)
 {
   gpe_text   *text;
   gpe_bmfont *font; 
@@ -98,27 +97,13 @@ void  font_system_text_set (U64 id, char *t, gpe_text_align align)
   gpr_allocator_t          *a = (gpr_allocator_t*)&ta;
   
   gpr_tmp_allocator_init(a, 2048);
-
-  //init output
-  text = gpr_idlut_lookup(gpe_text, &_fontsystem.texts, id);
-  if(text->cmd_id > 0)
-  {
-    gpr_deallocate(_fontsystem.a, text->verticies);
-    gpr_deallocate(_fontsystem.a, text->tex_coord);
-  }
-  else
-    text->cmd_id = glGenLists(1);
-
-  font = gpr_hash_get(gpe_bmfont, &_fontsystem.fonts, text->font_key);
-
-  _fsys_set_poses (text, t, font, &poses, &lines, a);
-
-  //on calcul le padx à réaliser par ligne en fonction de l'align
-  _fsys_set_lines_pad (&lines, text->width, align);
   
-  //on tri sur les tex_id
-  _fsys_sort_poses (&poses);
-
+  text = gpr_idlut_lookup(gpe_text, &_fontsystem.texts, id);
+  font = gpr_hash_get(gpe_bmfont, &_fontsystem.fonts, text->font_key);
+  
+  _fsys_set_poses (text, t, font, &poses, &lines, a);
+  _fsys_set_lines_pad (&lines, text->width, align);
+  gpr_mergesort(poses.data, poses.size, fsys_char_pos_t, _poses_comp, a);
   _fsys_create_command(text, font, &poses, &lines, a);
   
   gpr_array_destroy(&poses);
@@ -126,18 +111,15 @@ void  font_system_text_set (U64 id, char *t, gpe_text_align align)
   gpr_tmp_allocator_destroy(a);
 }
 
-void _fsys_set_poses (gpe_text *text, char *t, gpe_bmfont *font, fsys_poses *poses, fsys_lines_padx *lines, gpr_allocator_t *a)
+void _fsys_set_poses (gpe_text *text, wchar_t *t, gpe_bmfont *font, fsys_poses *poses, fsys_lines_padx *lines, gpr_allocator_t *a)
 {
   U32 i, len;
   U32 max_width, curr_width, line_index;
+  len = wcslen(t);
 
-  len = strlen(t);
-
-  //init des poses
   gpr_array_init(fsys_char_pos_t, poses, a);
   gpr_array_reserve(fsys_char_pos_t, poses, len);
 
-  //init lines
   gpr_array_init(F32, lines, a);
   {
     U32 line_count = 1;
@@ -154,13 +136,13 @@ void _fsys_set_poses (gpe_text *text, char *t, gpe_bmfont *font, fsys_poses *pos
       gpr_array_push_back(F32, lines, (F32)curr_width);
       line_index += 1;
       if(max_width<curr_width) max_width = curr_width;
+      curr_width = 0;
       continue;
     }
-    else
     {
       gpe_font_char *chr;
       fsys_char_pos_t pos;
-      char chr_key;
+      wchar_t chr_key;
         
       if(gpr_hash_has(gpe_font_char, &font->chars, (U64)t[i]))
       {
@@ -169,8 +151,8 @@ void _fsys_set_poses (gpe_text *text, char *t, gpe_bmfont *font, fsys_poses *pos
       }
       else
       {
-        chr = gpr_hash_get(gpe_font_char, &font->chars, missing_char_key);
-        chr_key = (char)missing_char_key;
+        chr = gpr_hash_get(gpe_font_char, &font->chars, (U64)missing_char_key);
+        chr_key = missing_char_key;
       }
         
       pos.c = chr_key;
@@ -182,7 +164,7 @@ void _fsys_set_poses (gpe_text *text, char *t, gpe_bmfont *font, fsys_poses *pos
     }
   }
   text->width = max_width;
-  text->height = font->line_height*(line_index+1);
+  text->height = font->line_height*line_index;
 }
 
 void _fsys_set_lines_pad (fsys_lines_padx *lines, U32 max, gpe_text_align align)
@@ -210,18 +192,11 @@ void _fsys_set_lines_pad (fsys_lines_padx *lines, U32 max, gpe_text_align align)
 
 }
 
-void _fsys_sort_poses (fsys_poses *poses)
-{
-  //TODO
-}
-
 void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, fsys_lines_padx *lines, gpr_allocator_t *a)
 {
   U32 i;
   fsys_char_groups  char_groups;
-  
-  text->verticies = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
-  text->tex_coord = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
+  GLfloat *verticies, *tex_coord;
 
   //init chars groups
   gpr_array_init(fsys_char_group_t, &char_groups, a);
@@ -229,23 +204,25 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
   {
     U64 tex_key = gpr_array_begin(poses)->tex_key;
     U32 start_index = 0;
-
+    
     for(i=1; i<=poses->size; i++)
     {
-      if((gpr_array_begin(poses)+i)->tex_key == tex_key && i<poses->size) continue;
+      if(gpr_array_item(poses, i).tex_key == tex_key && i<poses->size) continue;
       {
-        fsys_char_group_t group;
-        group.tex_key = tex_key;
-        group.first = start_index;
-        group.count = i-start_index;
-        gpr_array_push_back(fsys_char_group_t, &char_groups, group);
+        fsys_char_group_t g;
+        g.tex_key = tex_key; 
+        g.first = start_index; 
+        g.count = i-start_index;
+        gpr_array_push_back(fsys_char_group_t, &char_groups, g);
       }
       if(i==poses->size) break;
-      tex_key = (gpr_array_begin(poses)+i)->tex_key;
+      tex_key = gpr_array_item(poses, i).tex_key;
       start_index = i;
     }
   }
 
+  verticies = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
+  tex_coord = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
   for(i=0; i<poses->size; i++)
   {
     fsys_char_pos_t *pos = gpr_array_begin(poses)+i;
@@ -254,39 +231,44 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
     F32 line_pad_x = *(gpr_array_begin(lines) + pos->line_index);
     F32 line_pad_y = (F32)pos->line_index*font->line_height;
 
-    text->tex_coord[tmp] =   chr->tex_coord[0];
-    text->tex_coord[tmp+1] = chr->tex_coord[1];
-    text->tex_coord[tmp+2] = chr->tex_coord[2];
-    text->tex_coord[tmp+3] = chr->tex_coord[3];
-    text->tex_coord[tmp+4] = chr->tex_coord[4];
-    text->tex_coord[tmp+5] = chr->tex_coord[5];
-    text->tex_coord[tmp+6] = chr->tex_coord[6];
-    text->tex_coord[tmp+7] = chr->tex_coord[7];
+    tex_coord[tmp] =   chr->tex_coord[0];
+    tex_coord[tmp+1] = chr->tex_coord[1];
+    tex_coord[tmp+2] = chr->tex_coord[2];
+    tex_coord[tmp+3] = chr->tex_coord[3];
+    tex_coord[tmp+4] = chr->tex_coord[4];
+    tex_coord[tmp+5] = chr->tex_coord[5];
+    tex_coord[tmp+6] = chr->tex_coord[6];
+    tex_coord[tmp+7] = chr->tex_coord[7];
     
-    text->verticies[tmp] =   (GLfloat)chr->x_off+line_pad_x+pos->x;    
-    text->verticies[tmp+1] = (GLfloat)chr->y_off+chr->h+line_pad_y;
-    text->verticies[tmp+2] = (GLfloat)chr->x_off+line_pad_x+pos->x;
-    text->verticies[tmp+3] = (GLfloat)chr->y_off+line_pad_y;
-    text->verticies[tmp+4] = (GLfloat)chr->x_off+chr->w+line_pad_x+pos->x;
-    text->verticies[tmp+5] = (GLfloat)chr->y_off+line_pad_y;
-    text->verticies[tmp+6] = (GLfloat)chr->x_off+chr->w+line_pad_x+pos->x;
-    text->verticies[tmp+7] = (GLfloat)chr->y_off+chr->h+line_pad_y;
+    verticies[tmp] =   (GLfloat)chr->x_off+line_pad_x+pos->x;    
+    verticies[tmp+1] = (GLfloat)chr->y_off+chr->h+line_pad_y;
+    verticies[tmp+2] = (GLfloat)chr->x_off+line_pad_x+pos->x;
+    verticies[tmp+3] = (GLfloat)chr->y_off+line_pad_y;
+    verticies[tmp+4] = (GLfloat)chr->x_off+chr->w+line_pad_x+pos->x;
+    verticies[tmp+5] = (GLfloat)chr->y_off+line_pad_y;
+    verticies[tmp+6] = (GLfloat)chr->x_off+chr->w+line_pad_x+pos->x;
+    verticies[tmp+7] = (GLfloat)chr->y_off+chr->h+line_pad_y;
   }
-
-  //on génére la commande gl en bouclant fsys_char_group_t 
+  
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
   glNewList(text->cmd_id, GL_COMPILE);
   { 
-    glTexCoordPointer(2, GL_FLOAT, 0, text->tex_coord);
-    glVertexPointer(2, GL_FLOAT, 0, text->verticies);
+    glTexCoordPointer(2, GL_FLOAT, 0, tex_coord);
+    glVertexPointer(2, GL_FLOAT, 0, verticies);
     for(i=0; i<char_groups.size; i++)
     {
       fsys_char_group_t *group = (gpr_array_begin(&char_groups)+i);
       GLuint tex_id = *gpr_hash_get(GLuint, &font->tex, group->tex_key);
+      glBindTexture(GL_TEXTURE_2D, tex_id);  
       glDrawArrays(GL_QUADS, group->first*4, group->count*4);
     }
+    
   }glEndList();
 
   gpr_array_destroy(&char_groups);
+  gpr_deallocate(_fontsystem.a, verticies);
+  gpr_deallocate(_fontsystem.a, tex_coord);
 }
 
 void font_system_text_print (U64 id, F32 x, F32 y, gpe_text_dock dock, F32 screen_height, F32 screen_width)
@@ -320,16 +302,11 @@ void font_system_text_print (U64 id, F32 x, F32 y, gpe_text_dock dock, F32 scree
   } glPopMatrix();
 }
 
-
 void font_system_text_destroy (U64 id)
 {
   gpe_text *text = gpr_idlut_lookup(gpe_text, &_fontsystem.texts, id);
-  if(text->cmd_id>0)
-  {
-    glDeleteLists(text->cmd_id, 1);
-    gpr_deallocate(_fontsystem.a, text->verticies);
-    gpr_deallocate(_fontsystem.a, text->tex_coord);
-  }
+  glDeleteLists(text->cmd_id, 1);
+  
   gpr_idlut_remove(gpe_text, &_fontsystem.texts, id);
 }
 
@@ -339,15 +316,8 @@ void font_system_free ()
 
   //clean texts
   for (i=0; i<_fontsystem.texts.num_items; i++)
-  {
-    gpe_text *text = gpr_idlut_begin(gpe_text, &_fontsystem.texts) + i;
-    if(text->cmd_id>0)
-    {
-      glDeleteLists(text->cmd_id, 1);
-      gpr_deallocate(_fontsystem.a, text->verticies);
-      gpr_deallocate(_fontsystem.a, text->tex_coord);
-    }
-  }
+    glDeleteLists((gpr_idlut_begin(gpe_text, &_fontsystem.texts) + i)->cmd_id, 1);
+  
   gpr_idlut_destroy(gpe_font_string, &_fontsystem.texts);
 
   //clean fonts
@@ -363,7 +333,6 @@ void font_system_free ()
   }
   gpr_hash_destroy(gpe_bmfont, &_fontsystem.fonts);
 }
-
 
 /*
  *  PRIVATE
@@ -390,11 +359,12 @@ I32 _fsys_parse_page (gpe_bmfont *f, char *line, char *path)
   filename = _fsys_get_path_value (line, "file=", _fontsystem.a);
   imagepath = _strappend(path, filename, _fontsystem.a);
 
+  
   tex_id = SOIL_load_OGL_texture (
     imagepath, 
     SOIL_LOAD_AUTO, 
     SOIL_CREATE_NEW_ID, 
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_POWER_OF_TWO );
+		SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS );
 
   if( tex_id == 0 )
   {
@@ -421,8 +391,8 @@ I32 _fsys_parse_char (gpe_bmfont *f, char *line)
   chr.h = _fsys_get_key_value_int(line, "height=");
   chr.x = _fsys_get_key_value_int(line, "x=");
   chr.y = _fsys_get_key_value_int(line, "y=");
-  chr.x_off = (F64)_fsys_get_key_value_int(line, "xoffset=");
-  chr.y_off = (F64)_fsys_get_key_value_int(line, "yoffset=");
+  chr.x_off = _fsys_get_key_value_int(line, "xoffset=");
+  chr.y_off = _fsys_get_key_value_int(line, "yoffset=");
   chr.xAdvance = _fsys_get_key_value_int(line, "xadvance=");
   
   chr.tex_coord[2] = (GLfloat)chr.x/f->width;  

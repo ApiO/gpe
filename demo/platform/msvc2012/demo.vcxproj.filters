@@ -11,9 +11,6 @@
     <ClCompile Include="..\..\src\TheoJansen.c">
       <Filter>SAMPLES\physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\fonts_test.c">
-      <Filter>SAMPLES\fonts</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\graphic_system_test.c">
       <Filter>SAMPLES\graphic</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\TheoJansen.h">
       <Filter>SAMPLES\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fonts_test.h">
-      <Filter>SAMPLES\fonts</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphic_system_test.h">
       <Filter>SAMPLES\graphic</Filter>
