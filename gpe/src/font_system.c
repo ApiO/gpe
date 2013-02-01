@@ -186,7 +186,7 @@ void _fsys_set_lines_pad (fsys_lines_padx *lines, U32 max, gpe_text_align align)
   
   for(i=0; i<lines->size;i++)
   {
-    F32 *pad_x = gpr_array_begin(lines) + i;
+    F32 *pad_x = &gpr_array_item(lines, i);
     *pad_x = ((max - (*pad_x)) * pad_value);
   }
 
@@ -225,10 +225,10 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
   tex_coord = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
   for(i=0; i<poses->size; i++)
   {
-    fsys_char_pos_t *pos = gpr_array_begin(poses)+i;
+    fsys_char_pos_t *pos = &gpr_array_item(poses, i);
     gpe_font_char *chr = gpr_hash_get(gpe_font_char, &font->chars, (U64)pos->c);
     U32 tmp = i*8;
-    F32 line_pad_x = *(gpr_array_begin(lines) + pos->line_index);
+    F32 line_pad_x = gpr_array_item(lines, pos->line_index);
     F32 line_pad_y = (F32)pos->line_index*font->line_height;
 
     tex_coord[tmp] =   chr->tex_coord[0];
@@ -258,7 +258,7 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
     glVertexPointer(2, GL_FLOAT, 0, verticies);
     for(i=0; i<char_groups.size; i++)
     {
-      fsys_char_group_t *group = (gpr_array_begin(&char_groups)+i);
+      fsys_char_group_t *group = &gpr_array_item(&char_groups, i);
       GLuint tex_id = *gpr_hash_get(GLuint, &font->tex, group->tex_key);
       glBindTexture(GL_TEXTURE_2D, tex_id);  
       glDrawArrays(GL_QUADS, group->first*4, group->count*4);
@@ -321,14 +321,17 @@ void font_system_free ()
   gpr_idlut_destroy(gpe_font_string, &_fontsystem.texts);
 
   //clean fonts
-  for (i=0; i<_fontsystem.fonts.num_values; i++)
+  gpe_bmfont *f = gpr_hash_begin(gpe_bmfont, &_fontsystem.fonts);
+  gpe_bmfont *fend = gpr_hash_end(gpe_bmfont, &_fontsystem.fonts);
+  for (;f < fend; f++)
   {
-    gpe_bmfont *f = gpr_hash_begin(gpe_bmfont, &_fontsystem.fonts) + i;
     //clean chars
     gpr_hash_destroy(gpe_font_char, &f->chars);
     //clean tex
-    for (j=0; j<f->tex.num_values; j++)
-      glDeleteTextures(1, (gpr_hash_begin(GLuint, &f->tex)+j));
+    GLuint *t = gpr_hash_begin(GLuint, &f->tex);
+    GLuint *tend = gpr_hash_end(GLuint, &f->tex);
+    for (;t < tend; t++) glDeleteTextures(1, t);
+
     gpr_hash_destroy(gpe_font_char, &f->tex);
   }
   gpr_hash_destroy(gpe_bmfont, &_fontsystem.fonts);

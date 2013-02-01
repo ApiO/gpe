@@ -84,7 +84,7 @@ void font_system_test_foo()
     
     for(i=0; i<ITEM_COUNT; i++)
     {
-      tmp_fs_txt *t = gpr_array_begin(&sample)+i;
+      tmp_fs_txt *t = &gpr_array_item(&sample, i);
       font_system_text_print(t->id, 0, 0, t->dock, HEIGHT, WIDTH);
     }
 
