@@ -136,29 +136,29 @@ void cpBodySleep(cpBody *body);
 void cpBodySleepWithGroup(cpBody *body, cpBody *group);
 
 /// Returns true if the body is sleeping.
-static inline cpBool cpBodyIsSleeping(const cpBody *body)
+static cpBool cpBodyIsSleeping(const cpBody *body)
 {
 	return (CP_PRIVATE(body->node).root != ((cpBody*)0));
 }
 
 /// Returns true if the body is static.
-static inline cpBool cpBodyIsStatic(const cpBody *body)
+static cpBool cpBodyIsStatic(const cpBody *body)
 {
 	return CP_PRIVATE(body->node).idleTime == INFINITY;
 }
 
 /// Returns true if the body has not been added to a space.
-static inline cpBool cpBodyIsRogue(const cpBody *body)
+static cpBool cpBodyIsRogue(const cpBody *body)
 {
 	return (body->CP_PRIVATE(space) == ((cpSpace*)0));
 }
 
 
 #define CP_DefineBodyStructGetter(type, member, name) \
-static inline type cpBodyGet##name(const cpBody *body){return body->member;}
+static type cpBodyGet##name(const cpBody *body){return body->member;}
 
 #define CP_DefineBodyStructSetter(type, member, name) \
-static inline void cpBodySet##name(cpBody *body, const type value){ \
+static void cpBodySet##name(cpBody *body, const type value){ \
 	cpBodyActivate(body); \
 	cpBodyAssertSane(body); \
 	body->member = value; \
@@ -199,13 +199,13 @@ void cpBodyUpdateVelocity(cpBody *body, cpVect gravity, cpFloat damping, cpFloat
 void cpBodyUpdatePosition(cpBody *body, cpFloat dt);
 
 /// Convert body relative/local coordinates to absolute/world coordinates.
-static inline cpVect cpBodyLocal2World(const cpBody *body, const cpVect v)
+static cpVect cpBodyLocal2World(const cpBody *body, const cpVect v)
 {
 	return cpvadd(body->p, cpvrotate(v, body->rot));
 }
 
 /// Convert body absolute/world coordinates to  relative/local coordinates.
-static inline cpVect cpBodyWorld2Local(const cpBody *body, const cpVect v)
+static cpVect cpBodyWorld2Local(const cpBody *body, const cpVect v)
 {
 	return cpvunrotate(cpvsub(v, body->p), body->rot);
 }
@@ -224,7 +224,7 @@ cpVect cpBodyGetVelAtLocalPoint(cpBody *body, cpVect point);
 
 
 /// Get the kinetic energy of a body.
-static inline cpFloat cpBodyKineticEnergy(const cpBody *body)
+static cpFloat cpBodyKineticEnergy(const cpBody *body)
 {
 	// Need to do some fudging to avoid NaNs
 	cpFloat vsq = cpvdot(body->v, body->v);

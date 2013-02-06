@@ -39,9 +39,7 @@ void font_system_test_foo()
 
   window_manager_init(&w, "FONT_SYSTEM debug", HEIGHT, WIDTH);
   w.display_axes = true;
-  
-  font_system_init(gpr_default_allocator);
-  
+    
   font_system_load_font(font_key1, font1);
   font_system_load_font(font_key2, font2);
   font_system_load_font(font_key3, font3);
@@ -91,9 +89,7 @@ void font_system_test_foo()
     window_manager_swapBuffers(&w);
   }
 
-  
   gpr_array_destroy(&sample);
-  font_system_free();
   window_manager_free(&w);
   gpr_memory_shutdown();
 }

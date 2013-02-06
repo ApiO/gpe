@@ -16,11 +16,14 @@
   #include <windows.h>
 #endif
 #include <GL\GL.h>
-#include <stdio.h>
 #include "gpr_types.h"
 #include "gpr_hash.h"
 #include "gpr_array.h"
 #include "gpr_idlut.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static char *FSYS_DEFAULT_FONT_NAME = "consolas.24";
 
@@ -53,16 +56,16 @@ typedef struct
 {
 	gpr_hash_t chars;
 	gpr_hash_t tex;
-	U32        line_height;
-	U32        width, height;
+	I32        line_height;
+	I32        width, height;
 } gpe_bmfont;
 
 typedef struct
 {
   U64      font_key;
   GLuint   cmd_id;
-  U32      width;
-  U32      height;
+  I32      width;
+  I32      height;
 } gpe_text;
 
 typedef struct
@@ -79,5 +82,9 @@ void  font_system_text_set     (U64 id, wchar_t *t, gpe_text_align align);
 void  font_system_text_print   (U64 id, F32 x, F32 y, gpe_text_dock dock, F32 screen_height, F32 screen_width);
 void  font_system_text_destroy (U64 id);
 void  font_system_free         (void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //FONT_SYSTEM_H

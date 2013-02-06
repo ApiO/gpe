@@ -118,10 +118,10 @@ void cpSpaceDestroy(cpSpace *space);
 void cpSpaceFree(cpSpace *space);
 
 #define CP_DefineSpaceStructGetter(type, member, name) \
-static inline type cpSpaceGet##name(const cpSpace *space){return space->member;}
+static type cpSpaceGet##name(const cpSpace *space){return space->member;}
 
 #define CP_DefineSpaceStructSetter(type, member, name) \
-static inline void cpSpaceSet##name(cpSpace *space, type value){space->member = value;}
+static void cpSpaceSet##name(cpSpace *space, type value){space->member = value;}
 
 #define CP_DefineSpaceStructProperty(type, member, name) \
 CP_DefineSpaceStructGetter(type, member, name) \
@@ -141,7 +141,7 @@ CP_DefineSpaceStructGetter(cpBody*, staticBody, StaticBody);
 CP_DefineSpaceStructGetter(cpFloat, CP_PRIVATE(curr_dt), CurrentTimeStep);
 
 /// returns true from inside a callback and objects cannot be added/removed.
-static inline cpBool
+static cpBool
 cpSpaceIsLocked(cpSpace *space)
 {
 	return space->CP_PRIVATE(locked);

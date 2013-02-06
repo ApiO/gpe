@@ -9,22 +9,14 @@
 #include "gpr_types.h"
 #include "gpr_idlut.h"
 #include "gpr_array.h"
-/*
-typedef struct
-{
-  GLfloat x, y;
-} FVect;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct
 {
-  GLdouble x, y;
-} DVect;
-*/
-typedef struct
-{
   GLuint  tex_id;
-  //FVect   texCoord[4];
-  //DVect   quad[4];
   F32     x, y, w, h;
   F32     scale;
   F32     r, a;
@@ -34,7 +26,7 @@ typedef struct
 
 typedef struct 
 {
-  //gpr_idlut_t table;
+  gpr_idlut_t table;
 } gpe_gl_renderer;
 
 void gl_renderer_init   (gpe_gl_renderer *r);
@@ -42,5 +34,9 @@ void gl_renderer_add    (gpe_gl_renderer *r, gpe_gl_graphic_t graphic);
 void gl_renderer_update (gpe_gl_renderer *r);
 void gl_renderer_draw   (gpe_gl_renderer *r);
 void gl_renderer_free   (gpe_gl_renderer *r);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //GL_RENDERER_H

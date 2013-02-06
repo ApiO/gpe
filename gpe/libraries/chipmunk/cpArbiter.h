@@ -101,10 +101,10 @@ struct cpArbiter {
 };
 
 #define CP_DefineArbiterStructGetter(type, member, name) \
-static inline type cpArbiterGet##name(const cpArbiter *arb){return arb->member;}
+static type cpArbiterGet##name(const cpArbiter *arb){return arb->member;}
 
 #define CP_DefineArbiterStructSetter(type, member, name) \
-static inline void cpArbiterSet##name(cpArbiter *arb, type value){arb->member = value;}
+static void cpArbiterSet##name(cpArbiter *arb, type value){arb->member = value;}
 
 #define CP_DefineArbiterStructProperty(type, member, name) \
 CP_DefineArbiterStructGetter(type, member, name) \
@@ -133,7 +133,7 @@ void cpArbiterIgnore(cpArbiter *arb);
 /// Return the colliding shapes involved for this arbiter.
 /// The order of their cpSpace.collision_type values will match
 /// the order set when the collision handler was registered.
-static inline void cpArbiterGetShapes(const cpArbiter *arb, cpShape **a, cpShape **b)
+static void cpArbiterGetShapes(const cpArbiter *arb, cpShape **a, cpShape **b)
 {
 	if(arb->CP_PRIVATE(swappedColl)){
 		(*a) = arb->CP_PRIVATE(b), (*b) = arb->CP_PRIVATE(a);
@@ -147,7 +147,7 @@ static inline void cpArbiterGetShapes(const cpArbiter *arb, cpShape **a, cpShape
 /// Return the colliding bodies involved for this arbiter.
 /// The order of the cpSpace.collision_type the bodies are associated with values will match
 /// the order set when the collision handler was registered.
-static inline void cpArbiterGetBodies(const cpArbiter *arb, cpBody **a, cpBody **b)
+static void cpArbiterGetBodies(const cpArbiter *arb, cpBody **a, cpBody **b)
 {
 	CP_ARBITER_GET_SHAPES(arb, shape_a, shape_b);
 	(*a) = shape_a->body;

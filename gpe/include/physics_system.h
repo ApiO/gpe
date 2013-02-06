@@ -4,6 +4,10 @@
 #include <chipmunk\chipmunk.h>
 #include "gpr_idlut.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum
 {
   segment_shape
@@ -50,5 +54,9 @@ void  physics_system_free (physics_system * system);
 
 void  physics_system_loadFoo0 (physics_system * system);
 void  physics_system_loadFoo1 (physics_system * system);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // physics_system_H_

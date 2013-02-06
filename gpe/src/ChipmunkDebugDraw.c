@@ -53,6 +53,9 @@ static Color
 ColorFromHash(cpHashValue hash, float alpha)
 {
 	unsigned long val = (unsigned long)hash;
+	GLfloat r, g, b,
+          max, min;
+	GLfloat intensity = 0.75;
 	
 	// scramble the bits up using Robert Jenkins' 32 bit integer hash function
 	val = (val+0x7ed55d16) + (val<<12);
@@ -62,13 +65,12 @@ ColorFromHash(cpHashValue hash, float alpha)
 	val = (val+0xfd7046c5) + (val<<3);
 	val = (val^0xb55a4f09) ^ (val>>16);
 	
-	GLfloat r = (GLfloat)((val>>0) & 0xFF);
-	GLfloat g = (GLfloat)((val>>8) & 0xFF);
-	GLfloat b = (GLfloat)((val>>16) & 0xFF);
+	r = (GLfloat)((val>>0) & 0xFF);
+	g = (GLfloat)((val>>8) & 0xFF);
+	b = (GLfloat)((val>>16) & 0xFF);
 	
-	GLfloat max = (GLfloat)cpfmax(cpfmax(r, g), b);
-	GLfloat min = (GLfloat)cpfmin(cpfmin(r, g), b);
-	GLfloat intensity = 0.75;
+	max = (GLfloat)cpfmax(cpfmax(r, g), b);
+	min = (GLfloat)cpfmin(cpfmin(r, g), b);
 	
 	// Saturate and scale the color
 	if(min == max){
@@ -84,7 +86,7 @@ ColorFromHash(cpHashValue hash, float alpha)
 	}
 }
 
-static inline void
+static void
 glColor_from_color(Color color){
 	glColor4fv((GLfloat *)&color);
 }
@@ -266,12 +268,12 @@ void ChipmunkDebugDrawPoints(cpFloat size, int count, cpVect *verts, Color color
 
 void ChipmunkDebugDrawBB(cpBB bb, Color color)
 {
-	cpVect verts[] = {
-		cpv(bb.l, bb.b),
-		cpv(bb.l, bb.t),
-		cpv(bb.r, bb.t),
-		cpv(bb.r, bb.b),
-	};
+	cpVect verts[4];
+	verts[0] = cpv(bb.l, bb.b);
+	verts[1] = cpv(bb.l, bb.t);
+	verts[2] = cpv(bb.r, bb.t);
+	verts[3] = cpv(bb.r, bb.b);
+	
 	ChipmunkDebugDrawPolygon(4, verts, color, LAColor(0, 0));
 }
 
@@ -333,13 +335,16 @@ static const int springVAR_count = sizeof(springVAR)/sizeof(GLfloat)/2;
 static void
 drawSpring(cpDampedSpring *spring, cpBody *body_a, cpBody *body_b)
 {
+	cpVect points[2];
+	cpVect delta;
 	cpVect a = cpvadd(body_a->p, cpvrotate(spring->anchr1, body_a->rot));
 	cpVect b = cpvadd(body_b->p, cpvrotate(spring->anchr2, body_b->rot));
 	
-	cpVect points[] = {a, b};
+	points[0] = a;
+	points[1] = b;
 	ChipmunkDebugDrawPoints(5, 2, points, CONSTRAINT_COLOR);
 
-	cpVect delta = cpvsub(b, a);
+	delta = cpvsub(b, a);
 
 	glVertexPointer(2, GL_FLOAT, 0, springVAR);
 	glPushMatrix(); {
@@ -364,6 +369,7 @@ drawSpring(cpDampedSpring *spring, cpBody *body_a, cpBody *body_b)
 static void
 drawConstraint(cpConstraint *constraint, void *unused)
 {
+	cpVect points[2];
 	cpBody *body_a = constraint->a;
 	cpBody *body_b = constraint->b;
 
@@ -374,7 +380,8 @@ drawConstraint(cpConstraint *constraint, void *unused)
 		cpVect a = cpvadd(body_a->p, cpvrotate(joint->anchr1, body_a->rot));
 		cpVect b = cpvadd(body_b->p, cpvrotate(joint->anchr2, body_b->rot));
 		
-		cpVect points[] = {a, b};
+		points[0] = a;
+		points[1] = b;
 		ChipmunkDebugDrawPoints(5, 2, points, CONSTRAINT_COLOR);
 		ChipmunkDebugDrawSegment(a, b, CONSTRAINT_COLOR);
 	} else if(klass == cpSlideJointGetClass()){
@@ -383,7 +390,8 @@ drawConstraint(cpConstraint *constraint, void *unused)
 		cpVect a = cpvadd(body_a->p, cpvrotate(joint->anchr1, body_a->rot));
 		cpVect b = cpvadd(body_b->p, cpvrotate(joint->anchr2, body_b->rot));
 		
-		cpVect points[] = {a, b};
+		points[0] = a;
+		points[1] = b;
 		ChipmunkDebugDrawPoints(5, 2, points, CONSTRAINT_COLOR);
 		ChipmunkDebugDrawSegment(a, b, CONSTRAINT_COLOR);
 	} else if(klass == cpPivotJointGetClass()){
@@ -391,8 +399,9 @@ drawConstraint(cpConstraint *constraint, void *unused)
 	
 		cpVect a = cpvadd(body_a->p, cpvrotate(joint->anchr1, body_a->rot));
 		cpVect b = cpvadd(body_b->p, cpvrotate(joint->anchr2, body_b->rot));
-
-		cpVect points[] = {a, b};
+    
+		points[0] = a;
+		points[1] = b;
 		ChipmunkDebugDrawPoints(10, 2, points, CONSTRAINT_COLOR);
 	} else if(klass == cpGrooveJointGetClass()){
 		cpGrooveJoint *joint = (cpGrooveJoint *)constraint;
@@ -420,16 +429,17 @@ void ChipmunkDebugDrawConstraints(cpSpace *space)
 
 void ChipmunkDebugDrawCollisionPoints(cpSpace *space)
 {
+  int i, j;
 	cpArray *arbiters = space->arbiters;
 	
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glPointSize(4.0f*ChipmunkDebugDrawPointLineScale);
 	
 	glBegin(GL_POINTS); {
-		for(int i=0; i<arbiters->num; i++){
+		for(i=0; i<arbiters->num; i++){
 			cpArbiter *arb = (cpArbiter*)arbiters->arr[i];
 			
-			for(int j=0; j<arb->numContacts; j++){
+			for(j=0; j<arb->numContacts; j++){
 				cpVect v = arb->contacts[j].p;
 				glVertex2f((GLfloat)v.x, (GLfloat)v.y);
 			}

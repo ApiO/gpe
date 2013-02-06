@@ -88,19 +88,20 @@ void cpConstraintDestroy(cpConstraint *constraint);
 void cpConstraintFree(cpConstraint *constraint);
 
 /// @private
-static inline void cpConstraintActivateBodies(cpConstraint *constraint)
+static void cpConstraintActivateBodies(cpConstraint *constraint)
 {
-	cpBody *a = constraint->a; if(a) cpBodyActivate(a);
-	cpBody *b = constraint->b; if(b) cpBodyActivate(b);
+	cpBody *a,*b;
+	a = constraint->a; if(a) cpBodyActivate(a);
+	b = constraint->b; if(b) cpBodyActivate(b);
 }
 
 /// @private
 #define CP_DefineConstraintStructGetter(type, member, name) \
-static inline type cpConstraint##Get##name(const cpConstraint *constraint){return constraint->member;}
+static type cpConstraint##Get##name(const cpConstraint *constraint){return constraint->member;}
 
 /// @private
 #define CP_DefineConstraintStructSetter(type, member, name) \
-static inline void cpConstraint##Set##name(cpConstraint *constraint, type value){ \
+static void cpConstraint##Set##name(cpConstraint *constraint, type value){ \
 	cpConstraintActivateBodies(constraint); \
 	constraint->member = value; \
 }
@@ -122,7 +123,7 @@ CP_DefineConstraintStructProperty(cpConstraintPostSolveFunc, postSolve, PostSolv
 CP_DefineConstraintStructProperty(cpDataPointer, data, UserData);
 
 // Get the last impulse applied by this constraint.
-static inline cpFloat cpConstraintGetImpulse(cpConstraint *constraint)
+static cpFloat cpConstraintGetImpulse(cpConstraint *constraint)
 {
 	return constraint->CP_PRIVATE(klass)->getImpulse(constraint);
 }
@@ -133,13 +134,13 @@ static inline cpFloat cpConstraintGetImpulse(cpConstraint *constraint)
 	cpAssertHard(constraint->CP_PRIVATE(klass) == struct##GetClass(), "Constraint is not a "#struct)
 
 #define CP_DefineConstraintGetter(struct, type, member, name) \
-static inline type struct##Get##name(const cpConstraint *constraint){ \
+static type struct##Get##name(const cpConstraint *constraint){ \
 	cpConstraintCheckCast(constraint, struct); \
 	return ((struct *)constraint)->member; \
 }
 
 #define CP_DefineConstraintSetter(struct, type, member, name) \
-static inline void struct##Set##name(cpConstraint *constraint, type value){ \
+static void struct##Set##name(cpConstraint *constraint, type value){ \
 	cpConstraintCheckCast(constraint, struct); \
 	cpConstraintActivateBodies(constraint); \
 	((struct *)constraint)->member = value; \

@@ -130,22 +130,22 @@ cpFloat cpShapeNearestPointQuery(cpShape *shape, cpVect p, cpNearestPointQueryIn
 cpBool cpShapeSegmentQuery(cpShape *shape, cpVect a, cpVect b, cpSegmentQueryInfo *info);
 
 /// Get the hit point for a segment query.
-static inline cpVect cpSegmentQueryHitPoint(const cpVect start, const cpVect end, const cpSegmentQueryInfo info)
+static cpVect cpSegmentQueryHitPoint(const cpVect start, const cpVect end, const cpSegmentQueryInfo info)
 {
 	return cpvlerp(start, end, info.t);
 }
 
 /// Get the hit distance for a segment query.
-static inline cpFloat cpSegmentQueryHitDist(const cpVect start, const cpVect end, const cpSegmentQueryInfo info)
+static cpFloat cpSegmentQueryHitDist(const cpVect start, const cpVect end, const cpSegmentQueryInfo info)
 {
 	return cpvdist(start, end)*info.t;
 }
 
 #define CP_DefineShapeStructGetter(type, member, name) \
-static inline type cpShapeGet##name(const cpShape *shape){return shape->member;}
+static type cpShapeGet##name(const cpShape *shape){return shape->member;}
 
 #define CP_DefineShapeStructSetter(type, member, name, activates) \
-static inline void cpShapeSet##name(cpShape *shape, type value){ \
+static void cpShapeSet##name(cpShape *shape, type value){ \
 	if(activates && shape->body) cpBodyActivate(shape->body); \
 	shape->member = value; \
 }

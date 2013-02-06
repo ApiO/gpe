@@ -1,20 +1,54 @@
 #include "renderer_test.h"
 
-/*
-#if _WIN32
-  #include <windows.h>
-#endif
-#include <GL\GL.h>
 #include <math.h>
 #include <time.h>
-#include <SOIL\SOIL.h>
 
 #include "window_manager.h"
+#include <SOIL\SOIL.h>
 #include "rsx_mngr_temp.h"
 #include "renderer.h"
+#include "gpr_memory.h"
 
-#define ITEM_COUNT 5
-#define ITEM_TEX_COUNT 2
+#define HEIGHT          600
+#define WIDTH           800
+#define ITEM_COUNT      5
+#define ITEM_TEX_COUNT  2
+
+
+void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex);
+
+void renderer_test_foo()
+{
+  int i;
+  window_manager w;
+  graphic_buffer gb;
+  rsx_mngr r;
+  U32 soil_tex[ITEM_TEX_COUNT];
+
+  gpr_memory_init(410241024);
+
+  window_manager_init(&w, "simple gl rendering test", HEIGHT, WIDTH);
+  w.display_fps = 1;
+  w.display_axes = 1;
+
+  _init_env(&gb, &r, soil_tex);
+
+  while(w.running)
+  {
+    window_manager_clear(&w);
+      
+    renderer_draw(&gb);
+      
+    window_manager_swapBuffers(&w);
+  }
+
+  //clean
+  for (i=0; i < ITEM_TEX_COUNT; i++)  glDeleteTextures(1, &(GLuint)soil_tex[i]);
+  gpr_array_destroy(&gb);
+  rsx_mngr_temp_destroy(&r);
+  window_manager_free(&w);
+  gpr_memory_shutdown();
+}
 
 void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
 {
@@ -61,38 +95,4 @@ void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
 
     gpr_array_push_back(gpe_scene_item_t, gb, scene_item);
   }
-}
-*/
-
-void renderer_test_foo()
-{
-/*
-  int i;
-  window_manager window;
-  graphic_buffer gb;
-  rsx_mngr r;
-  U32 soil_tex[ITEM_TEX_COUNT];
-
-  gpr_memory_init(4*1024*1024);
-  
-  window_manager_init(&window, "RENDERER debug", 600, 800);
-
-  _init_env(&gb, &r, soil_tex);
-
-  while (window.running)
-  {
-    window_manager_clear(&window);
-    
-    renderer_draw(&gb);
-
-    window_manager_swapBuffers(&window);
-  }
-  
-  //clean
-  for (i=0; i < ITEM_TEX_COUNT; i++)  glDeleteTextures(1, &(GLuint)soil_tex[i]);
-  gpr_array_destroy(&gb);
-  rsx_mngr_temp_destroy(&r);
-  window_manager_free(&window);
-  gpr_memory_shutdown();
-  */
 }

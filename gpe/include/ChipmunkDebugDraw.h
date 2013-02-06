@@ -23,16 +23,21 @@
 
 #include <chipmunk\chipmunk.h>
 
-typedef struct Color {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct 
+{
 	float r, g, b, a;
 } Color;
 
-static inline Color RGBAColor(float r, float g, float b, float a){
+static Color RGBAColor(float r, float g, float b, float a){
 	Color color = {r, g, b, a};
 	return color;
 }
 
-static inline Color LAColor(float l, float a){
+static Color LAColor(float l, float a){
 	Color color = {l, l, l, a};
 	return color;
 }
@@ -52,5 +57,9 @@ void ChipmunkDebugDrawConstraints(cpSpace *space);
 void ChipmunkDebugDrawCollisionPoints(cpSpace *space);
 
 void ChipmunkDebugDraw_SetPointLineScale(float scale);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif ChipmunkDebugDraw_h

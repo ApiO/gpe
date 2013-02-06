@@ -98,7 +98,7 @@ void _print_array (char *title, graphic_array *arr, I32 count)
   }
 }
 */
-
+/*
 void _quickSort(int *arr, int elements) {
 
   const int MAX_LEVELS = 64;
@@ -149,3 +149,4 @@ void foo_hgkghjk(void)
   }
   
 }
+*/

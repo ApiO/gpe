@@ -7,10 +7,11 @@
 
 void physics_system_init (physics_system *system, int gravity_x, int gravity_y, int object_count)
 {
+  cpSpace *space;
   system->capacity = object_count;
   gpr_idlut_init(gpe_physics, &system->table, gpr_default_allocator);
-  
-  cpSpace *space = cpSpaceNew();
+
+  space = cpSpaceNew();
   system->space = space;
   cpSpaceSetGravity(space, cpv(gravity_x, gravity_y));
 }
@@ -72,10 +73,17 @@ void  physics_system_free (physics_system * system)
 //DEV :: ajoute un shape directement au space : ne passe pas par idlut. doit être utilisé pour dev/test sur physics_debug
 void  physics_system_loadFoo0 (physics_system * system)
 {
+  cpShape *ground;
+  cpShape *ballShape;
+  cpFloat radius = 5;
+  cpFloat mass = 1;
+  cpFloat moment;
+  cpBody *ballBody;
+
   // Add a static line segment shape for the ground.
   // We'll make it slightly tilted so the ball will roll off.
   // We attach it to space->staticBody to tell Chipmunk it shouldn't be movable.
-  cpShape *ground = cpSegmentShapeNew(system->space->staticBody, cpv(-20, 5), cpv(20, -5), 0);
+  ground = cpSegmentShapeNew(system->space->staticBody, cpv(-20, 5), cpv(20, -5), 0);
   cpShapeSetFriction(ground, 1);
   cpSpaceAddShape(system->space, ground);
   
@@ -83,23 +91,20 @@ void  physics_system_loadFoo0 (physics_system * system)
   // First we need to make a cpBody to hold the physical properties of the object.
   // These include the mass, position, velocity, angle, etc. of the object.
   // Then we attach collision shapes to the cpBody to give it a size and shape.
-  
-  cpFloat radius = 5;
-  cpFloat mass = 1;
-  
+    
   // The moment of inertia is like mass for rotation
   // Use the cpMomentFor*() functions to help you approximate it.
-  cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
+  moment = cpMomentForCircle(mass, 0, radius, cpvzero);
   
   // The cpSpaceAdd*() functions return the thing that you are adding.
   // It's convenient to create and add an object in one line.
-  cpBody *ballBody = cpSpaceAddBody(system->space, cpBodyNew(mass, moment));
+  ballBody = cpSpaceAddBody(system->space, cpBodyNew(mass, moment));
   cpBodySetPos(ballBody, cpv(0, 15));
   
   // Now we create the collision shape for the ball.
   // You can create multiple collision shapes that point to the same body.
   // They will all be attached to the body and move around to follow it.
-  cpShape *ballShape = cpSpaceAddShape(system->space, cpCircleShapeNew(ballBody, radius, cpvzero));
+  ballShape = cpSpaceAddShape(system->space, cpCircleShapeNew(ballBody, radius, cpvzero));
   cpShapeSetFriction(ballShape, 0.7);
 }
 

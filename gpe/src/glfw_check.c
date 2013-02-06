@@ -24,6 +24,7 @@ void Init(void)
 {
   const int window_width = 800,
             window_height = 600;
+  float aspect_ratio;
  
   if (glfwInit() != GL_TRUE)
     Shut_Down(1);
@@ -36,7 +37,7 @@ void Init(void)
   // set the projection matrix to a normal frustum with a max depth of 50
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  float aspect_ratio = ((float)window_height) / window_width;
+  aspect_ratio = ((float)window_height) / window_width;
   glFrustum(.5, -.5, -.5 * aspect_ratio, .5 * aspect_ratio, 1, 50);
   glMatrixMode(GL_MODELVIEW);
 }
@@ -96,6 +97,8 @@ void Draw_Square(float red, float green, float blue)
  
 void Draw(void)
 {
+  int i = 0, squares = 15;
+  float red = 0, blue = 1;
   // reset view matrix
   glLoadIdentity();
   // move view back a bit
@@ -105,8 +108,6 @@ void Draw(void)
   glRotatef(rotate_z, 0, 0, 1);
   // by repeatedly rotating the view matrix during drawing, the
   // squares end up in a circle
-  int i = 0, squares = 15;
-  float red = 0, blue = 1;
   for (; i < squares; ++i){
     glRotatef((float)(360.0/squares), 0.0f, 0.0f, 1.0f);
     // colors change for each square

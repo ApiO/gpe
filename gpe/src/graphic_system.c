@@ -16,7 +16,7 @@ U64 graphic_system_add (graphic_system *system, GLuint tex_id)
   return gpr_idlut_add(gpe_graphic_t, &system->table, &graphic);
 }
 
-U64 graphic_system_add (graphic_system *system, gpe_graphic_t graphic)
+U64 graphic_system_add_d (graphic_system *system, gpe_graphic_t graphic)
 {
   gpe_gl_graphic_t gl_graphic;
   _graphic_system_bind_gl_item(&graphic, &gl_graphic);

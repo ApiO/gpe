@@ -1,8 +1,8 @@
 ﻿#include "font_system.h"
 
 #include <string.h>
+#include <stdio.h>
 #include <SOIL\SOIL.h>
-#include <assert.h>
 #include "gpr_murmur_hash.h"
 #include "gpr_tmp_allocator.h"
 #include "gpr_sort.h"
@@ -312,8 +312,8 @@ void font_system_text_destroy (U64 id)
 
 void font_system_free ()
 {
-  U32 i, j;
-
+  U32 i;
+  gpe_bmfont *f, *fend;
   //clean texts
   for (i=0; i<_fontsystem.texts.num_items; i++)
     glDeleteLists((gpr_idlut_begin(gpe_text, &_fontsystem.texts) + i)->cmd_id, 1);
@@ -321,15 +321,16 @@ void font_system_free ()
   gpr_idlut_destroy(gpe_font_string, &_fontsystem.texts);
 
   //clean fonts
-  gpe_bmfont *f = gpr_hash_begin(gpe_bmfont, &_fontsystem.fonts);
-  gpe_bmfont *fend = gpr_hash_end(gpe_bmfont, &_fontsystem.fonts);
+  f = gpr_hash_begin(gpe_bmfont, &_fontsystem.fonts);
+  fend = gpr_hash_end(gpe_bmfont, &_fontsystem.fonts);
   for (;f < fend; f++)
   {
+    GLuint *t, *tend;
     //clean chars
     gpr_hash_destroy(gpe_font_char, &f->chars);
     //clean tex
-    GLuint *t = gpr_hash_begin(GLuint, &f->tex);
-    GLuint *tend = gpr_hash_end(GLuint, &f->tex);
+    t = gpr_hash_begin(GLuint, &f->tex);
+    tend = gpr_hash_end(GLuint, &f->tex);
     for (;t < tend; t++) glDeleteTextures(1, t);
 
     gpr_hash_destroy(gpe_font_char, &f->tex);
@@ -492,7 +493,7 @@ char *_fsys_get_font_path (char *filepath, gpr_allocator_t *a)
   int index;
   index = _last_indexof(filepath, '\\');
 
-  if(index != NULL && index > 0)
+  if(index > 0 && index > 0)
     path = _substring(0, index+1, filepath, a);
   else
   {
@@ -507,7 +508,7 @@ static I32 _last_indexof (char *str, char chr)
   U32 i, len;
   len = strlen(str);
   for (i=len-1; i>=0; i--)  if(str[i] == chr) return i;
-  return NULL;
+  return -1;
 }
 
 static char *_substring (int start, int stop, char *src, gpr_allocator_t *a)

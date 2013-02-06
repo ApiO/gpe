@@ -45,7 +45,7 @@ void cpArrayFreeEach(cpArray *arr, void (freeFunc)(void*));
 
 //MARK: Foreach loops
 
-static inline cpConstraint *
+static cpConstraint *
 cpConstraintNext(cpConstraint *node, cpBody *body)
 {
 	return (node->a == body ? node->next_a : node->next_b);
@@ -54,7 +54,7 @@ cpConstraintNext(cpConstraint *node, cpBody *body)
 #define CP_BODY_FOREACH_CONSTRAINT(bdy, var)\
 	for(cpConstraint *var = bdy->constraintList; var; var = cpConstraintNext(var, bdy))
 
-static inline cpArbiter *
+static cpArbiter *
 cpArbiterNext(cpArbiter *node, cpBody *body)
 {
 	return (node->body_a == body ? node->thread_a.next : node->thread_b.next);
@@ -100,7 +100,7 @@ void cpBodyRemoveConstraint(cpBody *body, cpConstraint *constraint);
 //MARK: Shape/Collision Functions
 
 // TODO should move this to the cpVect API. It's pretty useful.
-static inline cpVect
+static cpVect
 cpClosetPointOnSegment(const cpVect p, const cpVect a, const cpVect b)
 {
 	cpVect delta = cpvsub(a, b);
@@ -110,7 +110,7 @@ cpClosetPointOnSegment(const cpVect p, const cpVect a, const cpVect b)
 
 cpShape* cpShapeInit(cpShape *shape, const cpShapeClass *klass, cpBody *body);
 
-static inline cpBool
+static cpBool
 cpShapeActive(cpShape *shape)
 {
 	return shape->prev || (shape->body && shape->body->shapeList == shape);
@@ -119,15 +119,18 @@ cpShapeActive(cpShape *shape)
 int cpCollideShapes(const cpShape *a, const cpShape *b, cpContact *arr);
 
 // TODO doesn't really need to be inline, but need a better place to put this function
-static inline cpSplittingPlane
+static cpSplittingPlane
 cpSplittingPlaneNew(cpVect a, cpVect b)
 {
-	cpVect n = cpvnormalize(cpvperp(cpvsub(b, a)));
-	cpSplittingPlane plane = {n, cpvdot(n, a)};
+	cpVect n;
+	cpSplittingPlane plane;
+	n = cpvnormalize(cpvperp(cpvsub(b, a)));
+	plane.n = n;
+  plane.d = cpvdot(n, a);
 	return plane;
 }
 
-static inline cpFloat
+static cpFloat
 cpSplittingPlaneCompare(cpSplittingPlane plane, cpVect v)
 {
 	return cpvdot(plane.n, v) - plane.d;
@@ -135,25 +138,27 @@ cpSplittingPlaneCompare(cpSplittingPlane plane, cpVect v)
 
 void cpLoopIndexes(cpVect *verts, int count, int *start, int *end);
 
-static inline cpFloat
+static cpFloat
 cpPolyShapeValueOnAxis(const cpPolyShape *poly, const cpVect n, const cpFloat d)
 {
+  int i;
 	cpVect *verts = poly->tVerts;
 	cpFloat min = cpvdot(n, verts[0]);
 	
-	for(int i=1; i<poly->numVerts; i++){
+	for(i=1; i<poly->numVerts; i++){
 		min = cpfmin(min, cpvdot(n, verts[i]));
 	}
 	
 	return min - d;
 }
 
-static inline cpBool
+static cpBool
 cpPolyShapeContainsVert(const cpPolyShape *poly, const cpVect v)
 {
+  int i;
 	cpSplittingPlane *planes = poly->tPlanes;
 	
-	for(int i=0; i<poly->numVerts; i++){
+	for(i=0; i<poly->numVerts; i++){
 		cpFloat dist = cpSplittingPlaneCompare(planes[i], v);
 		if(dist > 0.0f) return cpFalse;
 	}
@@ -161,15 +166,18 @@ cpPolyShapeContainsVert(const cpPolyShape *poly, const cpVect v)
 	return cpTrue;
 }
 
-static inline cpBool
+static cpBool
 cpPolyShapeContainsVertPartial(const cpPolyShape *poly, const cpVect v, const cpVect n)
 {
+  int i;
 	cpSplittingPlane *planes = poly->tPlanes;
 	
-	for(int i=0; i<poly->numVerts; i++){
-		if(cpvdot(planes[i].n, n) < 0.0f) continue;
-		cpFloat dist = cpSplittingPlaneCompare(planes[i], v);
-		if(dist > 0.0f) return cpFalse;
+	for(i=0; i<poly->numVerts; i++){
+		if(cpvdot(planes[i].n, n) >= 0.0f)
+    {
+		  cpFloat dist = cpSplittingPlaneCompare(planes[i], v);
+		  if(dist > 0.0f) return cpFalse;
+    }
 	}
 	
 	return cpTrue;
@@ -197,14 +205,14 @@ void cpSpaceActivateBody(cpSpace *space, cpBody *body);
 void cpSpaceLock(cpSpace *space);
 void cpSpaceUnlock(cpSpace *space, cpBool runPostStep);
 
-static inline cpCollisionHandler *
+static cpCollisionHandler *
 cpSpaceLookupHandler(cpSpace *space, cpCollisionType a, cpCollisionType b)
 {
 	cpCollisionType types[] = {a, b};
 	return (cpCollisionHandler *)cpHashSetFind(space->collisionHandlers, CP_HASH_PAIR(a, b), types);
 }
 
-static inline void
+static void
 cpSpaceUncacheArbiter(cpSpace *space, cpArbiter *arb)
 {
 	cpShape *a = arb->a, *b = arb->b;
@@ -237,7 +245,7 @@ struct cpContact {
 cpContact* cpContactInit(cpContact *con, cpVect p, cpVect n, cpFloat dist, cpHashValue hash);
 cpArbiter* cpArbiterInit(cpArbiter *arb, cpShape *a, cpShape *b);
 
-static inline void
+static void
 cpArbiterCallSeparate(cpArbiter *arb, cpSpace *space)
 {
 	// The handler needs to be looked up again as the handler cached on the arbiter may have been deleted since the last step.
@@ -245,7 +253,7 @@ cpArbiterCallSeparate(cpArbiter *arb, cpSpace *space)
 	handler->separate(arb, space, handler->data);
 }
 
-static inline struct cpArbiterThread *
+static struct cpArbiterThread *
 cpArbiterThreadForBody(cpArbiter *arb, cpBody *body)
 {
 	return (arb->body_a == body ? &arb->thread_a : &arb->thread_b);

@@ -4,6 +4,9 @@
 #include "gpr_types.h"
 #include "gpr_idlut.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct
 {
@@ -27,6 +30,10 @@ void rsx_mngr_temp_remove_sprite(rsx_mngr *r, U64 ie);
 void rsx_mngr_temp_remove_command(rsx_mngr *r, U64 ie);
 void rsx_mngr_temp_destroy(rsx_mngr *r);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif //RSX_MNGR_TEMP_H

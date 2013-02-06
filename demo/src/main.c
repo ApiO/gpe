@@ -7,11 +7,11 @@
 #include "fonts_test.h"
 #include "graphic_system_test.h"
 #include "graphic_sort_test.h"
-#include "renderer_test.h"
-#include "gl_tmp.h"
-*/
-
 #include "font_system_test.h"
+#include "renderer_test.h"
+*/
+#include "gl_tmp.h"
+
 
 int main( int argc, const char* argv[] )
 {
@@ -23,10 +23,11 @@ int main( int argc, const char* argv[] )
   fonts_test_foo();
   graphic_system_test_foo();
   foo();
+  font_system_test_foo();
   renderer_test_foo();
-  GL_TMP_H_FOO();
 */
 
-  font_system_test_foo();
+  GL_TMP_H_FOO();
+
   return 0;
 }
