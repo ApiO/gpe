@@ -80,11 +80,11 @@ I32 font_system_load_font (char *key, char *file_path)
 
 U64  font_system_text_init (char *font_key)
 {
-  gpe_text s;
-  s.font_key = gpr_murmur_hash_64(font_key, strlen(font_key), FSYS_H_FONT_SEED);
-  s.cmd_id = 0;
-  s.cmd_id = glGenLists(1);
-  return gpr_idlut_add(gpe_text, &_fontsystem.texts, &s);
+  gpe_text text;
+  text.font_key = gpr_murmur_hash_64(font_key, strlen(font_key), FSYS_H_FONT_SEED);
+  text.cmd_id = 0;
+  text.cmd_id = glGenLists(1);
+  return gpr_idlut_add(gpe_text, &_fontsystem.texts, &text);
 }
 
 void  font_system_text_set (U64 id, wchar_t *t, gpe_text_align align)
@@ -101,6 +101,10 @@ void  font_system_text_set (U64 id, wchar_t *t, gpe_text_align align)
   text = gpr_idlut_lookup(gpe_text, &_fontsystem.texts, id);
   font = gpr_hash_get(gpe_bmfont, &_fontsystem.fonts, text->font_key);
   
+  gpr_array_init(fsys_char_pos_t, &poses, a);
+  gpr_array_init(F32, &lines, a);
+
+
   _fsys_set_poses (text, t, font, &poses, &lines, a);
   _fsys_set_lines_pad (&lines, text->width, align);
   gpr_mergesort(poses.data, poses.size, fsys_char_pos_t, _poses_comp, a);
@@ -117,10 +121,8 @@ void _fsys_set_poses (gpe_text *text, wchar_t *t, gpe_bmfont *font, fsys_poses *
   U32 max_width, curr_width, line_index;
   len = wcslen(t);
 
-  gpr_array_init(fsys_char_pos_t, poses, a);
   gpr_array_reserve(fsys_char_pos_t, poses, len);
 
-  gpr_array_init(F32, lines, a);
   {
     U32 line_count = 1;
     for(i=0; i<len; i++)
@@ -196,7 +198,7 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
 {
   U32 i;
   fsys_char_groups  char_groups;
-  GLfloat *verticies, *tex_coord;
+  F32 *verticies, *tex_coord;
 
   //init chars groups
   gpr_array_init(fsys_char_group_t, &char_groups, a);
@@ -221,8 +223,9 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
     }
   }
 
-  verticies = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
-  tex_coord = (GLfloat*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
+  verticies = (F32*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
+  tex_coord = (F32*)gpr_allocate(_fontsystem.a, sizeof(GLfloat)*poses->size*8);
+
   for(i=0; i<poses->size; i++)
   {
     fsys_char_pos_t *pos = &gpr_array_item(poses, i);
@@ -249,7 +252,7 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
     verticies[tmp+6] = (GLfloat)chr->x_off+chr->w+line_pad_x+pos->x;
     verticies[tmp+7] = (GLfloat)chr->y_off+chr->h+line_pad_y;
   }
-  
+
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR );
   glNewList(text->cmd_id, GL_COMPILE);
@@ -263,7 +266,6 @@ void _fsys_create_command(gpe_text *text, gpe_bmfont *font, fsys_poses *poses, f
       glBindTexture(GL_TEXTURE_2D, tex_id);  
       glDrawArrays(GL_QUADS, group->first*4, group->count*4);
     }
-    
   }glEndList();
 
   gpr_array_destroy(&char_groups);
@@ -304,9 +306,7 @@ void font_system_text_print (U64 id, F32 x, F32 y, gpe_text_dock dock, F32 scree
 
 void font_system_text_destroy (U64 id)
 {
-  gpe_text *text = gpr_idlut_lookup(gpe_text, &_fontsystem.texts, id);
-  glDeleteLists(text->cmd_id, 1);
-  
+  glDeleteLists(gpr_idlut_lookup(gpe_text, &_fontsystem.texts, id)->cmd_id, 1);
   gpr_idlut_remove(gpe_text, &_fontsystem.texts, id);
 }
 
@@ -317,6 +317,7 @@ void font_system_free ()
   //clean texts
   for (i=0; i<_fontsystem.texts.num_items; i++)
     glDeleteLists((gpr_idlut_begin(gpe_text, &_fontsystem.texts) + i)->cmd_id, 1);
+  
   
   gpr_idlut_destroy(gpe_font_string, &_fontsystem.texts);
 
@@ -363,7 +364,6 @@ I32 _fsys_parse_page (gpe_bmfont *f, char *line, char *path)
   filename = _fsys_get_path_value (line, "file=", _fontsystem.a);
   imagepath = _strappend(path, filename, _fontsystem.a);
 
-  
   tex_id = SOIL_load_OGL_texture (
     imagepath, 
     SOIL_LOAD_AUTO, 

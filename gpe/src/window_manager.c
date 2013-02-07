@@ -72,7 +72,7 @@ void window_manager_init (window_manager *m, char * title, int height, int width
   m->height = height;
  
   if( !glfwInit() ) exit( EXIT_FAILURE );
-  
+
   if( !glfwOpenWindow( width, height, 0,0,0,0,0,0, GLFW_WINDOW ) )
   {
     glfwTerminate();
@@ -85,7 +85,7 @@ void window_manager_init (window_manager *m, char * title, int height, int width
     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     exit(EXIT_FAILURE); 
   }
-
+ 
   glfwSetWindowTitle(title);
   
   _wm_gl_init(height, width);
@@ -93,7 +93,7 @@ void window_manager_init (window_manager *m, char * title, int height, int width
   
   font_system_init(gpr_default_allocator);
   m->fps_util.id = font_system_text_init(FSYS_DEFAULT_FONT_NAME);
-  m->fps_util.t0Value = glfwGetTime();;
+  m->fps_util.t0Value = glfwGetTime();
   m->fps_util.fpsFrameCount = 0;
   m->fps_util.fps = 0;
   font_system_text_set( m->fps_util.id, L"FPS: 0", ALIGN_TEXT_RIGHT);
@@ -106,6 +106,7 @@ void window_manager_clear (window_manager *m)
   glLoadIdentity();
   
   if(m->display_axes) glCallList(m->axes_cmd);
+  
 }
 
 void window_manager_swapBuffers (window_manager *m)
@@ -121,7 +122,6 @@ void window_manager_swapBuffers (window_manager *m)
     _wm_set_fps(m);
     font_system_text_print( m->fps_util.id, 10, 0, DOCK_TEXT_TOP_RIGHT, (F32)m->height, (F32)m->width);
   }
-
   glfwSwapBuffers();
 
   m->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
@@ -135,7 +135,6 @@ void window_manager_free (window_manager *m)
 
 void _wm_debug_init_axes(window_manager *m, GLfloat height, GLfloat width)
 {
-
   GLfloat axes_verticies[64] = { 
     0,0, 0,height/4,
     0,0, width/4,0,
