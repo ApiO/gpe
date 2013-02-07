@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glfw.h>
+#include <GL\glfw.h>
 
 void _wm_debug_init_axes (window_manager *m, GLfloat height, GLfloat width);
 void _wm_gl_init (int height, int width);
@@ -63,6 +63,7 @@ void _wm_gl_init (int height, int width)
 
 void window_manager_init (window_manager *m, char * title, int height, int width)
 {
+  GLenum err;
   m->running = GL_TRUE;
   m->restart = 0;
   m->display_fps = 0;
@@ -76,6 +77,13 @@ void window_manager_init (window_manager *m, char * title, int height, int width
   {
     glfwTerminate();
     exit( EXIT_FAILURE );
+  }
+  
+  err = glewInit();
+  if (GLEW_OK != err) 
+  { 
+    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    exit(EXIT_FAILURE); 
   }
 
   glfwSetWindowTitle(title);

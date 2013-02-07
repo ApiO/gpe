@@ -53,8 +53,8 @@ void renderer_test_foo()
 void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
 {
   int i;
-  U32 gl_cmd_id;
-  U64 cmd_id;
+ // U32 gl_cmd_id;
+ // U64 cmd_id;
 
   gpr_array_init(gpe_scene_item_t, gb, gpr_default_allocator);
   rsx_mngr_temp_init(rm);
@@ -73,7 +73,7 @@ void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
 
   //create gl command list and get list ID
   //gl_cmd_id = glNewList(1); ...
-  cmd_id = rsx_mngr_temp_add_command(rm, gl_cmd_id);
+  //cmd_id = rsx_mngr_temp_add_command(rm, gl_cmd_id);
   
   for(i=0; i < ITEM_COUNT; i++)
   {
@@ -82,7 +82,7 @@ void _init_env(graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
     U64 sprite_id;
 
     sprite.tex_id = soil_tex[i%2 ? 1 : 0];
-    sprite.command_id = cmd_id;
+    //sprite.command_id = cmd_id;
     sprite.tex_x = 0;
     sprite.tex_y = 0;
     sprite.height = 128;

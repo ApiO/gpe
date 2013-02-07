@@ -105,7 +105,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>gpr.lib;chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>gpr.lib;chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib;glew32sd.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)\lib\$(Configuration)\;$(ProjectDir)\..\..\..\..\gpr\msvc\vc11\gpr\build\$(Configuration)\</AdditionalLibraryDirectories>
@@ -128,7 +128,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>gpr.lib;chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>gpr.lib;chipmunk.lib;GLFW.lib;SOIL.lib;opengl32.lib;glew32s.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)\lib\$(Configuration)\;$(ProjectDir)\..\..\..\..\gpr\msvc\vc11\gpr\build\$(Configuration)\</AdditionalLibraryDirectories>

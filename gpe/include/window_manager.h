@@ -1,6 +1,8 @@
-#ifndef window_manager_h
-#define window_manager_h
+#ifndef WINDOW_MANAGER_H
+#define WINDOW_MANAGER_H
 
+#define GLEW_STATIC
+#include <GL\glew.h>
 #include "font_system.h"
 #include "gpr_types.h"
 
