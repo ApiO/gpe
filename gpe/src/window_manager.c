@@ -78,7 +78,8 @@ void window_manager_init (window_manager *m, char * title, int height, int width
     glfwTerminate();
     exit( EXIT_FAILURE );
   }
-  
+  glfwEnable( GLFW_STICKY_KEYS );
+
   err = glewInit();
   if (GLEW_OK != err) 
   { 
