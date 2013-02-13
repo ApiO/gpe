@@ -15,6 +15,7 @@ typedef struct
   F32 tex_x, tex_y;
   F32 tex_w, tex_h;
   F32 width, height;
+  U32 local_depth;
 } gpe_sprite_t;
 
 typedef struct

@@ -10,9 +10,11 @@
 #include "renderer.h"
 #include "gpr_memory.h"
 
+#include <stdint.h>
+
 #define HEIGHT          600
 #define WIDTH           800
-#define ITEM_COUNT      1000
+#define ITEM_COUNT      100
 #define ITEM_TEX_COUNT  2
 #define TEX_HEIGHT      128
 #define TEX_WIDTH       128
@@ -27,16 +29,27 @@ typedef gpr_array_t(_text_pose) _text_poses;
 void _init_env_1 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex);
 void _init_env_2 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex);
 void _load_sprite (rsx_mngr *rm, char *path, U32 *soil_tex, U64 *sprite_id, int i);
-void _add_scene_item (graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U64 srite_id, wchar_t *str);
+void _add_scene_item (graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U64 srite_id, wchar_t *str, U32 wd);
 
 static _text_poses _tposes;
 
 void _test_foo1();
 void _test_foo2();
 
+
+typedef struct
+{
+  union
+  {
+    U32 u;
+    F32 f;
+  } val;
+} _tmp_;
+typedef gpr_array_t(_tmp_) temps;
+
 void renderer_test_foo()
 {
-  //_test_foo1();
+  _test_foo1();
   _test_foo2();
 }
 
@@ -154,13 +167,10 @@ void _init_env_1 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
     si.translate.x = (F32)((WIDTH/2)+(-(TEX_WIDTH/2)+(WIDTH/3)*cos(2*M_PI/ITEM_COUNT*i)));
     si.translate.y = (F32)((HEIGHT/2)+(-(TEX_HEIGHT/2)+(HEIGHT/3)*sin(2*M_PI/ITEM_COUNT*i)));
     si.translate.z = (F32)(i%3 ? 2 : i%2 ? 1 : 0);
-    si.aabb.x1 = si.translate.x;
-    si.aabb.y1 = si.translate.y;
-    si.aabb.x2 = si.translate.x+TEX_WIDTH;
-    si.aabb.y2 = si.translate.y+TEX_HEIGHT;
     si.scale.x = 1.f;
     si.scale.y = 1.f;
     si.scale.z = 1.f;
+    si.world_depth = i;
     gpr_array_push_back(gpe_scene_item_t, gb, si);
   }
 }
@@ -188,6 +198,7 @@ void _load_sprite (rsx_mngr *rm, char *path, U32 *soil_tex, U64 *sprite_id, int 
   sprite.tex_w = TEX_WIDTH;
   sprite.height = TEX_HEIGHT;
   sprite.width = TEX_WIDTH;
+  sprite.local_depth = 0;
 
   renderer_init_vbo(&sprite);
 
@@ -201,19 +212,19 @@ void _init_env_2 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
   _load_sprite(rm, "..\\..\\src\\ressources\\t1.png", soil_tex, sprite_id, 0);  
   _load_sprite(rm, "..\\..\\src\\ressources\\t2.png", soil_tex, sprite_id, 1);
   
-  _add_scene_item(gb, 200,30,5, 4,3, sprite_id[1], L"A");
-  _add_scene_item(gb, 584,60,4, 1,3, sprite_id[1], L"B");
-  _add_scene_item(gb, 392,60,4, .5f,1, sprite_id[0], L"E");
-  _add_scene_item(gb, 520,90,3, 1,1, sprite_id[0], L"D");
+  _add_scene_item(gb, 200,30,5, 4,3, sprite_id[1], L"A", 0);
+  _add_scene_item(gb, 584,60,4, 1,3, sprite_id[1], L"B", 1);
+  _add_scene_item(gb, 392,60,4, .5f,1, sprite_id[0], L"E", 2);
+  _add_scene_item(gb, 520,90,3, 1,1, sprite_id[0], L"D", 3);
   
-  _add_scene_item(gb, 264,90,3, .5f,1, sprite_id[1], L"F");
-  _add_scene_item(gb, 584,120,2, 1,1, sprite_id[0], L"C");
-  _add_scene_item(gb, 10,120,2, .5f,3, sprite_id[0], L"G");
-  _add_scene_item(gb, 30,150,1, 1,3, sprite_id[1], L"H");
+  _add_scene_item(gb, 264,90,3, .5f,1, sprite_id[1], L"F", 4);
+  _add_scene_item(gb, 584,120,2, 1,1, sprite_id[0], L"C", 5);
+  _add_scene_item(gb, 10,120,2, .5f,3, sprite_id[0], L"G", 6);
+  _add_scene_item(gb, 30,150,1, 1,3, sprite_id[1], L"H", 7);
   
 }
 
-void _add_scene_item(graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U64 sprite_id, wchar_t *str)
+void _add_scene_item(graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U64 sprite_id, wchar_t *str, U32 wd)
 {
   _text_pose pose;
   gpe_scene_item_t si;
@@ -224,10 +235,7 @@ void _add_scene_item(graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 s
   si.scale.x = scale_x;
   si.scale.y = scale_y;
   si.scale.z = 1.f;
-  si.aabb.x1 = si.translate.x;
-  si.aabb.y1 = si.translate.y;
-  si.aabb.x2 = (si.translate.x+TEX_WIDTH) * si.scale.x;
-  si.aabb.y2 = (si.translate.y+TEX_HEIGHT) * si.scale.y;
+  si.world_depth = wd;
 
   gpr_array_push_back(gpe_scene_item_t, gb, si);
   

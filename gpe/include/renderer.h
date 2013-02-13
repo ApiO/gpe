@@ -22,10 +22,10 @@ typedef struct
 
 typedef struct
 {
-  U64     sprite_id;
-  _3F32   translate;
-  _3F32   scale;
-  AABB    aabb;
+  U64   sprite_id;
+  U32   world_depth;
+  _3F32 translate;
+  _3F32 scale;
 } gpe_scene_item_t;
 typedef gpr_array_t(gpe_scene_item_t) graphic_buffer;
 
