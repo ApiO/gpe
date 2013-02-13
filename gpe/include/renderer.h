@@ -12,23 +12,23 @@ extern "C" {
 
 typedef struct
 {
-  F32 x, y;
-} vec2F32;
+  F32 x, y, z;
+} _3F32;
 
 typedef struct
 {
-  F32 x, y, z;
-} _3F32;
+  F32 x1, y1, x2, y2;
+} AABB;
 
 typedef struct
 {
   U64     sprite_id;
   _3F32   translate;
   _3F32   scale;
-  vec2F32 aabb[2];
-  wchar_t userData[50];
+  AABB    aabb;
 } gpe_scene_item_t;
 typedef gpr_array_t(gpe_scene_item_t) graphic_buffer;
+
 
 void renderer_init();
 void renderer_draw (rsx_mngr *r, graphic_buffer *gb);

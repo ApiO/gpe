@@ -12,7 +12,7 @@
 
 #define HEIGHT          600
 #define WIDTH           800
-#define ITEM_COUNT      20000
+#define ITEM_COUNT      1000
 #define ITEM_TEX_COUNT  2
 #define TEX_HEIGHT      128
 #define TEX_WIDTH       128
@@ -27,13 +27,22 @@ typedef gpr_array_t(_text_pose) _text_poses;
 void _init_env_1 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex);
 void _init_env_2 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex);
 void _load_sprite (rsx_mngr *rm, char *path, U32 *soil_tex, U64 *sprite_id, int i);
-void _add_scene_item (graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U32 tex_id, wchar_t *str);
+void _add_scene_item (graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U64 srite_id, wchar_t *str);
 
 static _text_poses _tposes;
 
+void _test_foo1();
+void _test_foo2();
+
 void renderer_test_foo()
 {
-  int i;
+  //_test_foo1();
+  _test_foo2();
+}
+
+void _test_foo1()
+{
+  U32 i;
   window_manager w;
   graphic_buffer gb;
   rsx_mngr r;
@@ -41,7 +50,7 @@ void renderer_test_foo()
 
   gpr_memory_init(4*1024*1024);
 
-  window_manager_init(&w, "simple gl rendering test", HEIGHT, WIDTH);
+  window_manager_init(&w, "renderer : test", HEIGHT, WIDTH);
   w.display_fps = 1;
   w.display_axes = 1;
   
@@ -50,7 +59,51 @@ void renderer_test_foo()
 
   renderer_init();
   
-  //_init_env_1(&gb, &r, soil_tex);
+  _init_env_1(&gb, &r, soil_tex);
+
+  while(w.running)
+  {
+    window_manager_clear(&w);
+      
+    renderer_draw(&r, &gb);
+      
+    window_manager_swapBuffers(&w);
+  }
+
+  //clean
+  for (i=0; i < ITEM_TEX_COUNT; i++)  
+  {
+    glDeleteTextures(1, &(GLuint)soil_tex[i]);
+    renderer_destroy_vbo((gpr_idlut_begin(gpe_sprite_t, &r.sprites)+i));
+  }
+  
+  renderer_shutdown();
+
+  gpr_array_destroy(&gb);
+  rsx_mngr_temp_destroy(&r);
+  window_manager_free(&w);
+  
+  gpr_memory_shutdown();
+}
+
+void _test_foo2()
+{
+  U32 i;
+  window_manager w;
+  graphic_buffer gb;
+  rsx_mngr r;
+  U32 soil_tex[ITEM_TEX_COUNT];
+
+  gpr_memory_init(4*1024*1024);
+
+  window_manager_init(&w, "rendering : sort test", HEIGHT, WIDTH);
+  w.display_fps = 1;
+  w.display_axes = 1;
+  
+  gpr_array_init(gpe_scene_item_t, &gb, gpr_default_allocator);
+  rsx_mngr_temp_init(&r);
+
+  renderer_init();
   
   gpr_array_init(_text_pose, &_tposes, gpr_default_allocator);
   gpr_array_reserve(_text_pose, &_tposes, 8);
@@ -78,13 +131,10 @@ void renderer_test_foo()
   }
   
   renderer_shutdown();
-
   gpr_array_destroy(&gb);
   rsx_mngr_temp_destroy(&r);
   window_manager_free(&w);
-
   gpr_array_destroy(&_tposes);
-  
   gpr_memory_shutdown();
 }
 
@@ -101,13 +151,13 @@ void _init_env_1 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
   {
     gpe_scene_item_t si;
     si.sprite_id = sprite_id[i%2 ? 1 : 0];
-    si.translate.x = (F32)(WIDTH/2)+(-(TEX_WIDTH/2)+(WIDTH/3)*cos(2*M_PI/ITEM_COUNT*i));
-    si.translate.y = (F32)(HEIGHT/2)+(-(TEX_HEIGHT/2)+(HEIGHT/3)*sin(2*M_PI/ITEM_COUNT*i));
-    si.translate.z = i%3 ? 2 : i%2 ? 1 : 0;
-    si.aabb[0].x = si.translate.x;
-    si.aabb[0].y = si.translate.y;
-    si.aabb[1].x = si.translate.x+TEX_WIDTH;
-    si.aabb[1].y = si.translate.y+TEX_HEIGHT;
+    si.translate.x = (F32)((WIDTH/2)+(-(TEX_WIDTH/2)+(WIDTH/3)*cos(2*M_PI/ITEM_COUNT*i)));
+    si.translate.y = (F32)((HEIGHT/2)+(-(TEX_HEIGHT/2)+(HEIGHT/3)*sin(2*M_PI/ITEM_COUNT*i)));
+    si.translate.z = (F32)(i%3 ? 2 : i%2 ? 1 : 0);
+    si.aabb.x1 = si.translate.x;
+    si.aabb.y1 = si.translate.y;
+    si.aabb.x2 = si.translate.x+TEX_WIDTH;
+    si.aabb.y2 = si.translate.y+TEX_HEIGHT;
     si.scale.x = 1.f;
     si.scale.y = 1.f;
     si.scale.z = 1.f;
@@ -144,10 +194,8 @@ void _load_sprite (rsx_mngr *rm, char *path, U32 *soil_tex, U64 *sprite_id, int 
   sprite_id[i] = rsx_mngr_temp_add_sprite(rm, &sprite);
 }
 
-
 void _init_env_2 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
 {
-  int i;
   U64 sprite_id[2];
   
   _load_sprite(rm, "..\\..\\src\\ressources\\t1.png", soil_tex, sprite_id, 0);  
@@ -162,26 +210,25 @@ void _init_env_2 (graphic_buffer *gb, rsx_mngr *rm, U32 *soil_tex)
   _add_scene_item(gb, 584,120,2, 1,1, sprite_id[0], L"C");
   _add_scene_item(gb, 10,120,2, .5f,3, sprite_id[0], L"G");
   _add_scene_item(gb, 30,150,1, 1,3, sprite_id[1], L"H");
+  
 }
 
-
-void _add_scene_item(graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U32 tex_id, wchar_t *str)
+void _add_scene_item(graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 scale_y, U64 sprite_id, wchar_t *str)
 {
   _text_pose pose;
   gpe_scene_item_t si;
-  si.sprite_id = tex_id;
+  si.sprite_id = sprite_id;
   si.translate.x = x;
   si.translate.y = y;
   si.translate.z = z;
   si.scale.x = scale_x;
   si.scale.y = scale_y;
   si.scale.z = 1.f;
-  si.aabb[0].x = si.translate.x;
-  si.aabb[0].y = si.translate.y;
-  si.aabb[1].x = (si.translate.x+TEX_WIDTH) * si.scale.x;
-  si.aabb[1].y = (si.translate.y+TEX_HEIGHT) * si.scale.y;
+  si.aabb.x1 = si.translate.x;
+  si.aabb.y1 = si.translate.y;
+  si.aabb.x2 = (si.translate.x+TEX_WIDTH) * si.scale.x;
+  si.aabb.y2 = (si.translate.y+TEX_HEIGHT) * si.scale.y;
 
-  memcpy(si.userData, str, sizeof(str));
   gpr_array_push_back(gpe_scene_item_t, gb, si);
   
   pose.id = font_system_text_init(FSYS_DEFAULT_FONT_NAME);
