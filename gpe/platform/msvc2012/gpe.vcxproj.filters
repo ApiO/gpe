@@ -17,27 +17,19 @@
     <ClCompile Include="..\..\src\physics_debug_system.c">
       <Filter>systems\physics\debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphic_system.c">
-      <Filter>systems\graphic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphic_sort_test.c">
-      <Filter>systems\graphic</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\gl_renderer.c">
-      <Filter>systems\graphic</Filter>
+      <Filter>graphic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\renderer.c">
-      <Filter>systems\graphic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\rsx_mngr_temp.c">
-      <Filter>systems\graphic</Filter>
+      <Filter>graphic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\scene_graph_system.c">
-      <Filter>systems\graphic</Filter>
+      <Filter>graphic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\font_system.c">
       <Filter>fonts</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\rsx_mngr_temp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ressource_manager.h" />
@@ -56,27 +48,19 @@
     <ClInclude Include="..\..\include\ChipmunkDebugDraw.h">
       <Filter>systems\physics\debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\graphic_system.h">
-      <Filter>systems\graphic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\graphic_sort_test.h">
-      <Filter>systems\graphic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\gl_renderer.h">
-      <Filter>systems\graphic</Filter>
+      <Filter>graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\renderer.h">
-      <Filter>systems\graphic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\rsx_mngr_temp.h">
-      <Filter>systems\graphic</Filter>
+      <Filter>graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\scene_graph_system.h">
-      <Filter>systems\graphic</Filter>
+      <Filter>graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\font_system.h">
       <Filter>fonts</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\rsx_mngr_temp.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="systems">
@@ -94,7 +78,7 @@
     <Filter Include="fonts">
       <UniqueIdentifier>{c0224462-1ce4-47d5-886a-fe85e5ae4c01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="systems\graphic">
+    <Filter Include="graphic">
       <UniqueIdentifier>{b4f7ccb1-36f5-4bc1-91b7-422edd3a4aa3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

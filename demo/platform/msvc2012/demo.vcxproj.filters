@@ -11,9 +11,6 @@
     <ClCompile Include="..\..\src\TheoJansen.c">
       <Filter>SAMPLES\physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphic_system_test.c">
-      <Filter>SAMPLES\graphic</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\renderer_test.c">
       <Filter>SAMPLES\graphic</Filter>
     </ClCompile>
@@ -22,6 +19,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\font_system_test.c">
       <Filter>SAMPLES\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scene_graph_system_test.c">
+      <Filter>SAMPLES\graphic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -34,9 +34,6 @@
     <ClInclude Include="..\..\src\TheoJansen.h">
       <Filter>SAMPLES\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphic_system_test.h">
-      <Filter>SAMPLES\graphic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\renderer_test.h">
       <Filter>SAMPLES\graphic</Filter>
     </ClInclude>
@@ -45,6 +42,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\font_system_test.h">
       <Filter>SAMPLES\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scene_graph_system_test.h">
+      <Filter>SAMPLES\graphic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
