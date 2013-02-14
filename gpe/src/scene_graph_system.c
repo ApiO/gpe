@@ -1,4 +1,5 @@
 #include "scene_graph_system.h"
+#include "renderer.h"
 
 void scene_graph_system_init     (scene_graph_system *s, gpr_allocator_t *a)
 {

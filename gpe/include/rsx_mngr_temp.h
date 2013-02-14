@@ -2,20 +2,23 @@
 #define RSX_MNGR_TEMP_H
 
 #include "gpr_types.h"
+#include "gpr_math.h"
 #include "gpr_idlut.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
 typedef struct
 {
-  U32 tex_id;
-  U32 vbo[2];
-  F32 tex_x, tex_y;
-  F32 tex_w, tex_h;
-  F32 width, height;
-  U32 local_depth;
+  U32     tex_id;
+  U32     vbo[2];
+  F32     tex_x, tex_y;
+  F32     tex_w, tex_h;
+  F32     width, height;
+  U32     local_depth;
+  Vector2 local_translate;
 } gpe_sprite_t;
 
 typedef struct

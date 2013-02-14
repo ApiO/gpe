@@ -17,9 +17,6 @@
     <ClCompile Include="..\..\src\physics_debug_system.c">
       <Filter>systems\physics\debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\gl_renderer.c">
-      <Filter>graphic</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\renderer.c">
       <Filter>graphic</Filter>
     </ClCompile>
@@ -47,9 +44,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\ChipmunkDebugDraw.h">
       <Filter>systems\physics\debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\gl_renderer.h">
-      <Filter>graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\renderer.h">
       <Filter>graphic</Filter>
