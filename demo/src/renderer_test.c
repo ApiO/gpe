@@ -14,7 +14,7 @@
 
 #define HEIGHT          600
 #define WIDTH           800
-#define ITEM_COUNT      100
+#define ITEM_COUNT      1000
 #define ITEM_TEX_COUNT  2
 #define TEX_HEIGHT      128
 #define TEX_WIDTH       128
@@ -36,26 +36,17 @@ static _text_poses _tposes;
 void _test_foo1();
 void _test_foo2();
 
-
-typedef struct
-{
-  union
-  {
-    U32 u;
-    F32 f;
-  } val;
-} _tmp_;
-typedef gpr_array_t(_tmp_) temps;
-
 void renderer_test_foo()
 {
   _test_foo1();
-  _test_foo2();
+  //_test_foo2();
 }
 
 void _test_foo1()
 {
   U32 i;
+  U64 desc_id;
+  wchar_t desc[500];
   window_manager w;
   graphic_buffer gb;
   rsx_mngr r;
@@ -70,15 +61,19 @@ void _test_foo1()
   gpr_array_init(gpe_scene_item_t, &gb, gpr_default_allocator);
   rsx_mngr_temp_init(&r);
 
-  renderer_init();
-  
   _init_env_1(&gb, &r, soil_tex);
 
+  desc_id = font_system_text_init(FSYS_DEFAULT_FONT_NAME);
+  swprintf(desc, L"entities:%d\nsprites:%d\ngraphic buffer size:%d", ITEM_COUNT, ITEM_TEX_COUNT, gb.size);
+  font_system_text_set(desc_id, desc, ALIGN_TEXT_LEFT);
+
+  renderer_init();
   while(w.running)
   {
     window_manager_clear(&w);
       
     renderer_draw(&r, &gb);
+    font_system_text_print(desc_id, 0, 0, DOCK_TEXT_BOTTOM_LEFT, HEIGHT, WIDTH);
       
     window_manager_swapBuffers(&w);
   }

@@ -9,8 +9,8 @@
 #include "graphic_sort_test.h"
 #include "font_system_test.h"
 #include "gl_tmp.h"
-#include "renderer_test.h"
 */
+//#include "renderer_test.h"
 #include "scene_graph_system_test.h"
 
 int main( int argc, const char* argv[] )
@@ -25,9 +25,10 @@ int main( int argc, const char* argv[] )
   foo();
   font_system_test_foo();
   GL_TMP_H_FOO();
-  renderer_test_foo();
 */
-foo();
+  //renderer_test_foo();
+  
+  foo();
 
 
   return 0;

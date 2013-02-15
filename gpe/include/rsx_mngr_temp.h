@@ -19,6 +19,7 @@ typedef struct
   F32     width, height;
   U32     local_depth;
   Vector2 local_translate;
+  //char    user_data[50];
 } gpe_sprite_t;
 
 typedef struct
