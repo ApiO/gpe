@@ -13,7 +13,8 @@ extern "C" {
 typedef struct
 {
   U32     tex_id;
-  U32     vbo[2];
+  U32     vbo[3];
+  U32     vao;
   F32     tex_x, tex_y;
   F32     tex_w, tex_h;
   F32     width, height;

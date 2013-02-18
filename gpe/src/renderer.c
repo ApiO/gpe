@@ -9,11 +9,14 @@
 #include <GL\GL.h>
 #include "gpr_sort.h"
 
+#include <stdio.h>
+
 typedef struct
 {
   _3F32 translate;
   _3F32 scale;
-  U32   vbo[2];
+  U32   vbo[3];
+  U32   vao;
   U32   tex_id;
   U32   world_depth, local_depth;
   //char  user_data[50];
@@ -71,6 +74,10 @@ void _renderer_scene_to_render_item(rsx_mngr *r, gpe_scene_item_t *s,
   
   ri->vbo[0] =  sprite->vbo[0];
   ri->vbo[1] =  sprite->vbo[1];
+  ri->vbo[2] =  sprite->vbo[2];
+  
+  ri->vao =  sprite->vao;
+
   ri->tex_id =  sprite->tex_id;
   ri->scale =   s->scale;
   ri->translate =   s->translate;
@@ -93,19 +100,58 @@ void renderer_init_vbo (gpe_sprite_t *s)
     (s->tex_x + s->tex_w)/s->width, (s->tex_y + s->tex_h)/s->height, 
     (s->tex_x + s->tex_w)/s->width, s->tex_y/s->height
   };
-
+  GLubyte indicies[] = { 0,1,2, 2,3,0 };
+  
   glGenBuffers(1, &s->vbo[0]);
   glBindBuffer(GL_ARRAY_BUFFER, s->vbo[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+  
   glGenBuffers(1, &s->vbo[1]);
   glBindBuffer(GL_ARRAY_BUFFER, s->vbo[1]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
+  
+  glGenBuffers(1, &s->vbo[2]);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->vbo[2]);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
+  
   glBindBuffer(GL_ARRAY_BUFFER, 0 );
+  /*
+  //vao
+  glGenVertexArrays(1, &s->vao);
+  glBindVertexArray(s->vao);
+
+    glGenBuffers(1, &s->vbo[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, s->vbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+  
+    glGenBuffers(1, &s->vbo[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, s->vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
+  
+    glGenBuffers(1, &s->vbo[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->vbo[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
+  
+  glBindVertexArray(0);
+  */
+
+  {
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR)
+    {
+      char buffer[1024];
+      sprintf(buffer, "\n----\nOpenGl error: %s\n\tline: %d\n\tfile: %s\n----\n", 
+        glewGetErrorString(err), __LINE__, __FILE__);
+      OutputDebugString(buffer);
+      exit(EXIT_FAILURE); 
+    }
+  }
+
 }
 
 void renderer_destroy_vbo (gpe_sprite_t *s)
 {
-  glDeleteBuffers(2, s->vbo);
+  glDeleteBuffers(3, s->vbo);
 }
 
 void _renderer_draw()
@@ -119,14 +165,7 @@ void _renderer_draw()
   for(i=0; i<len; i++)
   {
     gpe_render_item_t *r = &gpr_array_item(&_render_buffer, i);
-    /*
-    printf("z:%.0f\twd:%d\tld:%d\tt:%d\tud:%s\n", 
-            r->translate.z, 
-            r->world_depth, 
-            r->local_depth,
-            r->tex_id, 
-            r->user_data);
-    */
+
     if(crr_tex != r->tex_id)
     {
       crr_tex = r->tex_id;
@@ -137,14 +176,35 @@ void _renderer_draw()
     {
       glTranslatef(r->translate.x, r->translate.y, 0.f);
       glScalef(r->scale.x, r->scale.y, r->scale.z);
-    
       glBindBuffer( GL_ARRAY_BUFFER, r->vbo[0] );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, r->vbo[2]); // for indices
       glVertexPointer( 2, GL_FLOAT, 0, 0 );
+
       glBindBuffer( GL_ARRAY_BUFFER, r->vbo[1] );
       glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-      glDrawArrays( GL_QUADS, 0, 4 );
-    } glPopMatrix();
-  }
+            
+      glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+      
+      glBindBuffer(GL_ARRAY_BUFFER, 0 );
+      /*
+      glBindVertexArray(r->vao);
+      glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+      glBindVertexArray(0);
+      */
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    } glPopMatrix();
+    {
+      GLenum err = glGetError();
+      if (err != GL_NO_ERROR)
+      {
+        char buffer[1024];
+        sprintf(buffer, "\n----\nOpenGl error: %s\n\tline: %d\n\tfile: %s\n----\n", 
+          glewGetErrorString(err), __LINE__, __FILE__);
+        OutputDebugString(buffer);
+        exit(EXIT_FAILURE); 
+      }
+    }
+  }
+  //glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

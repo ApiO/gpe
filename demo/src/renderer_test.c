@@ -182,7 +182,10 @@ void _load_sprite (rsx_mngr *rm, char *path, U32 *soil_tex, U64 *sprite_id, int 
 
   if(soil_tex[i] == 0)
   {
-    fprintf(stderr, "SOIL - file not found : %s\n", path);
+    char buffer[1024];
+        sprintf(buffer, "\n----\nSOIL - file not found : %s\n\tline: %d\n\tfile: %s\n----\n", 
+      path, __LINE__, __FILE__);
+    OutputDebugString(buffer);
     exit(EXIT_FAILURE); 
   }
 

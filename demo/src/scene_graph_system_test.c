@@ -1,15 +1,18 @@
 #include "scene_graph_system_test.h"
 #include "scene_graph_system.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <stdio.h>
 #include "window_manager.h"
 #include "renderer.h"
 #include "rsx_mngr_temp.h"
 #include <SOIL\SOIL.h>
 
-#define WIDTH       1200
-#define HEIGHT      700
+#define WIDTH         1200
+#define HEIGHT        700
 #define SPRITE_COUNT  14
+#define ENTITY_COUNT  1
 
 void _init_rsx(rsx_mngr *r);
 void _load_sprite (rsx_mngr *r, char *path, F32 width, F32 height, 
@@ -20,7 +23,7 @@ void _init_graphics(rsx_mngr *r, graphic_buffer *gb, F32 world_trans_x,
                     F32 world_trans_y, U32 world_depth);
 
 static U64 _sprites[SPRITE_COUNT];
-static I32 ENTITY_COUNT = 0;
+static I32 _curr_entities = 0;
 
 void foo()
 {
@@ -42,7 +45,8 @@ void foo()
   _init_graphic_buffer(&r, &gb);
 
   desc_id = font_system_text_init(FSYS_DEFAULT_FONT_NAME);
-  swprintf(desc, L"entities:%d\nsprites:%d\ngraphic buffer size:%d", ENTITY_COUNT, SPRITE_COUNT, gb.size);
+  swprintf(desc, L"entities: %d\ngraphic/entity: %d\ngraphic_buffer_size: %d", 
+    _curr_entities, SPRITE_COUNT, gb.size);
   font_system_text_set(desc_id, desc, ALIGN_TEXT_LEFT);
 
   renderer_init();
@@ -95,7 +99,10 @@ void _load_sprite (rsx_mngr *r, char *path, F32 width, F32 height,
 
   if(sprite.tex_id == 0)
   {
-    fprintf(stderr, "SOIL - file not found : %s\n", path);
+    char buffer[1024];
+        sprintf(buffer, "\n----\nSOIL - file not found : %s\n\tline: %d\n\tfile: %s\n----\n", 
+      path, __LINE__, __FILE__);
+    OutputDebugString(buffer);
     exit(EXIT_FAILURE); 
   }
 
@@ -120,32 +127,32 @@ void _init_graphic_buffer(rsx_mngr *r, graphic_buffer *gb)
   int i,
       start = 50,
       count = 50;
-
+  /*
   _init_graphics(r, gb, 200,  425, 4);
   _init_graphics(r, gb, 250,  450, 3);
   _init_graphics(r, gb, 300,  475, 2);
   _init_graphics(r, gb, 350,  500, 1);
   _init_graphics(r, gb, 400,  525, 0);
-  ++ENTITY_COUNT;
 
   _init_graphics(r, gb, 800,  525, 5);
   _init_graphics(r, gb, 825,  500, 6);
   _init_graphics(r, gb, 850,  475, 7);
   _init_graphics(r, gb, 875,  450, 8);
   _init_graphics(r, gb, 900,  425, 9);
-  ++ENTITY_COUNT;
+  */
   
-  for(i=start; i<count+start; i++)
+  for(i=0; i<ENTITY_COUNT; i++)
   {
-    _init_graphics(r, gb, 600,  425, i);
-    ++ENTITY_COUNT;
+    F32 x = (F32)((WIDTH/2)+(WIDTH/5)*cos(2*M_PI/ENTITY_COUNT*i));
+    F32 y = (F32)((HEIGHT*3/4)+(HEIGHT/6)*sin(2*M_PI/ENTITY_COUNT*i));
+    _init_graphics(r, gb, x,  y, _curr_entities);
   }
 }
 
 void _init_graphics(rsx_mngr *r, graphic_buffer *gb, F32 world_trans_x, 
                     F32 world_trans_y, U32 world_depth)
 {
-  int i;
+  int i = SPRITE_COUNT-1;
 
   for(i=0; i<SPRITE_COUNT; i++)
   {
@@ -163,4 +170,5 @@ void _init_graphics(rsx_mngr *r, graphic_buffer *gb, F32 world_trans_x,
 
     gpr_array_push_back(gpe_scene_item_t, gb, si);
   }
+  ++_curr_entities;
 }

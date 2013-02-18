@@ -83,7 +83,10 @@ void window_manager_init (window_manager *m, char * title, int height, int width
   err = glewInit();
   if (GLEW_OK != err) 
   { 
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    char buffer[1024];
+        sprintf(buffer, "\n----\nGlew init error: %s\n\tline: %d\n\tfile: %s\n----\n", 
+      glewGetErrorString(err), __LINE__, __FILE__);
+    OutputDebugString(buffer);
     exit(EXIT_FAILURE); 
   }
  
