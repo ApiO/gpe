@@ -9,19 +9,20 @@
 extern "C" {
 #endif
 
+typedef struct
+{
+  U64 id;
+  U32 width, height;
+} gpe_texture_t;
 
 typedef struct
 {
-  U32     tex_id;
-  U32     vbo[3];
-  U32     vao;
-  F32     tex_x, tex_y;
-  F32     tex_w, tex_h;
-  F32     width, height;
-  U32     local_depth;
-  Vector2 local_translate;
-  //char    user_data[50];
-} gpe_sprite_t;
+  U64    id;
+  U64    tex_id;
+  Point2 vertices[4];
+  F32    u, v;
+  U32    depth;
+} gpe_graphic_t;
 
 typedef struct
 {
@@ -29,7 +30,7 @@ typedef struct
 } rsx_mngr;
 
 void rsx_mngr_temp_init(rsx_mngr *r);
-U64  rsx_mngr_temp_add_sprite(rsx_mngr *r, gpe_sprite_t *s);
+U64  rsx_mngr_temp_add_sprite(rsx_mngr *r, gpe_graphic_t *s);
 void rsx_mngr_temp_remove_sprite(rsx_mngr *r, U64 ie);
 void rsx_mngr_temp_destroy(rsx_mngr *r);
 
