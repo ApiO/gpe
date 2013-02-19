@@ -1,14 +1,15 @@
 #ifndef RSX_MNGR_TEMP_H
 #define RSX_MNGR_TEMP_H
-
+/*
 #include "gpr_types.h"
 #include "gpr_math.h"
 #include "gpr_idlut.h"
-
+*/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/*
 typedef struct
 {
   U64 id;
@@ -26,7 +27,8 @@ typedef struct
 
 typedef struct
 {
-  gpr_idlut_t sprites;
+  gpr_idlut_t graphics;
+  gpr_idlut_t textures;
 } rsx_mngr;
 
 void rsx_mngr_temp_init(rsx_mngr *r);
@@ -34,7 +36,7 @@ U64  rsx_mngr_temp_add_sprite(rsx_mngr *r, gpe_graphic_t *s);
 void rsx_mngr_temp_remove_sprite(rsx_mngr *r, U64 ie);
 void rsx_mngr_temp_destroy(rsx_mngr *r);
 
-
+*/
 #ifdef __cplusplus
 }
 #endif

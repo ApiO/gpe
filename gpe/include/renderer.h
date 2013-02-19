@@ -4,16 +4,11 @@
 #include "gpr_tmp_allocator.h"
 #include "gpr_types.h"
 #include "gpr_array.h"
-#include "rsx_mngr_temp.h"
+#include "ressource_manager.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct
-{
-  F32 x, y, z;
-} _3F32;
 
 typedef struct
 {
@@ -22,19 +17,50 @@ typedef struct
 
 typedef struct
 {
-  U64   sprite_id;
-  U32   world_depth;
-  _3F32 translate;
-  _3F32 scale;
+  U64     sprite_id;
+  U32     world_depth;
+  Vector3 translate;
+  Vector3 scale;
 } gpe_scene_item_t;
 typedef gpr_array_t(gpe_scene_item_t) graphic_buffer;
 
+typedef struct
+{
+  Vector3 translate;
+  Vector3 scale;
+  U32     vbo[3];
+  U32     vao;
+  U32     tex_id;
+  U32     world_depth, local_depth;
+} gpe_render_item_t;
+typedef gpr_array_t(gpe_render_item_t) render_buffer;
 
-void renderer_init();
-void renderer_draw (rsx_mngr *r, graphic_buffer *gb);
-void renderer_init_vbo (gpe_sprite_t *s);
-void renderer_destroy_vbo (gpe_sprite_t *s);
-void renderer_shutdown();
+typedef struct
+{
+  U32 vbo[3];
+} renderer_graphic_t;
+
+typedef struct
+{
+  U32 tex_id;
+} renderer_texture_t;
+
+typedef struct
+{
+  ressource_manager *rm;
+  render_buffer render_buffer;
+  gpr_idlut_t graphics;
+  gpr_idlut_t textures;
+
+} renderer;
+
+void renderer_init(renderer *r, ressource_manager *rm);
+void renderer_draw            (renderer *r, graphic_buffer *gb);
+U64  renderer_init_graphic    (renderer *r, gpe_graphic_t *g);
+void renderer_destroy_graphic (renderer *r, U64 id);
+U64  renderer_init_texture    (renderer *r, char *path);
+void renderer_destroy_texture (renderer *r, U64 id);
+void renderer_shutdown(renderer *r);
 
 #ifdef __cplusplus
 }

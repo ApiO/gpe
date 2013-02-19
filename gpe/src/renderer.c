@@ -8,23 +8,13 @@
 #endif
 #include <GL\GL.h>
 #include "gpr_sort.h"
+#include <SOIL\SOIL.h>
 
 #include <stdio.h>
 
-typedef struct
-{
-  _3F32 translate;
-  _3F32 scale;
-  U32   vbo[3];
-  U32   vao;
-  U32   tex_id;
-  U32   world_depth, local_depth;
-  //char  user_data[50];
-} gpe_render_item_t;
-
-void _renderer_scene_to_render_item (rsx_mngr *r, gpe_scene_item_t *s, 
-                                     gpe_render_item_t *ri);
-void _renderer_draw();
+void _renderer_set_render_buffer (renderer *r, gpe_scene_item_t *s, gpe_render_item_t *ri);
+void _renderer_draw(renderer *r);
+void _print_gl_error();
 
 #define _renderer_compar_item(a,b)						          \
           ((a).translate.z == (b).translate.z           \
@@ -35,19 +25,93 @@ void _renderer_draw();
 	            : (a).world_depth > (b).world_depth       \
 	          : (a).translate.z > (b).translate.z)
 
-typedef gpr_array_t(gpe_render_item_t) render_buffer;
-static render_buffer _render_buffer;
 
-void renderer_init()
+void renderer_init(renderer *r, ressource_manager *rm)
 {
-  gpr_array_init(gpe_render_item_t, &_render_buffer, gpr_default_allocator);
+  r->rm = rm;
+  gpr_array_init(gpe_render_item_t, &r->render_buffer, gpr_default_allocator);
+  gpr_idlut_init(renderer_graphic_t, &r->graphics, gpr_default_allocator);
+  gpr_idlut_init(renderer_texture_t, &r->textures, gpr_default_allocator);
 }
 
-void renderer_shutdown()
+void renderer_shutdown(renderer *r)
 {
-  gpr_array_destroy(&_render_buffer);
+  U32 i;
+  gpr_array_destroy(&r->render_buffer);
+
+  for(i=0; i<r->textures.num_items; i++)
+    glDeleteBuffers(3, (gpr_idlut_begin(renderer_graphic_t, &r->graphics) + i)->vbo);
+  gpr_idlut_destroy(renderer_graphic_t, &r->graphics);
+
+  for(i=0; i<r->textures.num_items; i++)
+    glDeleteTextures(1, &(gpr_idlut_begin(renderer_texture_t, &r->textures) + i)->tex_id);
+  gpr_idlut_destroy(renderer_texture_t, &r->textures);
 }
 
+U64 renderer_init_graphic (renderer *r, gpe_graphic_t *g)
+{
+}
+
+void renderer_destroy_graphic (renderer *r, U64 id)
+{
+}
+
+U64 renderer_init_texture (renderer *r, char *path)
+{
+  renderer_texture_t tex;
+  tex.tex_id = SOIL_load_OGL_texture (
+      path, 
+      SOIL_LOAD_AUTO, 
+      SOIL_CREATE_NEW_ID, 
+		  SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS );
+
+  if(tex.tex_id == 0)
+  {
+    char buffer[1024];
+        sprintf(buffer, "\n----\nSOIL - file not found : %s\n\tline: %d\n\tfile: %s\n----\n", 
+      path, __LINE__, __FILE__);
+    OutputDebugString(buffer);
+    exit(EXIT_FAILURE); 
+  }
+
+  return gpr_idlut_add(renderer_texture_t, &r->textures, &tex);
+}
+
+void renderer_destroy_texture (renderer *r, U64 id)
+{
+  renderer_texture_t *tex = gpr_idlut_lookup(renderer_texture_t, &r->textures, id);
+  glDeleteTextures(1, &tex->tex_id);
+  gpr_idlut_remove(renderer_texture_t, &r->textures, id);
+}
+
+
+
+void renderer_draw (renderer *r, graphic_buffer *gb)
+{
+}
+
+void _renderer_set_render_buffer (renderer *r, gpe_scene_item_t *s, gpe_render_item_t *ri)
+{
+}
+
+void _renderer_draw(renderer *r)
+{
+}
+
+void _print_gl_error()
+{
+  GLenum err = glGetError();
+  if (err != GL_NO_ERROR)
+  {
+    char buffer[1024];
+    sprintf(buffer, "\n----\nOpenGl error: %s\n\tline: %d\n\tfile: %s\n----\n", 
+      glewGetErrorString(err), __LINE__, __FILE__);
+    OutputDebugString(buffer);
+    exit(EXIT_FAILURE); 
+  }
+}
+
+/*
 void renderer_draw(rsx_mngr *r, graphic_buffer *gb)
 {
   unsigned int i;
@@ -83,7 +147,6 @@ void _renderer_scene_to_render_item(rsx_mngr *r, gpe_scene_item_t *s,
   ri->translate =   s->translate;
   ri->world_depth = s->world_depth;
   ri->local_depth = sprite->local_depth;
-  //memcpy(ri->user_data, sprite->user_data, sizeof(sprite->user_data));
 }
 
 void renderer_init_vbo (gpe_sprite_t *s)
@@ -115,25 +178,6 @@ void renderer_init_vbo (gpe_sprite_t *s)
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
   
   glBindBuffer(GL_ARRAY_BUFFER, 0 );
-  /*
-  //vao
-  glGenVertexArrays(1, &s->vao);
-  glBindVertexArray(s->vao);
-
-    glGenBuffers(1, &s->vbo[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, s->vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
-  
-    glGenBuffers(1, &s->vbo[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, s->vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
-  
-    glGenBuffers(1, &s->vbo[2]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->vbo[2]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-  
-  glBindVertexArray(0);
-  */
 
   {
     GLenum err = glGetError();
@@ -186,13 +230,6 @@ void _renderer_draw()
       glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
       
       glBindBuffer(GL_ARRAY_BUFFER, 0 );
-      /*
-      glBindVertexArray(r->vao);
-      glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-      glBindVertexArray(0);
-      */
-
-
     } glPopMatrix();
     {
       GLenum err = glGetError();
@@ -208,3 +245,4 @@ void _renderer_draw()
   }
   //glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+*/
