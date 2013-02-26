@@ -54,7 +54,7 @@ typedef struct
 
 } renderer;
 
-void renderer_init(renderer *r, ressource_manager *rm);
+void renderer_init            (renderer *r, ressource_manager *rm);
 void renderer_draw            (renderer *r, graphic_buffer *gb);
 U64  renderer_init_graphic    (renderer *r, gpe_graphic_t *g);
 void renderer_destroy_graphic (renderer *r, U64 id);
