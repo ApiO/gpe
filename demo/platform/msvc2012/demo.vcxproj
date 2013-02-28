@@ -18,6 +18,7 @@
     <ClCompile Include="..\..\src\renderer_test.c" />
     <ClCompile Include="..\..\src\scene_graph_system_test.c" />
     <ClCompile Include="..\..\src\TheoJansen.c" />
+    <ClCompile Include="..\..\src\tmp.c" />
     <ClCompile Include="..\..\src\window_test.c" />
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +28,7 @@
     <ClInclude Include="..\..\src\renderer_test.h" />
     <ClInclude Include="..\..\src\scene_graph_system_test.h" />
     <ClInclude Include="..\..\src\TheoJansen.h" />
+    <ClInclude Include="..\..\src\tmp.h" />
     <ClInclude Include="..\..\src\window_test.h" />
   </ItemGroup>
   <ItemGroup>
