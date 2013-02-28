@@ -20,13 +20,13 @@
     <ClCompile Include="..\..\src\renderer.c">
       <Filter>graphic</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scene_graph_system.c">
-      <Filter>graphic</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\font_system.c">
       <Filter>fonts</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\rsx_mngr_temp.c" />
+    <ClCompile Include="..\..\src\scene_graph.c">
+      <Filter>graphic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ressource_manager.h" />
@@ -48,13 +48,13 @@
     <ClInclude Include="..\..\include\renderer.h">
       <Filter>graphic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\scene_graph_system.h">
-      <Filter>graphic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\font_system.h">
       <Filter>fonts</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\rsx_mngr_temp.h" />
+    <ClInclude Include="..\..\include\scene_graph.h">
+      <Filter>graphic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="systems">

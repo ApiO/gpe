@@ -17,11 +17,11 @@ typedef struct
 
 typedef struct
 {
-  U64    id;
-  U64    tex_id;
-  Point2 vertices[4];
-  F32    u, v;
-  U32    depth;
+  U64     id;
+  U64     tex_id;
+  Vector2 vertices[4];
+  F32     u, v;
+  U32     depth;
 } gpe_graphic_t;
 
 typedef struct

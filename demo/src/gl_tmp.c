@@ -21,7 +21,7 @@ void GL_TMP_H_FOO()
 
   gpr_memory_init(4*1024*1024);
 
-  window_manager_init(&w, "simple gl rendering test", HEIGHT, WIDTH);
+  window_manager_init(&w, "gl_tmp.c : simple gl rendering test", HEIGHT, WIDTH);
   w.display_axes = 1;
   w.display_fps = 1;
 
@@ -30,32 +30,29 @@ void GL_TMP_H_FOO()
     SOIL_LOAD_AUTO, 
     SOIL_CREATE_NEW_ID, 
 		SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS );
+
+      glBindTexture(GL_TEXTURE_2D, tex_id);
   
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 
   glGenBuffers(1, &vbo[0]);
   glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
   
-  glGenBuffers(1, &vbo[1]);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
-  
   glGenBuffers(1, &vbo[2]);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0 );
-  _print_gl_error();
-
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-      glBindBuffer( GL_ARRAY_BUFFER, vbo[0] );
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo[2]); // for indices
       glVertexPointer( 2, GL_FLOAT, 0, 0 );
-      glBindBuffer( GL_ARRAY_BUFFER, vbo[1] );
+  
+  glGenBuffers(1, &vbo[1]);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
       glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
+  
   glBindVertexArray(0);
-  _print_gl_error();
+  glBindBuffer(GL_ARRAY_BUFFER, 0 );
+
 
   while(w.running)
   {
@@ -63,25 +60,14 @@ void GL_TMP_H_FOO()
           
    glPushMatrix();
     {
-      glTranslatef(50, 50, 0.f);
+      glTranslatef(HEIGHT/2, HEIGHT/2, 0.f);
       glColor3f(1.f, 1.f, 1.f);
-      
-      /*
-      glBindBuffer( GL_ARRAY_BUFFER, vbo[0] );
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo[2]); // for indices
-      glVertexPointer( 2, GL_FLOAT, 0, 0 );
-      glBindBuffer( GL_ARRAY_BUFFER, vbo[1] );
-      glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-      glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-      glBindBuffer(GL_ARRAY_BUFFER, 0 );
-      */
-      
+      glScalef(1.f, 1.f, 1.f);
+ 
       glBindVertexArray(vao);
-  _print_gl_error();
       glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-  _print_gl_error();
       glBindVertexArray(0);
-  _print_gl_error();
+      //glBindBuffer(GL_ARRAY_BUFFER, 0 );
 
     } glPopMatrix();
 
@@ -104,7 +90,7 @@ void _print_gl_error()
   if (err != GL_NO_ERROR)
   {
     char buffer[1024];
-    sprintf(buffer, "\n----\nOpenGl error: %s\n\tline: %d\n\tfile: %s\n----\n", 
+    sprintf_s(buffer, "\n----\nOpenGl error: %s\n\tline: %d\n\tfile: %s\n----\n", 
       glewGetErrorString(err), __LINE__, __FILE__);
     OutputDebugString(buffer);
     exit(EXIT_FAILURE); 

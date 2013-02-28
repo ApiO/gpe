@@ -1,5 +1,6 @@
 #include "scene_graph_system_test.h"
-#include "scene_graph_system.h"
+/*
+#include "scene_graph.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -13,7 +14,6 @@
 #define HEIGHT        700
 #define SPRITE_COUNT  14
 #define ENTITY_COUNT  1
-
 void _init_rsx(rsx_mngr *r);
 void _load_sprite (rsx_mngr *r, char *path, F32 width, F32 height, 
                    F32 local_trans_x, F32 local_trans_y, U32 local_depth,
@@ -24,9 +24,11 @@ void _init_graphics(rsx_mngr *r, graphic_buffer *gb, F32 world_trans_x,
 
 static U64 _sprites[SPRITE_COUNT];
 static I32 _curr_entities = 0;
+*/
 
 void foo()
 {
+/*
   window_manager w;
   rsx_mngr r;
   graphic_buffer gb;
@@ -65,8 +67,10 @@ void foo()
   rsx_mngr_temp_destroy(&r);
   window_manager_free(&w);
   gpr_memory_shutdown();
+  */
 }
 
+/*
 void _init_rsx(rsx_mngr *r)
 {
   _load_sprite (r, "..\\..\\src\\ressources\\monster\\mon_shadows\\shadow_idle.png", 321,  64, -158,  27,   13, "shadow_idle");
@@ -139,7 +143,7 @@ void _init_graphic_buffer(rsx_mngr *r, graphic_buffer *gb)
   _init_graphics(r, gb, 850,  475, 7);
   _init_graphics(r, gb, 875,  450, 8);
   _init_graphics(r, gb, 900,  425, 9);
-  */
+  //* /
   
   for(i=0; i<ENTITY_COUNT; i++)
   {
@@ -172,3 +176,4 @@ void _init_graphics(rsx_mngr *r, graphic_buffer *gb, F32 world_trans_x,
   }
   ++_curr_entities;
 }
+*/

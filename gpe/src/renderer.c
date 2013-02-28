@@ -50,6 +50,7 @@ void renderer_shutdown(renderer *r)
 
 U64 renderer_init_graphic (renderer *r, gpe_graphic_t *g)
 {
+  return 0;
 }
 
 void renderer_destroy_graphic (renderer *r, U64 id)

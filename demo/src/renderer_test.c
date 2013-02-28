@@ -1,5 +1,5 @@
 #include "renderer_test.h"
-
+/*
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <time.h>
@@ -35,13 +35,15 @@ static _text_poses _tposes;
 
 void _test_foo1();
 void _test_foo2();
+*/
 
 void renderer_test_foo()
 {
-  _test_foo1();
+  //_test_foo1();
   //_test_foo2();
 }
 
+/*
 void _test_foo1()
 {
   U32 i;
@@ -244,3 +246,4 @@ void _add_scene_item(graphic_buffer *gb, F32 x, F32 y, F32 z, F32 scale_x, F32 s
   pose.y = y;
   gpr_array_push_back(_text_pose, &_tposes, pose);
 }
+*/

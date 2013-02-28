@@ -10,10 +10,12 @@
 extern "C" {
 #endif
 
+/*
 typedef struct
 {
   F32 x1, y1, x2, y2;
 } AABB;
+*/
 
 typedef struct
 {
