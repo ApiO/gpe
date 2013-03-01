@@ -30,9 +30,9 @@ static F32 tex_coord[] = { 0,0, 0,1, 1,1, 1,0, };
 static GLubyte indicies[] = { 0,1,2, 2,3,0 };
 
 static sample sample_0; //VBO : glDrawArrays sur GL_QUADS
-static sample sample_1; //VBO : glDrawElements sur GL_TRIANGLES
+static sample sample_1; //VBO : glDrawElements sur GL_TRIANGLES avec buffer d'indice
 static sample sample_2; //VAO : glDrawArrays sur GL_QUADS
-static sample sample_3; //VAO : glDrawElements sur GL_TRIANGLES
+static sample sample_3; //VAO : glDrawElements sur GL_TRIANGLES avec buffer d'indice
 
 void GL_TMP_H_FOO()
 {
@@ -112,18 +112,13 @@ void _init_sample_2()
   glBindBuffer(GL_ARRAY_BUFFER, sample_2.vbo[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
   glVertexPointer( 2, GL_FLOAT, 0, 0 );
-  /*
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  */
+  glEnableClientState(GL_VERTEX_ARRAY);
+
 
   glBindBuffer(GL_ARRAY_BUFFER, sample_2.vbo[1]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
   glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-  /*
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  */
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
   glBindBuffer(GL_ARRAY_BUFFER, 0 );
   glBindVertexArray(0);
@@ -138,21 +133,16 @@ void _init_sample_3()
 
   glBindBuffer(GL_ARRAY_BUFFER, sample_3.vbo[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+  glVertexPointer( 2, GL_FLOAT, 0, 0 );
+  glEnableClientState(GL_VERTEX_ARRAY);
+
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sample_3.vbo[2]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-  glVertexPointer( 2, GL_FLOAT, 0, 0 );
-  /*
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  */
 
   glBindBuffer(GL_ARRAY_BUFFER, sample_3.vbo[1]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coord), tex_coord, GL_STATIC_DRAW);
   glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-  /*
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  */
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0 );
@@ -161,12 +151,13 @@ void _init_sample_3()
 
 void _display_sample_0()
 {
+  glBindTexture(GL_TEXTURE_2D, tex_id);
+
   glPushMatrix();
   {
-    glTranslatef(0.f, 0.f, 0.f);
-    glColor3f(1.f, 1.f, 1.f);
+    glTranslatef((WIDTH/4)-64, (HEIGHT/4)-64, 0.f);
+    glColor3f(1.f, 0.f, 0.f);
  
-    glBindTexture(GL_TEXTURE_2D, tex_id);
     glBindBuffer(GL_ARRAY_BUFFER, sample_0.vbo[0]);
     glVertexPointer( 2, GL_FLOAT, 0, 0 );
     glBindBuffer(GL_ARRAY_BUFFER, sample_0.vbo[1]);
@@ -176,6 +167,7 @@ void _display_sample_0()
     glBindBuffer(GL_ARRAY_BUFFER, 0 );
 
   } glPopMatrix();
+
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -185,8 +177,8 @@ void _display_sample_1()
 
   glPushMatrix();
   {
-    glTranslatef(0.f, HEIGHT-128, 0.f);
-    glColor3f(1.f, 1.f, 1.f);
+    glTranslatef((WIDTH/4)-64, (3*HEIGHT/4)-64, 0.f);
+    glColor3f(0.f, 1.f, 0.f);
  
     glBindBuffer( GL_ARRAY_BUFFER, sample_1.vbo[0] );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sample_1.vbo[2] );
@@ -198,39 +190,44 @@ void _display_sample_1()
     glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0 );
 
-    glBindTexture(GL_TEXTURE_2D, 0);
   } glPopMatrix();
+
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void _display_sample_2()
 {
   glBindTexture(GL_TEXTURE_2D, tex_id);
+
   glPushMatrix();
   {
-    glTranslatef(WIDTH-128, 0.f, 0.f);
-    glColor3f(1.f, 1.f, 1.f);
+    glTranslatef((3*WIDTH/4)-64, (HEIGHT/4)-64, 0.f);
+    glColor3f(0.f, 0.f, 1.f);
  
     glBindVertexArray(sample_2.vao);
     glDrawArrays(GL_QUADS, 0, 4);
     glBindVertexArray(0);
 
   } glPopMatrix();
+
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void _display_sample_3()
 {
   glBindTexture(GL_TEXTURE_2D, tex_id);
+
   glPushMatrix();
   {
-    glTranslatef(WIDTH-128, HEIGHT-128, 0.f);
-    glColor3f(1.f, 1.f, 1.f);
+    glTranslatef((3*WIDTH/4)-64, (3*HEIGHT/4)-64, 0.f);
+    glColor3f(1.f, 1.f, 0.f);
  
     glBindVertexArray(sample_3.vao);
     glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
     glBindVertexArray(0);
 
   } glPopMatrix();
+
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 

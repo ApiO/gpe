@@ -10,10 +10,10 @@
 #include "font_system_test.h"
 #include "renderer_test.h"
 #include "scene_graph_system_test.h"
-#include "gl_tmp.h"
 */
 
 #include "tmp.h"
+#include "gl_tmp.h"
 
 int main( int argc, const char* argv[] )
 {
@@ -28,10 +28,11 @@ int main( int argc, const char* argv[] )
   font_system_test_foo();
   renderer_test_foo();
   foo();
-  GL_TMP_H_FOO();
-*/
-  
   FOO();
+*/
+
+  GL_TMP_H_FOO();
+  
 
   return 0;
 }

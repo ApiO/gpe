@@ -154,7 +154,7 @@ static void _init()
         { 1.0, 1.0, -1.0 },
         { 1.0, 1.0, 1.0 },
       };
-    GLfloat tex_coord[] = { 0,0, 0,1, 1,1, 1,0, };
+    GLfloat tex_coord[][2] = { {0.,0.}, {0.,1.}, {1.,1.}, {1.,0.}, };
     GLfloat cubeColors[][3] = {
         { 0.0, 0.0, 0.0 },
         { 0.0, 0.0, 1.0 },
@@ -180,12 +180,12 @@ static void _init()
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
     glVertexPointer(3, GL_FLOAT, 0, 0);
     glEnableClientState(GL_VERTEX_ARRAY);
-
+    
     glBindBuffer(GL_ARRAY_BUFFER, buffers[Colors]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeColors), cubeColors, GL_STATIC_DRAW);
     glColorPointer(3, GL_FLOAT, 0, 0);
     glEnableClientState(GL_COLOR_ARRAY);
-
+    
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[Elements]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
     
@@ -250,11 +250,15 @@ static void _display()
   glPushMatrix();
   glRotatef(Angle, 0.0, 1.0, 0.0);
 
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, tex_id);
 
   for (i = 0; i < NumVAOs; ++i) 
   {
+    if(i==0)
+    {
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, tex_id);
+    }
+
     glPushMatrix();
     {
       glTranslatef(Xform[i].xlate.x, Xform[i].xlate.y, Xform[i].xlate.z);
@@ -265,6 +269,12 @@ static void _display()
       glBindVertexArray(0);
 
     } glPopMatrix();
+
+    if(i==0)
+    {
+      glDisable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
   }
   glPopMatrix();
 }
