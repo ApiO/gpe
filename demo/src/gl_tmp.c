@@ -329,23 +329,62 @@ int RenderFrame()
 
 void snapshot()
 {
-  if(glfwGetKey( GLFW_KEY_DEL))
-  {
-    clock_t start = clock();
-    //JPEG
-    FIBITMAP *image;
-    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN; 
-    BYTE *pixels = (BYTE*)malloc(sizeof(BYTE)*3 * WIDTH * HEIGHT);
-    glReadPixels(0, 0, WIDTH, HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, pixels);
-    image = FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3*WIDTH, 24, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, 0);
-    FreeImage_Save(FIF_JPEG, image, "e:\\tmp.jpg", JPEG_QUALITYSUPERB);
-    free(pixels);
-    printf("JPEG: %.5f\n", (float)( clock () - start )/CLOCKS_PER_SEC);
-    //PNG
-    start = clock();
-    SOIL_save_screenshot("e:\\tmp.png", SOIL_SAVE_TYPE_BMP, 0, 0, WIDTH, HEIGHT);
-    printf("PNG:  %.5f\n", (float)( clock () - start )/CLOCKS_PER_SEC);
-  }
+  //JPEG - save to DISK
+  /*
+  int result;
+  clock_t start = clock();
+
+  FIBITMAP *img;
+  FREE_IMAGE_FORMAT fif = FIF_UNKNOWN; 
+  BYTE *pixels = (BYTE*)malloc(sizeof(BYTE)*3 * WIDTH * HEIGHT);
+  glReadPixels(0, 0, WIDTH, HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+  img = FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3*WIDTH, 24, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, 0);
+  result = FreeImage_Save(FIF_JPEG, img, "e:\\tmp.jpg", JPEG_QUALITYSUPERB);
+  free(pixels);
+  FreeImage_Unload(img);
+
+  printf("JPEG - FILE (%d): %.5f\n", result, (float)( clock () - start )/CLOCKS_PER_SEC);
+  //*/
+
+  //PNG - save to DISK
+  /*
+  start = clock();
+  SOIL_save_screenshot("e:\\tmp.png", SOIL_SAVE_TYPE_BMP, 0, 0, WIDTH, HEIGHT);
+  printf("PNG - FILE :  %.5f\n", (float)( clock () - start )/CLOCKS_PER_SEC);
+  */
+
+  //JPEG - save to MEMORY
+  //*
+  DWORD size_in_bytes = 0;
+  FIBITMAP *img;
+  BYTE *pixels, *mem_buffer;
+  long file_size;
+  int save, acquire;
+
+  clock_t start = clock();
+
+  pixels = (BYTE*)malloc(sizeof(BYTE)*3 * WIDTH * HEIGHT);
+  // Define the memory buffer.
+  FIMEMORY *hmem = FreeImage_OpenMemory();
+  glReadPixels(0, 0, WIDTH, HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+  // Define the image.
+  img = FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3*WIDTH, 24, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, 0);
+  // Save to memory
+  save = FreeImage_SaveToMemory(FIF_JPEG, img, hmem, JPEG_QUALITYSUPERB);
+  // Unload the file.
+  FreeImage_Unload(img);
+    
+  free(pixels);
+
+  // Get the file size.
+  file_size = FreeImage_TellMemory(hmem);
+
+  // Get the buffer from the memory stream.
+  acquire = FreeImage_AcquireMemory(hmem, &mem_buffer, &size_in_bytes);
+
+  FreeImage_CloseMemory(hmem);
+  printf("JPEG - MEMORY (%d;%d): %.5f\n", save, acquire, (float)( clock () - start )/CLOCKS_PER_SEC);
+  //*/
 }
 
 void _print_gl_error()
