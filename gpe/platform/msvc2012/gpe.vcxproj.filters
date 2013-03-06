@@ -55,6 +55,8 @@
     <ClInclude Include="..\..\include\scene_graph.h">
       <Filter>graphic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\jpeglib.h" />
+    <ClInclude Include="..\..\include\snapshot.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="systems">

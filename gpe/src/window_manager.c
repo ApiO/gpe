@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL\glfw.h>
+#include "GL\glfw.h"
 
 void _wm_debug_init_axes (window_manager *m, GLfloat height, GLfloat width);
 void _wm_gl_init (int height, int width);
@@ -16,7 +16,7 @@ void _wm_set_fps (window_manager *m)
 	{
 		 m->fps_util.fps = (I32)( m->fps_util.fpsFrameCount / (currentTime -  m->fps_util.t0Value));
 		 m->fps_util.fpsFrameCount = 0;
-		 m->fps_util.t0Value = glfwGetTime();
+		 m->fps_util.t0Value = currentTime;
 
     if( m->fps_util.last_fps ==  m->fps_util.fps) return;
     m->fps_util.last_fps =  m->fps_util.fps;
@@ -78,6 +78,7 @@ void window_manager_init (window_manager *m, char * title, int height, int width
     glfwTerminate();
     exit( EXIT_FAILURE );
   }
+
   glfwEnable( GLFW_STICKY_KEYS );
 
   err = glewInit();
@@ -127,7 +128,7 @@ void window_manager_swapBuffers (window_manager *m)
     font_system_text_print( m->fps_util.id, 10, 0, DOCK_TEXT_TOP_RIGHT, (F32)m->height, (F32)m->width);
   }
   glfwSwapBuffers();
-
+    
   m->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
 }
 
