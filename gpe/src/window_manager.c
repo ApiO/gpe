@@ -85,12 +85,13 @@ void window_manager_init (window_manager *m, char * title, int height, int width
     glfwTerminate();
     exit( EXIT_FAILURE );
   }
+  glfwMakeContextCurrent(m->window);
 
   err = glewInit();
   if (GLEW_OK != err) 
   { 
     char buffer[1024];
-        sprintf(buffer, "\n----\nGlew init error: %s\n\tline: %d\n\tfile: %s\n----\n", 
+        sprintf(buffer, "\n----\nGlew init error: %s\n(%d) %s\n----\n", 
       glewGetErrorString(err), __LINE__, __FILE__);
     OutputDebugString(buffer);
     exit(EXIT_FAILURE); 

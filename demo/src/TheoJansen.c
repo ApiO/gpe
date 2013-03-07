@@ -4,7 +4,7 @@
 #include "physics_system.h"
 #include "physics_debug_system.h"
 //#include "glbmfont.h"
-#include <GL/glfw.h>
+#include "GL\glfw3.h"
 
 int TheoJansen_app (void);
 void TheoJansen_init (physics_system * system);
@@ -60,17 +60,17 @@ int TheoJansen_app(void)
   {
     window_manager_clear(&manager);
     
-    if (glfwGetKey( GLFW_KEY_RIGHT ) && glfwGetWindowParam( GLFW_OPENED ))
+    if (glfwGetKey(manager.window, GLFW_KEY_RIGHT ))
     {
       tj_Keyboard.x = 1.0f;
     }
 	
-    if(glfwGetKey( GLFW_KEY_LEFT ) && glfwGetWindowParam( GLFW_OPENED ))
+    if(glfwGetKey(manager.window, GLFW_KEY_LEFT ))
     {
       tj_Keyboard.x = -1.0f;
     } 
 
-    if(glfwGetKey( GLFW_KEY_DOWN ) && glfwGetWindowParam( GLFW_OPENED ))
+    if(glfwGetKey( manager.window,GLFW_KEY_DOWN ))
     {
       tj_Keyboard.x = 0.0f;
     } 
@@ -78,7 +78,7 @@ int TheoJansen_app(void)
     TheoJansen_update(&physics_system, ticks);
     //glbmfont_print("press ENTER: reload app\npress ESC: exit app", 10, 0, dock_top_left, .9f);
 
-    physics_debug_system_draw(&physics_debug_system);
+    physics_debug_system_draw(SCREEN_WIDTH, SCREEN_HEIGHT, &physics_debug_system);
 
     window_manager_swapBuffers(&manager);
     ticks += 1;

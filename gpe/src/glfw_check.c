@@ -50,6 +50,7 @@ void Init(void)
     glfwTerminate();
     exit(EXIT_FAILURE);
   }
+  glfwMakeContextCurrent(_window);
 
   // set the projection matrix to a normal frustum with a max depth of 50
   glMatrixMode(GL_PROJECTION);

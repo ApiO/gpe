@@ -37,7 +37,7 @@ typedef struct
 
 typedef struct
 {
-  I32     text_id;
+  U64     text_id;
   double  t0Value;
   int     fpsFrameCount;
   I32     fps;
