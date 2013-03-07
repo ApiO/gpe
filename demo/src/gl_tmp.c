@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "SOIL\SOIL.h"
 #include "window_manager.h"
-#include "GL\glfw.h"
+#include "GL\glfw3.h"
 
 #include <time.h>
 #include "SOIL\SOIL.h"
@@ -25,7 +25,7 @@ void _display_sample_1(F32 r, F32 g, F32 b, F32 x, F32 y);
 void _display_sample_2(F32 r, F32 g, F32 b, F32 x, F32 y);
 void _display_sample_3(F32 r, F32 g, F32 b, F32 x, F32 y);
 static void _clean();
-void _print_gl_error();
+static void _print_gl_error();
 int RenderFrame();
 void snapshot();
 
@@ -354,7 +354,7 @@ void snapshot()
   */
 
   //JPEG - save to MEMORY
-  //*
+  /*
   DWORD size_in_bytes = 0;
   FIBITMAP *img;
   BYTE *pixels, *mem_buffer;
@@ -387,7 +387,7 @@ void snapshot()
   //*/
 }
 
-void _print_gl_error()
+static void _print_gl_error()
 {
   GLenum err = glGetError();
   if (err != GL_NO_ERROR)

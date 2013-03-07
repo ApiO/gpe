@@ -2,11 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "GL\glfw.h"
 
 void _wm_debug_init_axes (window_manager *m, GLfloat height, GLfloat width);
 void _wm_gl_init (int height, int width);
 void _wm_set_fps (window_manager *w);
+static void _glfw_error_callback(int error, const char* description);
 
 
 void _wm_set_fps (window_manager *m)
@@ -61,6 +61,11 @@ void _wm_gl_init (int height, int width)
   glEnable(GL_TEXTURE_2D);
 }
 
+static void _glfw_error_callback(int error, const char* description)
+{
+  fprintf(stderr, "Error: %s\n", description);
+}
+
 void window_manager_init (window_manager *m, char * title, int height, int width)
 {
   GLenum err;
@@ -71,15 +76,15 @@ void window_manager_init (window_manager *m, char * title, int height, int width
   m->width = width;
   m->height = height;
  
+  glfwSetErrorCallback(_glfw_error_callback);
   if( !glfwInit() ) exit( EXIT_FAILURE );
 
-  if( !glfwOpenWindow( width, height, 0,0,0,0,0,0, GLFW_WINDOW ) )
+  m->window = glfwCreateWindow(width, height, title, NULL, NULL);
+  if(!m->window)
   {
     glfwTerminate();
     exit( EXIT_FAILURE );
   }
-
-  glfwEnable( GLFW_STICKY_KEYS );
 
   err = glewInit();
   if (GLEW_OK != err) 
@@ -90,8 +95,6 @@ void window_manager_init (window_manager *m, char * title, int height, int width
     OutputDebugString(buffer);
     exit(EXIT_FAILURE); 
   }
- 
-  glfwSetWindowTitle(title);
   
   _wm_gl_init(height, width);
   _wm_debug_init_axes(m, (GLfloat)height, (GLfloat)width);
@@ -116,7 +119,7 @@ void window_manager_clear (window_manager *m)
 
 void window_manager_swapBuffers (window_manager *m)
 {
-  m->restart = !(!glfwGetKey( GLFW_KEY_ENTER ) && glfwGetWindowParam( GLFW_OPENED ));
+  m->restart = glfwGetKey( m->window, GLFW_KEY_ENTER );
 
   if(m->restart == 1) {
     m->running = 0;
@@ -127,14 +130,19 @@ void window_manager_swapBuffers (window_manager *m)
     _wm_set_fps(m);
     font_system_text_print( m->fps_util.id, 10, 0, DOCK_TEXT_TOP_RIGHT, (F32)m->height, (F32)m->width);
   }
-  glfwSwapBuffers();
+  glfwSwapBuffers(m->window);
+  glfwPollEvents();
     
-  m->running = !glfwGetKey( GLFW_KEY_ESC ) && glfwGetWindowParam( GLFW_OPENED );
+  m->running = !glfwGetKey( m->window, GLFW_KEY_ESC ) && !glfwWindowShouldClose(m->window);
 }
 
 void window_manager_free (window_manager *m)
 {
   font_system_free();
+
+  glfwDestroyWindow(m->window);
+  m->window = NULL;
+
   glfwTerminate();
 }
 

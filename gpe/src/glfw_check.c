@@ -1,23 +1,36 @@
 #include "glfw_check.h"
+
+#include <stdio.h>
 #include <stdlib.h>
-#include <GL/glfw.h>
+#include <GL/glfw3.h>
 
 void Init(void);
-void Shut_Down(int return_code);
 void Main_Loop(void);
 void Draw_Square(float red, float green, float blue);
 void Draw(void);
+static void error_callback(int error, const char* description);
 
 float rotate_y = 0,
       rotate_z = 0;
 
 const float rotations_per_tick = 0.2f;
 
+static GLFWwindow *_window;
+
 void glfw_check_foo(void)
 {
   Init();
   Main_Loop();
-  Shut_Down(0);
+
+  glfwDestroyWindow(_window);
+  _window = NULL;
+
+  glfwTerminate();
+}
+
+static void error_callback(int error, const char* description)
+{
+  fprintf(stderr, "Error: %s\n", description);
 }
 
 void Init(void)
@@ -26,14 +39,18 @@ void Init(void)
             window_height = 600;
   float aspect_ratio;
  
+  glfwSetErrorCallback(error_callback);
+
   if (glfwInit() != GL_TRUE)
-    Shut_Down(1);
-  // 800 x 600, 16 bit color, no depth, alpha or stencil buffers, windowed
-  if (glfwOpenWindow(window_width, window_height, 5, 6, 5,
-                     0, 0, 0, GLFW_WINDOW) != GL_TRUE)
-    Shut_Down(1);
-  glfwSetWindowTitle("The GLFW Window");
- 
+    exit(EXIT_FAILURE);
+
+  _window = glfwCreateWindow(window_width, window_height, "The GLFW Window", NULL, NULL);
+  if (!_window)
+  {
+    glfwTerminate();
+    exit(EXIT_FAILURE);
+  }
+
   // set the projection matrix to a normal frustum with a max depth of 50
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -42,29 +59,23 @@ void Init(void)
   glMatrixMode(GL_MODELVIEW);
 }
  
-void Shut_Down(int return_code)
-{
-  glfwTerminate();
-  exit(return_code);
-}
- 
 void Main_Loop(void)
 {
   // the time of the previous frame
   double old_time = glfwGetTime();
   // this just loops as long as the program runs
-  while(1)
+  while(!glfwWindowShouldClose(_window))
   {
     // calculate time elapsed, and the amount by which stuff rotates
     double current_time = glfwGetTime(),
            delta_rotate = (current_time - old_time) * rotations_per_tick * 360;
     old_time = current_time;
     // escape to quit, arrow keys to rotate view
-    if (glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS)
+    if (glfwGetKey(_window, GLFW_KEY_ESC) == GLFW_PRESS)
       break;
-    if (glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
+    if (glfwGetKey(_window, GLFW_KEY_LEFT)== GLFW_PRESS)
       rotate_y = (float)(rotate_y + delta_rotate);
-    if (glfwGetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
+    if (glfwGetKey(_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
       rotate_y = (float)(rotate_y - delta_rotate);
     // z axis always rotates
     rotate_z = (float)(rotate_z + delta_rotate);
@@ -74,7 +85,8 @@ void Main_Loop(void)
     // draw the figure
     Draw();
     // swap back and front buffers
-    glfwSwapBuffers();
+    glfwSwapBuffers(_window);
+    glfwPollEvents();
   }
 }
  

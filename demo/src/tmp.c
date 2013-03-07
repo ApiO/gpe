@@ -1,12 +1,17 @@
 #include "tmp.h"
 
+void FOO()
+{
+}
+
+/*
 #include <windows.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #define GLEW_STATIC
 #include <GL\glew.h>
-#include <GL\glfw.h>
+#include "GL\glfw3.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -289,3 +294,4 @@ static void _clean()
   glfwTerminate();
 }
 
+*/

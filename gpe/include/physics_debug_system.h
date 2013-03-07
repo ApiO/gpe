@@ -16,7 +16,7 @@ typedef struct
 } physics_debug_system;
 
 void  physics_debug_system_init (physics_debug_system * system, cpSpace * space);
-void  physics_debug_system_draw (physics_debug_system * system);
+void  physics_debug_system_draw (int width, int height, physics_debug_system * system);
 
 #ifdef __cplusplus
 }

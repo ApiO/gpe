@@ -24,7 +24,7 @@ void physics_system_test_foo0(void)
   while (manager.running)
   {
     window_manager_clear(&manager);
-    physics_debug_system_draw(&debug);
+    physics_debug_system_draw(800, 600, &debug);
     window_manager_swapBuffers(&manager);
   }
   
@@ -78,7 +78,7 @@ void physics_system_test_foo1(void)
   while (manager.running)
   {
     window_manager_clear(&manager);
-    physics_debug_system_draw(&debug);
+    physics_debug_system_draw(800, 600, &debug);
     window_manager_swapBuffers(&manager);
   }
   
@@ -107,7 +107,7 @@ void physics_system_test_foo2(void)
   while (manager.running)
   {
     window_manager_clear(&manager);
-    physics_debug_system_draw(&debug);
+    physics_debug_system_draw(800, 600, &debug);
     window_manager_swapBuffers(&manager);
   }
   

@@ -1,6 +1,6 @@
 #include "physics_debug_system.h"
 
-#include <GL\glfw.h>
+#include "GL\glfw3.h"
 #include "ChipmunkDebugDraw.h"
 
 GLfloat translate_x = 0.0;
@@ -15,17 +15,14 @@ void physics_debug_system_init (physics_debug_system * system, cpSpace * space)
 	ChipmunkDebugDraw_SetPointLineScale(1.0f);
 }
 
-void physics_debug_system_draw (physics_debug_system * system)
-{
-	int width, height;
-      	
+void physics_debug_system_draw (int width, int height, physics_debug_system * system)
+{      	
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glfwGetWindowSize(&width, &height);
 	reshape(width, height);
 
 	glMatrixMode(GL_MODELVIEW);

@@ -22,7 +22,7 @@
 #include <limits.h>
 #include <string.h>
 
-#include <GL\glfw.h>
+#include "GL\glfw3.h"
 #include <chipmunk\chipmunk_private.h>
 #include "ChipmunkDebugDraw.h"
 

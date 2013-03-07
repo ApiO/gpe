@@ -5,6 +5,7 @@
 #include <GL\glew.h>
 #include "font_system.h"
 #include "gpr_types.h"
+#include "GL\glfw3.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +28,7 @@ typedef struct window_manager
   I32 width, height;
   I32 display_axes, display_fps;
   fps_util_t fps_util;
+  GLFWwindow *window;
 } window_manager;
 
 void window_manager_init        (window_manager *m, char * title, I32 height, I32 width);
