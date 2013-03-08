@@ -117,6 +117,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\gpr\include;..\..\include;..\..\libraries</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

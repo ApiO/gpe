@@ -20,6 +20,7 @@
     <ClCompile Include="..\..\src\scene_graph_system_test.c" />
     <ClCompile Include="..\..\src\TheoJansen.c" />
     <ClCompile Include="..\..\src\tmp.c" />
+    <ClCompile Include="..\..\src\tool_server.c" />
     <ClCompile Include="..\..\src\window_test.c" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="..\..\src\scene_graph_system_test.h" />
     <ClInclude Include="..\..\src\TheoJansen.h" />
     <ClInclude Include="..\..\src\tmp.h" />
+    <ClInclude Include="..\..\src\tool_server.h" />
     <ClInclude Include="..\..\src\window_test.h" />
   </ItemGroup>
   <ItemGroup>
@@ -93,11 +95,12 @@
       <AdditionalIncludeDirectories>..\..\..\gpe\include;..\..\..\..\gpr\include;..\..\..\gpe\libraries;..\..\libraries</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\..\gpe\platform\msvc2012\build\$(Configuration)\;$(SolutionDir)\lib\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gpe.lib;opengl32.lib;ZLIB.lib;websockets_static.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\..\gpe\platform\msvc2012\build\$(Configuration)\;$(SolutionDir)\lib\Debug;$(SolutionDir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gpe.lib;opengl32.lib;websockets_static.lib;ws2_32.lib;turbojpeg-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD /NODEFAULTLIB:MSVCRT /LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -110,13 +113,14 @@
       <AdditionalIncludeDirectories>..\..\..\gpe\include;..\..\..\..\gpr\include;..\..\..\gpe\libraries;..\..\libraries</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\..\gpe\platform\msvc2012\build\$(Configuration)\;$(SolutionDir)\lib\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gpe.lib;opengl32.lib;ZLIB.lib;websockets_static.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\..\gpe\platform\msvc2012\build\$(Configuration)\;$(SolutionDir)\lib\Release;$(SolutionDir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gpe.lib;opengl32.lib;websockets_static.lib;ws2_32.lib;turbojpeg-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>

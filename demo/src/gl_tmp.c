@@ -1,6 +1,5 @@
-#include "libwebsockets/lib/libwebsockets.h"
+#include "tool_server.h"
 #include "gl_tmp.h"
-
 #include <stdlib.h>
 
 #define _USE_MATH_DEFINES
@@ -12,7 +11,6 @@
 
 #include <time.h>
 #include "SOIL\SOIL.h"
-#include "FreeImage\FreeImage.h"
 
 #define HEIGHT      600
 #define WIDTH       800
@@ -72,124 +70,11 @@ typedef struct
   I32 send;
 } user_data_t;
 
-static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-  'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-  'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-  'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-  'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-  'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-  'w', 'x', 'y', 'z', '0', '1', '2', '3',
-  '4', '5', '6', '7', '8', '9', '+', '/'};
-static char *decoding_table = NULL;
-static int mod_table[] = {0, 2, 1};
-
-
-static void base64_encode(const unsigned char *data,
-                          int input_length,
-                          char *out,
-                          int *output_length)
-{
-  *output_length = (size_t) (4.0 * ceil((double) input_length / 3.0));
-
-  for (int i = 0, j = 0; i < input_length;) {
-
-    uint32_t octet_a = i < input_length ? data[i++] : 0;
-    uint32_t octet_b = i < input_length ? data[i++] : 0;
-    uint32_t octet_c = i < input_length ? data[i++] : 0;
-
-    uint32_t triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
-
-    out[j++] = encoding_table[(triple >> 3 * 6) & 0x3F];
-    out[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
-    out[j++] = encoding_table[(triple >> 1 * 6) & 0x3F];
-    out[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
-  }
-
-  for (int i = 0; i < mod_table[input_length % 3]; i++)
-    out[*output_length - 1 - i] = '=';
-}
-
-static int callback_engine(struct libwebsocket_context *context,
-struct libwebsocket *wsi,
-  enum libwebsocket_callback_reasons reason, void *user,
-  void *in, size_t len)
-{
-  user_data_t *pss = (user_data_t*)user;
-  switch(reason)
-  {
-  case LWS_CALLBACK_ESTABLISHED:
-    printf("connection established\n");
-    pss->byte_buf = (unsigned char*)malloc(3*800*600);
-    pss->b64_buf  = (char*)malloc(LWS_SEND_BUFFER_PRE_PADDING + 3*800*600 + LWS_SEND_BUFFER_POST_PADDING);
-    break;
-  case LWS_CALLBACK_PROTOCOL_DESTROY:
-    free(pss->byte_buf);
-    free(pss->b64_buf);
-    printf("connection closed\n");
-  case LWS_CALLBACK_SERVER_WRITEABLE:
-    {
-      /*if (!pss->send)
-      {
-        pss->send = 1;
-        return 0;
-      }*/
-
-      int n, size;
-
-      FIBITMAP *img;
-      BYTE *pixels;
-      long file_size;
-      int save, acquire;
-      FIMEMORY *hmem;
-      char *b64;
-
-      pixels = (BYTE*)malloc(sizeof(BYTE)*3 * WIDTH * HEIGHT);
-      hmem = FreeImage_OpenMemory();
-      glReadPixels(0, 0, WIDTH, HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, pixels);
-      img = FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3*WIDTH, 24, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, 0);
-      save = FreeImage_SaveToMemory(FIF_JPEG, img, hmem, JPEG_QUALITYSUPERB);
-      FreeImage_Unload(img);
-      free(pixels);
-
-      // Get the buffer from the memory stream.
-      acquire = FreeImage_AcquireMemory(hmem, &pss->byte_buf, (DWORD*)&n);
-      b64 = pss->b64_buf + LWS_SEND_BUFFER_PRE_PADDING;
-      base64_encode(pss->byte_buf, n, b64, &size);
-
-      n = libwebsocket_write(wsi, (unsigned char*)b64, size, LWS_WRITE_TEXT);
-      FreeImage_CloseMemory(hmem);
-
-      pss->send = 0;
-    }
-    break;
-  case LWS_CALLBACK_RECEIVE:
-    printf("message recieved\n");
-    break;
-  default : 
-    break;
-  }
-  return 0;
-}
-
-static struct libwebsocket_protocols protocols[] = {
-  // first protocol must always be HTTP handler
-  {
-    "engine-protocol",    // name
-      callback_engine,    // callback
-      sizeof(user_data_t) // per_session_data_size
-  },
-  {
-    NULL, NULL, 0       // end of list
-    }
-};
-
 void GL_TMP_H_FOO()
 {
   window_manager w;
   F32 ax, ay;
-
-  struct libwebsocket_context *context;
-  struct lws_context_creation_info info;
+  tool_server_t server;
 
   gpr_memory_init(4*1024*1024);
 
@@ -217,17 +102,7 @@ void GL_TMP_H_FOO()
   _frame_util.dock = DOCK_TEXT_TOP_RIGHT;
   font_system_text_set( _frame_util.text_id, L"FPS: 0", _frame_util.align );
 
-  // create libwebsocket context representing this server
-  memset(&info, 0, sizeof info);
-  info.port = 9000;
-  info.protocols = protocols;
-
-  context = libwebsocket_create_context(&info);
-
-  if (context == NULL) {
-    fprintf(stderr, "libwebsocket init failed\n");
-    return;
-  }
+  tool_server_init(&server, &w, gpr_default_allocator);
 
   while(w.running)
   {
@@ -249,13 +124,10 @@ void GL_TMP_H_FOO()
     font_system_text_print( _frame_util.text_id, 6, 0, _frame_util.dock, HEIGHT, WIDTH);
 
     window_manager_swapBuffers(&w);
-
-    //snapshot();
-    libwebsocket_callback_on_writable_all_protocol(&protocols[0]);
-    libwebsocket_service(context, 0);
+    tool_server_update(&server);
   }
 
-  libwebsocket_context_destroy(context);
+  tool_server_shutdown(&server);
 
   _clean();
 

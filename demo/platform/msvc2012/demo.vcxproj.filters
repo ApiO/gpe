@@ -29,6 +29,9 @@
     <ClCompile Include="..\..\src\gl_sample.c">
       <Filter>SAMPLES\graphic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\tool_server.c">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\physics_system_test.h">
@@ -56,6 +59,9 @@
       <Filter>SAMPLES\graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\gl_sample.h">
+      <Filter>SAMPLES\graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\tool_server.h">
       <Filter>SAMPLES\graphic</Filter>
     </ClInclude>
   </ItemGroup>
