@@ -14,6 +14,7 @@
 #include "gl_sample.h"
 */
 #include "gl_tmp.h"
+#include "libwebsockets/lib/libwebsockets.h"
 
 
 int main( int argc, const char* argv[] )
