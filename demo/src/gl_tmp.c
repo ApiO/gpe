@@ -12,7 +12,8 @@
 
 #include <time.h>
 #include "SOIL\SOIL.h"
-#include "FreeImage\FreeImage.h"
+#include "jpeglib\turbojpeg.h"
+
 
 #define HEIGHT      600
 #define WIDTH       800
@@ -62,7 +63,7 @@ static sample sample_3; //VAO : glDrawElements sur GL_TRIANGLES avec buffer d'in
 
 static F32 FRAME_DURATION = ((F32)1000/60)/1000;
 static const F32 ANGLE_UNIT = M_PI/12;
-static F32 angle = 0.f;
+static F32 _current_angle = 0.f;
 static frame_util _frame_util;
 
 typedef struct
@@ -133,7 +134,7 @@ struct libwebsocket *wsi,
         pss->send = 1;
         return 0;
       }*/
-
+      /*
       int n, size;
 
       FIBITMAP *img;
@@ -160,6 +161,7 @@ struct libwebsocket *wsi,
       FreeImage_CloseMemory(hmem);
 
       pss->send = 0;
+      //*/
     }
     break;
   case LWS_CALLBACK_RECEIVE:
@@ -235,8 +237,8 @@ void GL_TMP_H_FOO()
 
     window_manager_clear(&w);
 
-    ax = 60*cos(angle);
-    ay = 60*sin(angle);
+    ax = 60*cos(_current_angle);
+    ay = 60*sin(_current_angle);
 
     _display_sample_0(1.f, 0.f, 0.f, (WIDTH/4)-64+ax, (HEIGHT/4)-64+ay);
     _display_sample_1(0.f, 1.f, 0.f, (WIDTH/4)-64-ax, (3*HEIGHT/4)-64-ay);
@@ -244,7 +246,7 @@ void GL_TMP_H_FOO()
     _display_sample_3(1.f, 1.f, 0.f, (3*WIDTH/4)-64+ax, (3*HEIGHT/4)-64+ay);
     _display_sample_3(1.f, 1.f, 1.f, (WIDTH-128)/2, (HEIGHT-128)/2);
 
-    angle += ANGLE_UNIT;
+    _current_angle += ANGLE_UNIT;
 
     font_system_text_print( _frame_util.text_id, 6, 0, _frame_util.dock, HEIGHT, WIDTH);
 
