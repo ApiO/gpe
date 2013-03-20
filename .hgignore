@@ -1,2 +1,6 @@
 syntax: glob
-gpe/platform/msvc2012/build/Debug/CL.read.1.tlog
+*.user
+*.suo
+*.sdf
+gpe/platform/msvc2012/build/*
+demo/platform/msvc2012/build/*
